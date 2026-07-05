@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Portada</title>
+<link rel="stylesheet" href="print.css">
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <a class="button" href="/"><button class="alt" type="button">← Volver al cotizador</button></a>
+  <span class="hint" id="hint">Cargando…</span>
+</div>
+<div id="content"></div>
+
+<script>
+function esc(s){ return String(s??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+var id = new URLSearchParams(location.search).get('id');
+var content = document.getElementById('content');
+var hint = document.getElementById('hint');
+
+if(!id){
+  content.innerHTML = '<div class="errbox">Falta el parámetro de cotización.</div>';
+} else {
+  fetch('/api/quotes/' + id).then(function(r){
+    if(!r.ok) throw new Error('No se encontró la cotización');
+    return r.json();
+  }).then(function(q){ render(q); })
+    .catch(function(e){ content.innerHTML = '<div class="errbox">'+esc(e.message)+'</div>'; hint.textContent=''; });
+}
+
+function render(q){
+  var s = q.settings || {};
+  hint.textContent = 'Portada — Cotización ' + q.number;
+  var firstItem = (q.items && q.items[0]) || null;
+  var itemLine = '';
+  if (firstItem) {
+    itemLine = '<div class="cover-item">' + esc(firstItem.code ? firstItem.code + ' : ' : '') + esc(firstItem.description) + '</div>';
+  }
+
+  content.innerHTML = ''
+  + '<div class="sheet premium">'
+  + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
+  + '<div class="coversheet">'
+  + '  <div class="premium-topbar">'
+  + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
+  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
+  + '    <div class="accent-line"></div>'
+  + '  </div>'
+  + '  <div class="cover-mid">'
+  + '    <div class="badge"></div>'
+  + '    <h1>COTIZACIÓN</h1>'
+  + '    <div class="for">Preparado para: <span>'+esc(q.client_name||'')+'</span></div>'
+  + itemLine
+  + '  </div>'
+  + '  <div class="premium-footbar">'
+  + '    N° '+esc(q.number)+' &nbsp;·&nbsp; '+esc(s.company_email||'')+' &nbsp;·&nbsp; '+esc(s.company_phone||'')
+  + '  </div>'
+  + '</div></div>';
+  document.title = 'Portada — Cotización ' + q.number;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cotizador · Fluid Solutions Business Center</title>
+<link rel="stylesheet" href="css/style.css">
+<script>
+  (function(){
+    var saved = localStorage.getItem('fs_theme');
+    var theme = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  })();
+</script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <img id="sidebarLogo" src="/img/logo-placeholder.svg" alt="Logo">
+      <div class="name">Fluid Solutions <small>COTIZADOR LOCAL</small></div>
+    </div>
+    <div class="field" style="margin-bottom:16px">
+      <label style="color:#8ea3c2">Empresa activa</label>
+      <select id="companySwitcher" style="width:100%;background:#1a2333;color:#fff;border-color:rgba(255,255,255,.15)"></select>
+    </div>
+    <nav class="nav">
+      <button data-view="quotes" class="active"><span class="ico">🧾</span> Cotizaciones</button>
+      <button data-view="products"><span class="ico">📦</span> Productos</button>
+      <button data-view="fichas"><span class="ico">📋</span> Fichas técnicas</button>
+      <button data-view="clients"><span class="ico">👥</span> Clientes</button>
+      <button data-view="companies"><span class="ico">🏢</span> Empresas</button>
+      <button data-view="settings"><span class="ico">⚙️</span> Configuración</button>
+    </nav>
+    <button class="theme-toggle" id="btnThemeToggle" title="Cambiar tema">
+      <span id="themeIcon">🌙</span> <span id="themeLabel">Modo oscuro</span>
+    </button>
+    <div class="foot">App local · red interna<br>Sin conexión a internet requerida</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ===== COTIZACIONES ===== -->
+    <section class="view active" id="view-quotes">
+      <h1 class="pagetitle">Cotizaciones</h1>
+      <div class="pagesub">Cree, edite e imprima cotizaciones para sus clientes.</div>
+      <div class="toolbar">
+        <div class="search"><span>🔎</span><input id="qSearch" placeholder="Buscar por N° o cliente…"></div>
+        <div class="spacer"></div>
+        <button class="btn" id="btnNewQuote">＋ Nueva cotización</button>
+      </div>
+      <div id="quotesTableWrap"></div>
+    </section>
+
+    <!-- ===== PRODUCTOS ===== -->
+    <section class="view" id="view-products">
+      <h1 class="pagetitle">Catálogo de productos</h1>
+      <div class="pagesub">Base de productos con imagen y precio, disponible al armar cotizaciones y fichas.</div>
+      <div class="toolbar">
+        <div class="search"><span>🔎</span><input id="pSearch" placeholder="Buscar producto, código o categoría…"></div>
+        <div class="spacer"></div>
+        <button class="btn" id="btnNewProduct">＋ Nuevo producto</button>
+      </div>
+      <div id="productsGridWrap"></div>
+    </section>
+
+    <!-- ===== FICHAS TÉCNICAS ===== -->
+    <section class="view" id="view-fichas">
+      <h1 class="pagetitle">Fichas técnicas</h1>
+      <div class="pagesub">Complete las especificaciones de cada producto y genere su ficha en PDF.</div>
+      <div class="toolbar">
+        <div class="search"><span>🔎</span><input id="fSearch" placeholder="Buscar producto…"></div>
+      </div>
+      <div id="fichasGridWrap"></div>
+    </section>
+
+    <!-- ===== CLIENTES ===== -->
+    <section class="view" id="view-clients">
+      <h1 class="pagetitle">Clientes</h1>
+      <div class="pagesub">Guarde los datos de sus clientes para reutilizarlos en nuevas cotizaciones.</div>
+      <div class="toolbar">
+        <div class="search"><span>🔎</span><input id="cSearch" placeholder="Buscar cliente o RUT…"></div>
+        <div class="spacer"></div>
+        <button class="btn" id="btnNewClient">＋ Nuevo cliente</button>
+      </div>
+      <div id="clientsTableWrap"></div>
+    </section>
+
+    <!-- ===== EMPRESAS ===== -->
+    <section class="view" id="view-companies">
+      <h1 class="pagetitle">Empresas</h1>
+      <div class="pagesub">Cada empresa tiene su propio catálogo, cotizaciones, clientes y correlativo — completamente separados entre sí.</div>
+      <div class="toolbar">
+        <div class="spacer"></div>
+        <button class="btn" id="btnNewCompany">＋ Nueva empresa</button>
+      </div>
+      <div id="companiesGridWrap"></div>
+    </section>
+
+    <!-- ===== CONFIGURACIÓN ===== -->
+    <section class="view" id="view-settings">
+      <h1 class="pagetitle">Configuración de la empresa</h1>
+      <div class="pagesub">Estos datos aparecen en todas las cotizaciones y fichas que imprima.</div>
+      <div class="card" style="max-width:640px">
+        <div class="field">
+          <label>Logo</label>
+          <div class="imgpick">
+            <div class="prev" id="settingsLogoPrev"><span style="font-size:10px;color:#a9b2c6">Sin logo</span></div>
+            <input type="file" id="settingsLogoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+          </div>
+        </div>
+        <div class="field"><label>Nombre de la empresa</label><input id="s_company_name"></div>
+        <div class="row2">
+          <div class="field"><label>RUT</label><input id="s_company_rut"></div>
+          <div class="field"><label>Teléfono</label><input id="s_company_phone"></div>
+        </div>
+        <div class="field"><label>Dirección</label><input id="s_company_address"></div>
+        <div class="row2">
+          <div class="field"><label>Correo</label><input id="s_company_email"></div>
+          <div class="field"><label>Sitio web</label><input id="s_company_web"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Prefijo de N° de cotización</label><input id="s_quote_prefix"></div>
+          <div class="field"><label>Próximo correlativo</label><input id="s_next_quote_seq" type="number" min="1"></div>
+        </div>
+        <div class="field"><label>Aviso legal (aparece arriba y al pie de cada cotización)</label>
+          <textarea id="s_legal_notice" rows="2"></textarea>
+        </div>
+        <div class="modal foot" style="border:none;padding:8px 0 0;margin:0">
+          <button class="btn" id="btnSaveSettings">Guardar configuración</button>
+        </div>
+      </div>
+
+      <h1 class="pagetitle" style="margin-top:28px">Datos de transferencia</h1>
+      <div class="pagesub">Se muestran en la cotización solo si activa la casilla correspondiente al crearla.</div>
+      <div class="card" style="max-width:640px">
+        <div class="row2">
+          <div class="field"><label>Banco</label><input id="s_bank_name" placeholder="Ej: Banco Estado"></div>
+          <div class="field"><label>Tipo de cuenta</label><input id="s_bank_account_type" placeholder="Ej: Cuenta corriente"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>N° de cuenta</label><input id="s_bank_account_number"></div>
+          <div class="field"><label>RUT</label><input id="s_bank_rut"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Titular</label><input id="s_bank_holder"></div>
+          <div class="field"><label>Correo para comprobante</label><input id="s_bank_email"></div>
+        </div>
+        <div class="modal foot" style="border:none;padding:8px 0 0;margin:0">
+          <button class="btn" id="btnSaveBank">Guardar datos de transferencia</button>
+        </div>
+      </div>
+
+      <h1 class="pagetitle" style="margin-top:28px">Términos y Condiciones</h1>
+      <div class="pagesub">Se incluyen como página final al generar el "Documento completo" de una cotización.</div>
+      <div class="card" style="max-width:760px">
+        <div class="field"><label>1. Plazo de entrega</label><textarea id="s_terms_delivery" rows="2" placeholder="Ej: Entrega en 20 días desde la emisión de la orden de compra, en Santiago."></textarea></div>
+        <div class="field"><label>2. Forma de pago</label><input id="s_terms_payment" placeholder="Ej: OC a 30 días"></div>
+        <div class="field"><label>3. Puesta en marcha</label><input id="s_terms_startup" placeholder="Ej: N/A"></div>
+        <div class="field"><label>4. Alcances de la oferta</label><textarea id="s_terms_scope" rows="2" placeholder="Ej: 24 meses contra defectos de fabricación o empaquetado."></textarea></div>
+        <div class="field"><label>5. Garantía</label><textarea id="s_terms_warranty" rows="2" placeholder="Ej: 24 meses contra defectos de fabricación o empaquetado."></textarea></div>
+        <div class="field"><label>6. Documentos técnicos</label><textarea id="s_terms_docs" rows="2" placeholder="Ej: Incluye certificado de garantía y certificaciones al momento de cada entrega."></textarea></div>
+        <div class="field"><label>7. Link con el detalle de condiciones comerciales</label><input id="s_terms_link" placeholder="https://..."></div>
+        <div class="modal foot" style="border:none;padding:8px 0 0;margin:0">
+          <button class="btn" id="btnSaveTerms">Guardar Términos y Condiciones</button>
+        </div>
+      </div>
+
+      <h1 class="pagetitle" style="margin-top:28px">Carta de presentación</h1>
+      <div class="pagesub">Opcional. Si la completa, se agrega como página aparte (después de la portada) al generar el "Documento completo" de una cotización. Déjela en blanco si esta empresa no usa carta de presentación.</div>
+      <div class="card" style="max-width:760px">
+        <div class="field"><label>Párrafo de presentación</label><textarea id="s_letter_intro" rows="5" placeholder="Ej: Es importante resaltar que nuestra compañía... Ha generado acuerdos legales con... Esto garantiza la originalidad de los productos y las garantías de fábrica."></textarea></div>
+        <div class="row2">
+          <div class="field"><label>Nombre de quien firma</label><input id="s_letter_signer_name" placeholder="Ej: Carlos Burgos Iriarte"></div>
+          <div class="field"><label>Cargo</label><input id="s_letter_signer_role" placeholder="Ej: Socio Fundador"></div>
+        </div>
+        <div class="modal foot" style="border:none;padding:8px 0 0;margin:0">
+          <button class="btn" id="btnSaveLetter">Guardar carta de presentación</button>
+        </div>
+      </div>
+
+      <h1 class="pagetitle" style="margin-top:28px">Proveedores</h1>
+      <div class="pagesub">Suba el logo de cada proveedor; se muestran como franja al final de cada cotización impresa.</div>
+      <div class="card" style="max-width:900px">
+        <div class="field">
+          <label>Agregar logo</label>
+          <div class="imgpick">
+            <div class="prev" id="brandLogoPrev"><span style="font-size:10px;color:#a9b2c6">Sin imagen</span></div>
+            <input type="file" id="brandLogoFile" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Nombre del proveedor (opcional)</label><input id="brandLogoName" placeholder="Ej: SKF"></div>
+          <div class="field" style="display:flex;align-items:flex-end">
+            <button class="btn" id="btnAddBrandLogo" style="width:100%">＋ Agregar proveedor</button>
+          </div>
+        </div>
+        <div id="brandLogosGrid" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== Modal: Producto ===== -->
+<div class="overlay" id="modalProduct">
+  <div class="modal">
+    <h2 id="productModalTitle">Nuevo producto</h2>
+    <input type="hidden" id="p_id">
+    <div class="field">
+      <label>Imagen del producto</label>
+      <div class="imgpick">
+        <div class="prev" id="productImgPrev"><span style="font-size:10px;color:#a9b2c6">Sin imagen</span></div>
+        <input type="file" id="p_image_file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Nombre *</label><input id="p_name" placeholder="Ej: Notebook 14&quot; Pro"></div>
+      <div class="field"><label>Código / SKU</label><input id="p_code" placeholder="Ej: NB-14PRO"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Categoría</label><input id="p_category" placeholder="Ej: Computación"></div>
+      <div class="field"><label>Precio unitario (CLP)</label><input id="p_price" type="number" min="0" step="1"></div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea id="p_description" placeholder="Detalle breve del producto"></textarea></div>
+    <div class="field">
+      <label>Datasheet del fabricante (PDF, opcional)</label>
+      <div class="imgpick">
+        <div class="prev" id="productPdfPrev"><span style="font-size:20px">📄</span></div>
+        <div>
+          <input type="file" id="p_datasheet_file" accept="application/pdf">
+          <div class="hint" id="productPdfName">Sin datasheet cargado</div>
+        </div>
+      </div>
+      <div class="hint">Se adjunta tal cual al generar el "Documento completo" de una cotización que incluya este producto.</div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="btnCancelProduct">Cancelar</button>
+      <button class="btn" id="btnSaveProduct">Guardar producto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: Cliente ===== -->
+<div class="overlay" id="modalClient">
+  <div class="modal">
+    <h2>Nuevo cliente</h2>
+    <div class="field"><label>Nombre / Razón social *</label><input id="c_name"></div>
+    <div class="row2">
+      <div class="field"><label>RUT</label><input id="c_rut"></div>
+      <div class="field"><label>Contacto</label><input id="c_contact"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Correo</label><input id="c_email"></div>
+      <div class="field"><label>Teléfono</label><input id="c_phone"></div>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="btnCancelClient">Cancelar</button>
+      <button class="btn" id="btnSaveClient">Guardar cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: Cotización (editor) ===== -->
+<div class="overlay" id="modalQuote">
+  <div class="modal wide">
+    <h2 id="quoteModalTitle">Nueva cotización</h2>
+    <input type="hidden" id="q_id">
+    <div class="qmeta">
+      <div class="card">
+        <div class="field autocomplete">
+          <label>Cliente *</label>
+          <input id="q_client_name" placeholder="Escriba para buscar o ingrese uno nuevo" autocomplete="off">
+          <div class="ac-list" id="clientAcList"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>RUT</label><input id="q_client_rut"></div>
+          <div class="field"><label>Contacto</label><input id="q_client_contact"></div>
+        </div>
+        <div class="field"><label>Correo</label><input id="q_client_email"></div>
+      </div>
+      <div class="card">
+        <div class="row2">
+          <div class="field"><label>Fecha</label><input id="q_date" type="date"></div>
+          <div class="field"><label>Validez</label><input id="q_validity" value="15 días"></div>
+        </div>
+        <div class="field"><label>Forma de pago</label><input id="q_payment_terms" placeholder="Ej: 50% anticipo, saldo contra entrega"></div>
+        <div class="field"><label>Plazo de entrega</label><input id="q_delivery_terms" placeholder="Ej: 7 a 10 días hábiles"></div>
+        <div class="field"><label>Estado</label>
+          <select id="q_status">
+            <option value="borrador">Borrador</option>
+            <option value="enviada">Enviada</option>
+            <option value="aceptada">Aceptada</option>
+            <option value="rechazada">Rechazada</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="itemsbox">
+      <table class="items">
+        <thead>
+          <tr>
+            <th style="width:44px"></th>
+            <th style="width:34%">Producto / Descripción</th>
+            <th style="width:8%">Cant.</th>
+            <th style="width:14%">P. Unit.</th>
+            <th style="width:8%">Desc. %</th>
+            <th style="width:14%">Subtotal</th>
+            <th style="width:34px"></th>
+          </tr>
+        </thead>
+        <tbody id="quoteItemsBody"></tbody>
+      </table>
+      <div class="additem" id="btnAddItem">＋ Agregar ítem</div>
+      <div class="totalsbox">
+        <div class="r"><span>Neto</span><b id="q_neto">$0</b></div>
+        <div class="r"><span>IVA (<span id="q_ivapct">19</span>%)</span><b id="q_iva">$0</b></div>
+        <div class="r grand"><span>Total</span><b id="q_total">$0</b></div>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:16px"><label>Observaciones</label><textarea id="q_notes" placeholder="Notas adicionales para el cliente"></textarea></div>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent-d)">
+      <input type="checkbox" id="q_include_bank_info" style="width:16px;height:16px">
+      Incluir datos de transferencia en esta cotización
+    </label>
+
+    <details class="termsOverride" style="margin-top:14px">
+      <summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:var(--accent-d)">⚙️ Términos y condiciones de ESTA cotización (opcional — solo si es distinto a lo habitual de la empresa)</summary>
+      <div class="hint" style="margin:6px 0 10px">Deje en blanco cualquier campo para usar el texto configurado en la empresa. Lo que escriba aquí solo aplica a esta cotización.</div>
+      <div class="row2">
+        <div class="field"><label>Plazo de entrega</label><textarea id="q_terms_delivery" rows="2" placeholder="(usa el de la empresa)"></textarea></div>
+        <div class="field"><label>Forma de pago</label><textarea id="q_terms_payment" rows="2" placeholder="(usa el de la empresa)"></textarea></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Puesta en marcha</label><textarea id="q_terms_startup" rows="2" placeholder="(usa el de la empresa)"></textarea></div>
+        <div class="field"><label>Alcances de la oferta</label><textarea id="q_terms_scope" rows="2" placeholder="(usa el de la empresa)"></textarea></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Garantía</label><textarea id="q_terms_warranty" rows="2" placeholder="(usa el de la empresa)"></textarea></div>
+        <div class="field"><label>Documentos técnicos</label><textarea id="q_terms_docs" rows="2" placeholder="(usa el de la empresa)"></textarea></div>
+      </div>
+      <div class="field"><label>Link T&C</label><input id="q_terms_link" placeholder="(usa el de la empresa)"></div>
+    </details>
+
+    <div class="foot" id="quoteFullDocRow" style="display:none;justify-content:flex-start;border-top:none;padding-top:0;margin-top:0">
+      <button class="btn ghost" id="btnFullDoc">📎 Generar documento completo</button>
+      <span class="hint">Portada + cotización + datasheets de cada producto + Términos y Condiciones, en un solo PDF.</span>
+    </div>
+    <div class="foot">
+      <button class="btn ghost" id="btnCancelQuote">Cancelar</button>
+      <button class="btn" id="btnSaveQuote">Guardar cotización</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: aviso de datasheets faltantes ===== -->
+<div class="overlay" id="modalMissingDatasheets">
+  <div class="modal">
+    <h2>Faltan datasheets</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Estos productos de la cotización no tienen un datasheet PDF cargado en el Catálogo:</p>
+    <ul id="missingDatasheetsList" style="margin:0 0 14px 18px;font-size:13px"></ul>
+    <p style="font-size:13px;color:var(--muted)">¿Cómo quiere continuar?</p>
+    <div class="foot" style="flex-wrap:wrap">
+      <button class="btn ghost" id="btnMissingCancel">Cancelar</button>
+      <button class="btn ghost" id="btnMissingSkip">Generar sin esas páginas</button>
+      <button class="btn" id="btnMissingUseFicha">Usar su Ficha Técnica</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal: Ficha técnica (specs) ===== -->
+<div class="overlay" id="modalFicha">
+  <div class="modal wide">
+    <h2 id="fichaModalTitle">Ficha técnica</h2>
+    <input type="hidden" id="fi_product_id">
+    <div id="specSections"></div>
+    <button class="addsection" id="btnAddSection">＋ Agregar sección</button>
+    <div class="foot">
+      <button class="btn ghost" id="btnCancelFicha">Cancelar</button>
+      <button class="btn" id="btnSaveFicha">Guardar ficha</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/companies.js"></script>
+<script src="js/app.js"></script>
+<script src="js/products.js"></script>
+<script src="js/clients.js"></script>
+<script src="js/quotes.js"></script>
+<script src="js/fichas.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/brands.js"></script>
+</body>
+</html>

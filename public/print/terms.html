@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Términos y Condiciones</title>
+<link rel="stylesheet" href="print.css">
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <a class="button" href="/"><button class="alt" type="button">← Volver al cotizador</button></a>
+  <span class="hint" id="hint">Cargando…</span>
+</div>
+<div id="content"></div>
+
+<script>
+function esc(s){ return String(s??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+var id = new URLSearchParams(location.search).get('id');
+var content = document.getElementById('content');
+var hint = document.getElementById('hint');
+
+if(!id){
+  content.innerHTML = '<div class="errbox">Falta el parámetro de cotización.</div>';
+} else {
+  fetch('/api/quotes/' + id).then(function(r){
+    if(!r.ok) throw new Error('No se encontró la cotización');
+    return r.json();
+  }).then(function(q){ render(q); })
+    .catch(function(e){ content.innerHTML = '<div class="errbox">'+esc(e.message)+'</div>'; hint.textContent=''; });
+}
+
+function render(q){
+  var s = q.settings || {};
+  var t = q.effective_terms || s;
+  hint.textContent = 'Términos y Condiciones — Cotización ' + q.number;
+
+  var items = [
+    ['1. Plazo de entrega', t.terms_delivery],
+    ['2. Forma de pago', t.terms_payment],
+    ['3. Puesta en marcha', t.terms_startup],
+    ['4. Alcances de la oferta', t.terms_scope],
+    ['5. Garantía', t.terms_warranty],
+    ['6. Documentos técnicos', t.terms_docs],
+  ];
+  var itemsHtml = items.map(function(it){
+    if (!it[1]) return '';
+    return '<div class="item"><h4>'+esc(it[0])+'</h4><p>'+esc(it[1])+'</p></div>';
+  }).join('');
+
+  var linkHtml = '';
+  if (t.terms_link) {
+    linkHtml = '<div class="item"><h4>7. Términos y Condiciones</h4><p>El detalle de nuestras condiciones comerciales específicas lo puede descargar desde el siguiente link: '
+      + '<a href="'+esc(t.terms_link)+'">'+esc(t.terms_link)+'</a>. '
+      + 'Se entenderán como leídas, verificadas y aceptadas al momento de la emisión de la orden de compra.</p></div>';
+  }
+
+  content.innerHTML = ''
+  + '<div class="sheet premium">'
+  + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
+  + '  <div class="premium-topbar">'
+  + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
+  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
+  + '    <div class="accent-line"></div>'
+  + '  </div>'
+  + '  <div class="termsblock"><div class="title">Términos y Condiciones<br><small style="font-weight:400;font-size:11px;color:var(--muted)">Cotización N° '+esc(q.number)+'</small></div>' + itemsHtml + linkHtml + '</div>'
+  + '  <div class="ocbox">'
+  + '    <h4>La Orden de Compra debe ser extendida a</h4>'
+  + '    <div class="name">'+esc(s.company_name||'')+'</div>'
+  + (s.company_rut ? '<div class="l">RUT '+esc(s.company_rut)+'</div>' : '')
+  + (s.company_address ? '<div class="l">'+esc(s.company_address)+'</div>' : '')
+  + (s.company_phone ? '<div class="l">'+esc(s.company_phone)+'</div>' : '')
+  + '  </div>'
+  + '</div>';
+  document.title = 'Términos y Condiciones — Cotización ' + q.number;
+}
+</script>
+</body>
+</html>

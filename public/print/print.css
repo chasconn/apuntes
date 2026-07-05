@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@page { size: A4; margin: 14mm; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --bg:#ffffff; --soft:#f6f8fc; --border:#e2e6f0; --line:#dde2ee;
+  --txt:#171b2b; --muted:#5b6478; --accent:#1478A6; --accent2:#17A6A0; --accent-d:#0e5b7c;
+  --grad: linear-gradient(120deg, #1478A6 0%, #17A6A0 100%);
+  --red:#c62a40;
+  --serif:'Playfair Display',Georgia,serif;
+}
+body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-serif; font-size:13px; line-height:1.5; padding:24px; }
+.sheet{ width:210mm; min-height:297mm; margin:0 auto; background:var(--bg); padding:16mm 16mm 14mm; box-shadow:0 8px 40px rgba(0,0,0,.18); position:relative; }
+.toolbar{ width:210mm; margin:0 auto 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.toolbar button{ font-family:'Inter',sans-serif; font-weight:700; font-size:12.5px; cursor:pointer; border:none; border-radius:9px; padding:9px 16px; color:#fff; background:var(--grad); }
+.toolbar a.button{ text-decoration:none; }
+.toolbar button.alt{ background:#232a3d; }
+.toolbar .hint{ color:#56566a; font-size:12px; }
+
+.head{ display:flex; align-items:center; gap:14px; padding-bottom:14px; border-bottom:2px solid var(--accent); }
+.head img.logo{ height:34px; width:auto; display:block; }
+.brand{ font-family:'Poppins',sans-serif; font-weight:700; font-size:12px; color:var(--txt); line-height:1.3; }
+.brand small{ display:block; font-weight:500; font-size:9.5px; color:var(--muted); letter-spacing:.03em; }
+.doctype{ margin-left:auto; text-align:right; }
+.doctype .t{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); letter-spacing:.01em; }
+.doctype .meta{ font-size:11.5px; color:var(--muted); margin-top:3px; }
+
+.parties{ display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:18px; }
+.box{ background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:13px 15px; }
+.box h3{ font-family:'Poppins',sans-serif; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-d); margin-bottom:10px; }
+.box .f{ margin-bottom:7px; font-size:12.5px; }
+.box .f b{ color:var(--muted); font-weight:600; font-size:10.5px; text-transform:uppercase; letter-spacing:.03em; display:block; margin-bottom:1px; }
+
+.items{ margin-top:22px; }
+table{ width:100%; border-collapse:collapse; }
+thead th{ font-family:'Poppins',sans-serif; font-weight:600; font-size:9px; letter-spacing:.04em; text-transform:uppercase; color:#fff; background:var(--accent-d); padding:9px 10px; text-align:left; }
+thead th.num{ text-align:right; }
+tbody td{ padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:middle; font-size:12.5px; }
+tbody td.num{ text-align:right; font-family:'Poppins',sans-serif; font-weight:600; }
+.itemimg{ width:36px; height:36px; border-radius:6px; object-fit:cover; background:var(--soft); }
+.desc-main{ font-weight:700; }
+.desc-sub{ color:var(--muted); font-size:11px; }
+tbody tr:nth-child(even){ background:#fbfcfe; }
+
+.totals{ margin-top:16px; margin-left:auto; width:280px; }
+.totals .row{ display:flex; justify-content:space-between; padding:6px 2px; font-size:13px; color:var(--muted); }
+.totals .row b{ color:var(--txt); }
+.totals .grand{ margin-top:6px; border-top:2px solid var(--accent); padding-top:10px; }
+.totals .grand span{ font-family:'Poppins',sans-serif; font-weight:700; font-size:13px; color:var(--accent-d); text-transform:uppercase; letter-spacing:.03em; }
+.totals .grand b{ font-size:19px; color:var(--accent-d); }
+
+.cond{ margin-top:24px; }
+.cond h3{ font-family:'Poppins',sans-serif; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-d); margin-bottom:8px; }
+.cond-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:10px; }
+.cond-grid .f b{ display:block; font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:2px; }
+.notes{ font-size:11.5px; color:var(--muted); border:1px dashed var(--border); border-radius:8px; padding:10px 12px; margin-top:8px; }
+
+.foot{ margin-top:26px; border-top:1px solid var(--border); padding-top:12px; display:flex; justify-content:space-between; align-items:center; }
+.foot .l{ font-size:11px; color:var(--muted); font-style:italic; max-width:62%; }
+.foot .r{ font-family:'Poppins',sans-serif; font-size:11px; color:var(--accent-d); font-weight:600; }
+
+/* Aviso legal */
+.legalnotice{ background:#fdeceb; border:1px solid var(--red); color:var(--red); font-weight:700;
+  font-size:11px; text-align:center; text-transform:uppercase; letter-spacing:.02em; line-height:1.5;
+  padding:8px 14px; border-radius:8px; margin-bottom:14px; }
+.legalnotice-foot{ margin-top:16px; margin-bottom:0; }
+
+/* Datos de transferencia */
+.bankbox{ background:var(--soft); border:1px solid var(--border); border-radius:0 0 8px 8px; padding:12px 14px; }
+.bankbox .cond-grid{ margin-bottom:0; }
+
+/* Franja de empresas cliente (pie de firma) */
+.brandstrip{ margin-top:24px; border-top:1px solid var(--border); padding-top:14px; }
+.brandstrip-title{ font-family:'Poppins',sans-serif; font-size:9px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); text-align:center; margin-bottom:10px; }
+.brandstrip-grid{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:14px 22px; }
+.brandstrip-grid img{ max-height:26px; max-width:90px; object-fit:contain; filter:grayscale(0); }
+
+/* Páginas de presentación (portada, términos, carta) del Documento Completo —
+   formal y sobrio: sin marco ni fondo punteado de página completa. Una línea
+   de acento fina, tipografía prolija y un watermark discreto en la esquina
+   (guiño al mapa de puntos que Fluid Solutions ya usa a mano), sin banderas
+   ni elementos vistosos. */
+.sheet.premium{ position:relative; overflow:hidden; }
+.sheet.premium::after{
+  content:''; position:absolute; right:-10mm; bottom:-10mm; width:70mm; height:55mm; z-index:-1;
+  background-image: radial-gradient(rgba(20,120,166,.5) 1px, transparent 1px);
+  background-size: 6px 6px; opacity:.10; pointer-events:none;
+}
+.premium-topbar{ display:flex; align-items:center; gap:14px; padding-bottom:14px; border-bottom:1px solid var(--border); position:relative; z-index:1; }
+.premium-topbar img.logo{ height:38px; width:auto; }
+.premium-topbar .brand{ font-family:'Poppins',sans-serif; font-weight:700; font-size:13px; color:var(--txt); }
+.premium-topbar .brand small{ display:block; font-weight:500; font-size:10px; color:var(--muted); }
+.premium-topbar .accent-line{ margin-left:auto; width:64px; height:3px; border-radius:3px; background:var(--accent-d); }
+.premium-footbar{ position:relative; z-index:1; margin-top:26px; border-top:1px solid var(--border); padding-top:10px;
+  text-align:center; font-family:'Poppins',sans-serif; font-size:10px; letter-spacing:.03em; color:var(--muted); }
+
+/* Marca de agua muy tenue del logo, para las páginas propias del documento
+   (portada, carta, cotización, términos) — detalle de papelería cuidada,
+   deliberadamente casi imperceptible. */
+.page-watermark{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; z-index:-1; overflow:hidden; }
+.page-watermark img{ width:60%; max-width:110mm; opacity:.045; filter:grayscale(1); }
+
+/* Portada del documento completo */
+.coversheet{ display:flex; flex-direction:column; height:255mm; }
+.cover-mid{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:22px; }
+.cover-mid .badge{ width:100%; max-width:130mm; height:2px; background:var(--accent-d); border-radius:2px; }
+.cover-mid h1{ font-family:var(--serif); font-weight:700; font-size:38px; color:var(--accent-d); letter-spacing:.01em; }
+.cover-mid .for{ font-family:'Poppins',sans-serif; font-weight:600; font-size:16px; color:var(--txt); }
+.cover-mid .for span{ color:var(--accent-d); }
+.cover-item{ margin-top:6px; background:var(--soft); border:1px solid var(--border); border-radius:10px;
+  padding:14px 22px; font-family:'Poppins',sans-serif; font-weight:600; font-size:13px; color:var(--accent-d); max-width:150mm; }
+.cover-bottom{ text-align:center; font-size:11px; color:var(--muted); }
+
+/* Términos y condiciones */
+.termsblock{ margin-top:20px; }
+.termsblock .title{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--txt); text-align:center; margin-bottom:18px; }
+.termsblock .item{ margin-bottom:16px; }
+.termsblock .item h4{ font-family:'Poppins',sans-serif; font-size:12.5px; color:var(--accent-d); margin-bottom:4px; }
+.termsblock .item p{ font-size:12px; color:var(--txt); line-height:1.55; }
+.termsblock .item a{ color:var(--accent-d); }
+.ocbox{ margin-top:24px; background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:16px 20px; text-align:center; }
+.ocbox h4{ font-family:'Poppins',sans-serif; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-bottom:8px; }
+.ocbox .name{ font-family:'Poppins',sans-serif; font-weight:700; font-size:14px; color:var(--accent-d); }
+.ocbox .l{ font-size:12px; color:var(--txt); margin-top:3px; }
+
+/* Página separadora antes de cada datasheet de fabricante — da contexto de
+   que lo que sigue es un anexo externo, en vez de que el datasheet aparezca
+   de golpe con el diseño de otra marca. */
+.anexosheet{ display:flex; flex-direction:column; height:255mm; position:relative; z-index:1; }
+.anexo-mid{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px; }
+.anexo-mid .kicker{ font-family:'Poppins',sans-serif; font-weight:600; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+.anexo-mid .rule{ width:52px; height:2px; background:var(--accent-d); border-radius:2px; }
+.anexo-mid h1{ font-family:var(--serif); font-weight:700; font-size:26px; color:var(--txt); max-width:150mm; }
+.anexo-mid .item{ margin-top:4px; font-family:'Poppins',sans-serif; font-weight:600; font-size:13px; color:var(--accent-d); }
+.anexo-mid .note{ margin-top:18px; font-size:11px; color:var(--muted); max-width:120mm; }
+
+/* Carta de presentación (opcional, por empresa) */
+.letterblock{ margin-top:26px; font-size:12.5px; line-height:1.65; color:var(--txt); }
+.letterblock .to{ margin-bottom:18px; }
+.letterblock .to b{ display:block; }
+.letterblock .asunto{ font-family:'Poppins',sans-serif; font-weight:700; margin:16px 0; }
+.letterblock .asunto span{ font-weight:400; color:var(--accent-d); }
+.letterblock p{ margin-bottom:14px; white-space:pre-wrap; }
+.letterblock .sign{ margin-top:34px; text-align:center; }
+.letterblock .sign b{ display:block; font-family:'Poppins',sans-serif; }
+
+/* Ficha técnica */
+.hero{ display:flex; gap:18px; margin-top:18px; }
+.hero .photo{ width:70mm; height:56mm; border-radius:10px; background:var(--soft); border:1px solid var(--border); overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hero .photo img{ width:100%; height:100%; object-fit:cover; }
+.hero .info h1{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); margin-bottom:8px; }
+.hero .info .meta{ font-size:11.5px; margin-bottom:4px; }
+.hero .info .meta b{ color:var(--muted); font-weight:600; }
+.hero .info .desc{ margin-top:10px; font-size:12px; color:var(--txt); line-height:1.55; }
+.secblock{ margin-top:16px; }
+.secblock h3{ font-family:'Poppins',sans-serif; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:#fff; background:var(--accent); padding:7px 10px; border-radius:6px 6px 0 0; }
+.spectable{ width:100%; border-collapse:collapse; border:1px solid var(--border); border-top:none; }
+.spectable td{ padding:7px 10px; font-size:12px; border-bottom:1px solid var(--border); }
+.spectable tr:nth-child(even){ background:var(--soft); }
+.spectable td.lbl{ font-weight:700; color:var(--accent-d); width:34%; }
+
+.loading, .errbox{ width:210mm; margin:60px auto; text-align:center; color:#666; font-size:14px; }
+
+@media print{
+  body{ background:#fff; padding:0; }
+  .toolbar{ display:none; }
+  .sheet{ box-shadow:none; width:auto; min-height:auto; padding:0; margin:0; }
+}

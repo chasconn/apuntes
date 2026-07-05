@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="36" viewBox="0 0 140 36">
+  <rect x="0" y="0" width="36" height="36" rx="8" fill="#17A6A0"/>
+  <path d="M10 24 C10 15, 26 15, 26 8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <circle cx="26" cy="8" r="2.4" fill="#fff"/>
+  <text x="44" y="17" font-family="Poppins, Arial, sans-serif" font-weight="700" font-size="11" fill="#ffffff">FLUID SOLUTIONS</text>
+  <text x="44" y="29" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="8" fill="#9fb0c9" letter-spacing="1">BUSINESS CENTER</text>
+</svg>

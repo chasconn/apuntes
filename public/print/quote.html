@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cotización</title>
+<link rel="stylesheet" href="print.css">
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <a class="button" href="/"><button class="alt" type="button">← Volver al cotizador</button></a>
+  <span class="hint" id="hint">Cargando…</span>
+</div>
+<div id="content"></div>
+
+<script>
+function fmtCLP(n){ n = Math.round(Number(n)||0); return '$' + n.toLocaleString('es-CL'); }
+function fmtDate(s){ if(!s) return ''; var p=String(s).slice(0,10).split('-'); return p[2]+'-'+p[1]+'-'+p[0]; }
+function esc(s){ return String(s??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+var id = new URLSearchParams(location.search).get('id');
+var content = document.getElementById('content');
+var hint = document.getElementById('hint');
+
+if(!id){
+  content.innerHTML = '<div class="errbox">Falta el parámetro de cotización.</div>';
+} else {
+  Promise.all([
+    fetch('/api/quotes/' + id).then(function(r){
+      if(!r.ok) throw new Error('No se encontró la cotización');
+      return r.json();
+    }),
+    fetch('/api/brand-logos').then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; })
+  ]).then(function(res){
+    render(res[0], res[1]);
+  }).catch(function(e){
+    content.innerHTML = '<div class="errbox">' + esc(e.message) + '</div>';
+    hint.textContent = '';
+  });
+}
+
+function render(q, brandLogos){
+  var s = q.settings || {};
+  hint.textContent = 'Cotización ' + q.number + ' — lista para imprimir';
+  var itemsRows = q.items.map(function(it){
+    var sub = (Number(it.qty)||0) * (Number(it.unit_price)||0) * (1 - (Number(it.discount_pct)||0)/100);
+    return '<tr>'
+      + '<td>' + (it.image_path ? '<img class="itemimg" src="'+esc(it.image_path)+'">' : '') + '</td>'
+      + '<td><div class="desc-main">'+esc(it.description)+'</div>' + (it.detail ? '<div class="desc-sub">'+esc(it.detail)+'</div>' : '') + '</td>'
+      + '<td class="num">' + (it.qty) + '</td>'
+      + '<td class="num">' + fmtCLP(it.unit_price) + '</td>'
+      + '<td class="num">' + (it.discount_pct||0) + '%</td>'
+      + '<td class="num">' + fmtCLP(sub) + '</td>'
+      + '</tr>';
+  }).join('');
+
+  var legalFoot = s.legal_notice ? '<div class="legalnotice legalnotice-foot">'+esc(s.legal_notice)+'</div>' : '';
+
+  var bankBlock = '';
+  if (q.include_bank_info && (s.bank_name || s.bank_account_number)) {
+    bankBlock = ''
+      + '<div class="cond" style="margin-top:18px"><h3>Datos de transferencia</h3>'
+      + '  <div class="bankbox">'
+      + '    <div class="cond-grid">'
+      + '      <div class="f"><b>Banco</b>'+esc(s.bank_name||'—')+'</div>'
+      + '      <div class="f"><b>Tipo de cuenta</b>'+esc(s.bank_account_type||'—')+'</div>'
+      + '      <div class="f"><b>N° de cuenta</b>'+esc(s.bank_account_number||'—')+'</div>'
+      + '      <div class="f"><b>RUT</b>'+esc(s.bank_rut||'—')+'</div>'
+      + '      <div class="f"><b>Titular</b>'+esc(s.bank_holder||'—')+'</div>'
+      + '      <div class="f"><b>Enviar comprobante a</b>'+esc(s.bank_email||s.company_email||'—')+'</div>'
+      + '    </div>'
+      + '  </div>'
+      + '</div>';
+  }
+
+  var brandStrip = '';
+  if (brandLogos && brandLogos.length) {
+    brandStrip = ''
+      + '<div class="brandstrip">'
+      + '  <div class="brandstrip-title">Proveedores</div>'
+      + '  <div class="brandstrip-grid">'
+      + brandLogos.map(function(b){ return '<img src="'+esc(b.image_path)+'" title="'+esc(b.name||'')+'">'; }).join('')
+      + '  </div>'
+      + '</div>';
+  }
+
+  content.innerHTML = ''
+  + '<div class="sheet" style="position:relative;overflow:hidden">'
+  + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
+  + '  <div class="head">'
+  + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
+  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
+  + '    <div class="doctype"><div class="t">COTIZACIÓN</div><div class="meta">N° '+esc(q.number)+' · '+fmtDate(q.quote_date)+'</div></div>'
+  + '  </div>'
+  + '  <div class="parties">'
+  + '    <div class="box"><h3>Cliente</h3>'
+  + '      <div class="f"><b>Empresa</b>'+esc(q.client_name||'—')+'</div>'
+  + '      <div class="f"><b>RUT</b>'+esc(q.client_rut||'—')+'</div>'
+  + '      <div class="f"><b>Contacto</b>'+esc(q.client_contact||'—')+'</div>'
+  + '      <div class="f"><b>Correo</b>'+esc(q.client_email||'—')+'</div>'
+  + '    </div>'
+  + '    <div class="box"><h3>Emite</h3>'
+  + '      <div class="f"><b>Proveedor</b>'+esc(s.company_name||'—')+'</div>'
+  + '      <div class="f"><b>RUT</b>'+esc(s.company_rut||'—')+'</div>'
+  + '      <div class="f"><b>Contacto</b>'+esc(s.company_email||'—')+' · '+esc(s.company_phone||'')+'</div>'
+  + '      <div class="f"><b>Validez de la oferta</b>'+esc(q.validity||'—')+'</div>'
+  + '    </div>'
+  + '  </div>'
+  + '  <div class="items">'
+  + '    <table><thead><tr><th style="width:44px"></th><th style="width:38%">Producto / Descripción</th>'
+  + '      <th class="num" style="width:8%">Cant.</th><th class="num" style="width:15%">P. Unit.</th>'
+  + '      <th class="num" style="width:9%">Desc.</th><th class="num" style="width:15%">Subtotal</th></tr></thead>'
+  + '    <tbody>' + itemsRows + '</tbody></table>'
+  + '    <div class="totals">'
+  + '      <div class="row"><span>Neto</span><b>'+fmtCLP(q.totals.neto)+'</b></div>'
+  + '      <div class="row"><span>IVA ('+Math.round((q.iva_rate||0.19)*100)+'%)</span><b>'+fmtCLP(q.totals.iva)+'</b></div>'
+  + '      <div class="row grand"><span>Total</span><b>'+fmtCLP(q.totals.total)+'</b></div>'
+  + '    </div>'
+  + '  </div>'
+  + '  <div class="cond"><h3>Condiciones comerciales</h3>'
+  + '    <div class="cond-grid">'
+  + '      <div class="f"><b>Forma de pago</b>'+esc(q.payment_terms||'A convenir')+'</div>'
+  + '      <div class="f"><b>Plazo de entrega</b>'+esc(q.delivery_terms||'A convenir')+'</div>'
+  + '    </div>'
+  + (q.notes ? '<div class="notes">'+esc(q.notes)+'</div>' : '')
+  + '  </div>'
+  + bankBlock
+  + '  <div class="foot">'
+  + '    <div class="l" style="max-width:100%">Documento de oferta comercial. Valores en pesos chilenos (CLP). Cotización válida según fecha de emisión y condiciones indicadas.</div>'
+  + '  </div>'
+  + legalFoot
+  + brandStrip
+  + '  <div class="premium-footbar">'+esc(s.company_name||'')+(s.company_web ? ' &nbsp;·&nbsp; '+esc(s.company_web) : '')+'</div>'
+  + '</div>';
+  document.title = 'Cotización ' + q.number;
+}
+</script>
+</body>
+</html>

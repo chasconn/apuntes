@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ficha técnica</title>
+<link rel="stylesheet" href="print.css">
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <a class="button" href="/"><button class="alt" type="button">← Volver al cotizador</button></a>
+  <span class="hint" id="hint">Cargando…</span>
+</div>
+<div id="content"></div>
+
+<script>
+function fmtCLP(n){ n = Math.round(Number(n)||0); return '$' + n.toLocaleString('es-CL'); }
+function esc(s){ return String(s??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+var id = new URLSearchParams(location.search).get('id');
+var content = document.getElementById('content');
+var hint = document.getElementById('hint');
+
+fetch('/api/products/' + id).then(function(r){
+  if(!r.ok) throw new Error('No se encontró el producto');
+  return r.json();
+}).then(function(p){ render(p, p.settings || {}); })
+  .catch(function(e){ content.innerHTML = '<div class="errbox">'+esc(e.message)+'</div>'; hint.textContent=''; });
+
+function render(p, s){
+  hint.textContent = 'Ficha técnica — ' + p.name;
+  var bySection = {};
+  (p.specs||[]).forEach(function(sp){
+    bySection[sp.section] = bySection[sp.section] || [];
+    bySection[sp.section].push(sp);
+  });
+  var sections = Object.keys(bySection).map(function(sec){
+    var rows = bySection[sec].map(function(r){
+      return '<tr><td class="lbl">'+esc(r.label)+'</td><td>'+esc(r.value||'—')+'</td></tr>';
+    }).join('');
+    return '<div class="secblock"><h3>'+esc(sec)+'</h3><table class="spectable">'+rows+'</table></div>';
+  }).join('');
+
+  content.innerHTML = ''
+  + '<div class="sheet" style="position:relative;overflow:hidden">'
+  + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
+  + '  <div class="head">'
+  + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
+  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
+  + '    <div class="doctype"><div class="t">FICHA TÉCNICA</div><div class="meta">'+esc(p.code||'')+'</div></div>'
+  + '  </div>'
+  + '  <div class="hero">'
+  + '    <div class="photo">' + (p.image_path ? '<img src="'+esc(p.image_path)+'">' : '<span style="color:#a9b2c6;font-size:11px">Sin imagen</span>') + '</div>'
+  + '    <div class="info">'
+  + '      <h1>'+esc(p.name)+'</h1>'
+  + '      <div class="meta"><b>Código / SKU:</b> '+esc(p.code||'—')+'</div>'
+  + '      <div class="meta"><b>Categoría:</b> '+esc(p.category||'—')+'</div>'
+  + '      <div class="meta"><b>Precio referencial:</b> '+fmtCLP(p.price)+'</div>'
+  + (p.description ? '<div class="desc">'+esc(p.description)+'</div>' : '')
+  + '    </div>'
+  + '  </div>'
+  + (sections || '<div class="notes" style="margin-top:16px">Aún no se han completado especificaciones para este producto.</div>')
+  + '  <div class="foot">'
+  + '    <div class="l">Especificaciones referenciales sujetas a cambio sin previo aviso. Imagen ilustrativa.</div>'
+  + '    <div class="r">'+esc(s.company_web||'')+' · '+esc(s.company_email||'')+'</div>'
+  + '  </div>'
+  + '  <div class="premium-footbar">'+esc(s.company_name||'')+'</div>'
+  + '</div>';
+  document.title = 'Ficha técnica — ' + p.name;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carta de presentación</title>
+<link rel="stylesheet" href="print.css">
+</head>
+<body>
+<div class="toolbar">
+  <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <a class="button" href="/"><button class="alt" type="button">← Volver al cotizador</button></a>
+  <span class="hint" id="hint">Cargando…</span>
+</div>
+<div id="content"></div>
+
+<script>
+function esc(s){ return String(s??'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function nl2p(s){ return String(s??'').split(/\n{2,}/).map(function(p){ return '<p>'+esc(p)+'</p>'; }).join(''); }
+
+var id = new URLSearchParams(location.search).get('id');
+var content = document.getElementById('content');
+var hint = document.getElementById('hint');
+
+if(!id){
+  content.innerHTML = '<div class="errbox">Falta el parámetro de cotización.</div>';
+} else {
+  fetch('/api/quotes/' + id).then(function(r){
+    if(!r.ok) throw new Error('No se encontró la cotización');
+    return r.json();
+  }).then(function(q){ render(q); })
+    .catch(function(e){ content.innerHTML = '<div class="errbox">'+esc(e.message)+'</div>'; hint.textContent=''; });
+}
+
+function render(q){
+  var s = q.settings || {};
+  hint.textContent = 'Carta de presentación — Cotización ' + q.number;
+
+  content.innerHTML = ''
+  + '<div class="sheet premium">'
+  + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
+  + '  <div class="premium-topbar">'
+  + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
+  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
+  + '    <div class="accent-line"></div>'
+  + '  </div>'
+  + '  <div class="letterblock">'
+  + '    <div class="to"><b>Señores</b><b>'+esc(q.client_name||'')+'</b><b>Presente</b></div>'
+  + '    <div class="asunto">Asunto: <span>'+esc(q.number)+'</span></div>'
+  + '    <p>Estimados,</p>'
+  + nl2p(s.letter_intro)
+  + '    <p>Esta propuesta detalla las condiciones técnicas y comerciales. Sin otro particular y esperando contar con su favorable acogida, le saluda atentamente.</p>'
+  + (s.letter_signer_name ? '<div class="sign"><span>Atentamente</span><b>'+esc(s.letter_signer_name)+'</b>'+(s.letter_signer_role ? '<span>'+esc(s.letter_signer_role)+'</span>' : '')+'</div>' : '')
+  + '  </div>'
+  + '</div>';
+  document.title = 'Carta de presentación — Cotización ' + q.number;
+}
+</script>
+</body>
+</html>
