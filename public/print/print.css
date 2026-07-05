@@ -14,6 +14,7 @@ body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-s
 .toolbar button{ font-family:'Inter',sans-serif; font-weight:700; font-size:12.5px; cursor:pointer; border:none; border-radius:9px; padding:9px 16px; color:#fff; background:var(--grad); }
 .toolbar a.button{ text-decoration:none; }
 .toolbar button.alt{ background:#232a3d; }
+.toolbar button.ds{ background:#0E5B7C; }
 .toolbar .hint{ color:#56566a; font-size:12px; }
 
 .head{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:9px; padding-bottom:16px; border-bottom:2px solid var(--accent); }

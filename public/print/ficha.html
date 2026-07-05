@@ -9,6 +9,7 @@
 <div class="toolbar">
   <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
   <a class="button" href="/"><button class="alt" type="button">← Volver al cotizador</button></a>
+  <span id="datasheetActions"></span>
   <span class="hint" id="hint">Cargando…</span>
 </div>
 <div id="content"></div>
@@ -29,6 +30,12 @@ fetch('/api/products/' + id).then(function(r){
 
 function render(p, s){
   hint.textContent = 'Ficha técnica — ' + p.name;
+  // Si el producto tiene datasheet cargado, mostrar botones para verlo y descargarlo
+  var dsEl = document.getElementById('datasheetActions');
+  if (dsEl && p.datasheet_path){
+    dsEl.innerHTML = '<a class="button" href="'+esc(p.datasheet_path)+'" target="_blank" rel="noopener"><button class="ds" type="button">📄 Ver datasheet</button></a>'
+      + '<a class="button" href="'+esc(p.datasheet_path)+'" download><button class="ds" type="button">⬇️ Descargar datasheet</button></a>';
+  }
   var bySection = {};
   (p.specs||[]).forEach(function(sp){
     bySection[sp.section] = bySection[sp.section] || [];
