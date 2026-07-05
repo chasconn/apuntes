@@ -32,6 +32,14 @@ body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-s
 .doctype .t{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); letter-spacing:.01em; }
 .doctype .meta{ font-size:11.5px; color:var(--muted); margin-top:3px; }
 
+/* Barra de contacto (letterhead) en la parte superior de la cotización */
+.contactbar{ margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:8px 30px; font-size:11px; color:var(--txt); }
+.cb-g{ display:flex; align-items:center; gap:7px; }
+.cb-g span{ line-height:1.35; }
+.cb-ic{ width:15px; height:15px; flex-shrink:0; }
+.cb-addr{ margin-top:8px; display:flex; align-items:center; justify-content:center; gap:7px; flex-wrap:wrap; font-size:10.5px; color:var(--muted); }
+.cb-addr .cb-ic{ width:13px; height:13px; }
+
 .parties{ display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:18px; }
 .box{ background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:13px 15px; }
 .box h3{ font-family:'Poppins',sans-serif; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-d); margin-bottom:10px; }
