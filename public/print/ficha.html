@@ -36,6 +36,26 @@ function render(p, s){
     dsEl.innerHTML = '<a class="button" href="'+esc(p.datasheet_path)+'" target="_blank" rel="noopener"><button class="ds" type="button">📄 Ver datasheet</button></a>'
       + '<a class="button" href="'+esc(p.datasheet_path)+'" download><button class="ds" type="button">⬇️ Descargar datasheet</button></a>';
   }
+
+  // Si el producto trae datasheet del fabricante, la ficha MUESTRA ese datasheet embebido
+  // (no hay que rehacer las especificaciones). Si no, se arma la ficha normal más abajo.
+  if (p.datasheet_path){
+    content.innerHTML = ''
+    + '<div class="sheet sheet--ds" style="position:relative;overflow:hidden">'
+    + '<div class="corner-dots corner-tl"></div>'
+    + '  <div class="head head--corner">'
+    + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
+    + '    <div class="doctype"><div class="t">FICHA TÉCNICA</div><div class="meta">'+esc(p.code||'')+'</div></div>'
+    + '  </div>'
+    + '  <div class="ds-title"><h1>'+esc(p.name)+'</h1>'
+    +      '<div class="ds-meta"><b>Código / SKU:</b> '+esc(p.code||'—')+' &nbsp;·&nbsp; <b>N° de Parte:</b> '+esc(p.category||'—')+' &nbsp;·&nbsp; <b>Precio:</b> '+fmtCLP(p.price)+'</div></div>'
+    + '  <div class="ds-embed"><iframe src="'+esc(p.datasheet_path)+'#view=FitH" title="Datasheet del fabricante"></iframe></div>'
+    + '  <div class="ds-note">Documento técnico del fabricante. Para verlo a pantalla completa o descargarlo, usa los botones de arriba.</div>'
+    + '</div>';
+    document.title = 'Ficha técnica — ' + p.name;
+    return;
+  }
+
   var bySection = {};
   (p.specs||[]).forEach(function(sp){
     bySection[sp.section] = bySection[sp.section] || [];

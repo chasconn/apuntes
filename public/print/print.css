@@ -196,6 +196,16 @@ tbody tr:nth-child(even){ background:#fbfcfe; }
 .foot-contact{ display:block; margin-top:4px; font-style:normal; color:var(--accent-d); font-weight:600; }
 .foot-mails{ display:block; margin-top:2px; font-style:normal; color:var(--accent-d); font-weight:600; }
 
+/* Ficha que muestra el datasheet del fabricante embebido */
+.sheet--ds{ min-height:auto; padding-bottom:12mm; }
+.ds-title{ margin-top:16px; }
+.ds-title h1{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); margin-bottom:5px; }
+.ds-meta{ font-size:12px; color:var(--muted); }
+.ds-meta b{ color:var(--txt); font-weight:600; }
+.ds-embed{ margin-top:14px; }
+.ds-embed iframe{ width:100%; height:225mm; border:1px solid var(--border); border-radius:8px; background:#f6f8fc; display:block; }
+.ds-note{ margin-top:10px; font-size:11px; color:var(--muted); font-style:italic; text-align:center; }
+
 .loading, .errbox{ width:210mm; margin:60px auto; text-align:center; color:#666; font-size:14px; }
 
 @media print{
