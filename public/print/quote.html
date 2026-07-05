@@ -89,7 +89,6 @@ function render(q, brandLogos){
   + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
   + '  <div class="head">'
   + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
-  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
   + '    <div class="doctype"><div class="t">COTIZACIÓN</div><div class="meta">N° '+esc(q.number)+' · '+fmtDate(q.quote_date)+'</div></div>'
   + '  </div>'
   + '  <div class="parties">'

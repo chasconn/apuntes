@@ -34,9 +34,12 @@ function render(p, s){
     bySection[sp.section] = bySection[sp.section] || [];
     bySection[sp.section].push(sp);
   });
+  var chipIdx = 0;
   var sections = Object.keys(bySection).map(function(sec){
     var rows = bySection[sec].map(function(r){
-      return '<tr><td class="lbl">'+esc(r.label)+'</td><td>'+esc(r.value||'—')+'</td></tr>';
+      var chipCls = 'chip chip-' + (chipIdx++ % 4);
+      var val = r.value ? '<span class="'+chipCls+'">'+esc(r.value)+'</span>' : '—';
+      return '<tr><td class="lbl">'+esc(r.label)+'</td><td>'+val+'</td></tr>';
     }).join('');
     return '<div class="secblock"><h3>'+esc(sec)+'</h3><table class="spectable">'+rows+'</table></div>';
   }).join('');
@@ -46,7 +49,6 @@ function render(p, s){
   + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
   + '  <div class="head">'
   + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
-  + '    <div class="brand">'+esc(s.company_name||'')+'<small>'+esc(s.company_web||'')+'</small></div>'
   + '    <div class="doctype"><div class="t">FICHA TÉCNICA</div><div class="meta">'+esc(p.code||'')+'</div></div>'
   + '  </div>'
   + '  <div class="hero">'
@@ -61,8 +63,10 @@ function render(p, s){
   + '  </div>'
   + (sections || '<div class="notes" style="margin-top:16px">Aún no se han completado especificaciones para este producto.</div>')
   + '  <div class="foot">'
-  + '    <div class="l">Especificaciones referenciales sujetas a cambio sin previo aviso. Imagen ilustrativa.</div>'
-  + '    <div class="r">'+esc(s.company_web||'')+' · '+esc(s.company_email||'')+'</div>'
+  + '    <div class="l">Especificaciones referenciales sujetas a cambio sin previo aviso. Imagen ilustrativa.'
+  +      ((s.company_web||s.company_email) ? '<span class="foot-contact">'+esc(s.company_web||'')+((s.company_web&&s.company_email)?' · ':'')+esc(s.company_email||'')+'</span>' : '')
+  +    '</div>'
+  + '    <div class="r"><img class="fsbc-badge" src="/img/fsbc-business-spa.png" alt="FSBC Business Spa" onerror="this.style.display=\'none\'"></div>'
   + '  </div>'
   + '  <div class="premium-footbar">'+esc(s.company_name||'')+'</div>'
   + '</div>';
