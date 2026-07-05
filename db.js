@@ -165,6 +165,18 @@ for (const stmt of [
   try { db.exec(stmt); } catch (e) { /* ya existe */ }
 }
 
+// Datos de contacto ampliados (letterhead de la cotización): 2° teléfono, 2° correo,
+// direcciones adicionales e Instagram. Todo opcional; se muestra solo lo que esté cargado.
+for (const stmt of [
+  "ALTER TABLE companies ADD COLUMN company_phone2 TEXT DEFAULT ''",
+  "ALTER TABLE companies ADD COLUMN company_email2 TEXT DEFAULT ''",
+  "ALTER TABLE companies ADD COLUMN company_address2 TEXT DEFAULT ''",
+  "ALTER TABLE companies ADD COLUMN company_address3 TEXT DEFAULT ''",
+  "ALTER TABLE companies ADD COLUMN company_instagram TEXT DEFAULT ''",
+]) {
+  try { db.exec(stmt); } catch (e) { /* ya existe */ }
+}
+
 // Términos y Condiciones por cotización: NULL = usa el valor por defecto de la empresa,
 // texto = anula el de la empresa solo para este documento (ej. una licitación pide una
 // redacción distinta de garantía, sin tener que tocar la configuración general).

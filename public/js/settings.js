@@ -27,6 +27,11 @@ const Settings = {
       document.getElementById('s_company_address').value = this.data.company_address || '';
       document.getElementById('s_company_email').value = this.data.company_email || '';
       document.getElementById('s_company_web').value = this.data.company_web || '';
+      document.getElementById('s_company_phone2').value = this.data.company_phone2 || '';
+      document.getElementById('s_company_email2').value = this.data.company_email2 || '';
+      document.getElementById('s_company_instagram').value = this.data.company_instagram || '';
+      document.getElementById('s_company_address2').value = this.data.company_address2 || '';
+      document.getElementById('s_company_address3').value = this.data.company_address3 || '';
       document.getElementById('s_quote_prefix').value = this.data.quote_prefix || 'COT';
       document.getElementById('s_next_quote_seq').value = this.data.next_quote_seq || '1';
       document.getElementById('s_legal_notice').value = this.data.legal_notice || '';
@@ -75,6 +80,11 @@ const Settings = {
       company_address: document.getElementById('s_company_address').value.trim(),
       company_email: document.getElementById('s_company_email').value.trim(),
       company_web: document.getElementById('s_company_web').value.trim(),
+      company_phone2: document.getElementById('s_company_phone2').value.trim(),
+      company_email2: document.getElementById('s_company_email2').value.trim(),
+      company_instagram: document.getElementById('s_company_instagram').value.trim(),
+      company_address2: document.getElementById('s_company_address2').value.trim(),
+      company_address3: document.getElementById('s_company_address3').value.trim(),
       quote_prefix: document.getElementById('s_quote_prefix').value.trim() || 'COT',
       next_quote_seq: document.getElementById('s_next_quote_seq').value || '1',
       legal_notice: document.getElementById('s_legal_notice').value.trim(),
