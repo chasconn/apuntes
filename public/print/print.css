@@ -170,8 +170,8 @@ tbody tr:nth-child(even){ background:#fbfcfe; }
 .spectable .lbl-inline{ font-weight:700; color:var(--accent-d); }
 .spectable .specdesc{ font-weight:400; color:var(--txt); font-size:12px; line-height:1.55; }
 /* Sello FSBC Business Spa — solo en la ficha técnica, en su propia línea al pie */
-.foot--note{ align-items:flex-start; }
-.foot--note .l{ max-width:100%; }
+.foot--note{ align-items:center; }
+.foot--note .l{ max-width:100%; text-align:center; }
 .fsbc-row{ margin-top:14px; display:flex; justify-content:flex-end; align-items:center; }
 .fsbc-row .fsbc-badge{ width:48mm; max-width:48mm; height:auto; display:block; object-fit:contain; }
 .foot-contact{ display:block; margin-top:4px; font-style:normal; color:var(--accent-d); font-weight:600; }
