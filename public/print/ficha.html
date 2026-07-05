@@ -51,6 +51,8 @@ function render(p, s){
 
   content.innerHTML = ''
   + '<div class="sheet" style="position:relative;overflow:hidden">'
+  + '<div class="corner-dots corner-tl"></div>'
+  + '<div class="corner-dots corner-br"></div>'
   + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
   + '  <div class="head">'
   + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
@@ -73,7 +75,6 @@ function render(p, s){
   +      '<span class="foot-mails">ventas@fluidsolutionsbc.com · ventas2@fluidsolutionsbc.com</span>'
   +    '</div>'
   + '  </div>'
-  + '  <div class="premium-footbar">'+esc(s.company_name||'')+'</div>'
   + '  <div class="fsbc-row"><img class="fsbc-badge" src="/img/fsbc-business-spa.svg" alt="FSBC Business Spa" onerror="this.style.display=\'none\'"></div>'
   + '</div>';
   document.title = 'Ficha técnica — ' + p.name;

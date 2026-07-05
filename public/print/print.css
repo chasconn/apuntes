@@ -173,7 +173,18 @@ tbody tr:nth-child(even){ background:#fbfcfe; }
 .foot--note{ align-items:center; justify-content:center; }
 .foot--note .l{ max-width:100%; width:100%; text-align:center; }
 .fsbc-row{ margin-top:14px; display:flex; justify-content:flex-end; align-items:center; }
-.fsbc-row .fsbc-badge{ width:48mm; max-width:48mm; height:auto; display:block; object-fit:contain; }
+.fsbc-row .fsbc-badge{ width:62mm; max-width:62mm; height:auto; display:block; object-fit:contain; }
+
+/* Textura de puntillismo azul difuminado en esquinas diagonales (sup-izq / inf-der) */
+.corner-dots{ position:absolute; width:60mm; height:52mm; z-index:0; pointer-events:none;
+  background-image: radial-gradient(rgba(20,120,166,.65) 1.1px, transparent 1.7px);
+  background-size: 7px 7px; opacity:.15; }
+.corner-tl{ top:0; left:0;
+  -webkit-mask-image: radial-gradient(135% 135% at 0 0, #000 20%, transparent 66%);
+          mask-image: radial-gradient(135% 135% at 0 0, #000 20%, transparent 66%); }
+.corner-br{ bottom:0; right:0;
+  -webkit-mask-image: radial-gradient(135% 135% at 100% 100%, #000 20%, transparent 66%);
+          mask-image: radial-gradient(135% 135% at 100% 100%, #000 20%, transparent 66%); }
 .foot-contact{ display:block; margin-top:4px; font-style:normal; color:var(--accent-d); font-weight:600; }
 .foot-mails{ display:block; margin-top:2px; font-style:normal; color:var(--accent-d); font-weight:600; }
 
