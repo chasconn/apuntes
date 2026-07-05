@@ -25,9 +25,9 @@ body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-s
    uno al lado del otro, justo arriba de la línea del encabezado. */
 .head--corner{ position:relative; }
 .head--corner img.logo{ height:68px; }
-.head--corner .doctype{ position:absolute; right:0; top:4px; display:flex; align-items:baseline; gap:9px; text-align:right; }
+.head--corner .doctype{ position:absolute; right:0; top:4px; text-align:right; }
 .head--corner .doctype .t{ font-size:19px; }
-.head--corner .doctype .meta{ margin-top:0; font-size:12px; }
+.head--corner .doctype .meta{ margin-top:2px; font-size:12px; }
 .doctype .t{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); letter-spacing:.01em; }
 .doctype .meta{ font-size:11.5px; color:var(--muted); margin-top:3px; }
 
