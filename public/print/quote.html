@@ -36,7 +36,7 @@ function buildContactBar(s){
   if (s.company_instagram) items += '<div class="cb-g">'+CB_ICONS.ig+'<span>@'+esc(String(s.company_instagram).replace(/^@/,''))+'</span></div>';
   var html = '';
   if (items) html += '<div class="contactbar">'+items+'</div>';
-  if (addrs.length) html += '<div class="cb-addr">'+CB_ICONS.pin+'<span>'+addrs.map(esc).join('&nbsp;&nbsp;·&nbsp;&nbsp;')+'</span></div>';
+  if (addrs.length) html += '<div class="cb-addr">'+addrs.map(function(a){ return '<div class="cb-g">'+CB_ICONS.pin+'<span>'+esc(a)+'</span></div>'; }).join('')+'</div>';
   return html;
 }
 

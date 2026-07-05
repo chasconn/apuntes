@@ -37,8 +37,9 @@ body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-s
 .cb-g{ display:flex; align-items:center; gap:7px; }
 .cb-g span{ line-height:1.35; }
 .cb-ic{ width:15px; height:15px; flex-shrink:0; }
-.cb-addr{ margin-top:8px; display:flex; align-items:center; justify-content:center; gap:7px; flex-wrap:wrap; font-size:10.5px; color:var(--muted); }
-.cb-addr .cb-ic{ width:13px; height:13px; }
+.cb-addr{ margin-top:8px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:center; gap:6px 22px; font-size:10.5px; color:var(--muted); }
+.cb-addr .cb-g{ align-items:flex-start; }
+.cb-addr .cb-ic{ width:13px; height:13px; margin-top:1px; }
 
 .parties{ display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:18px; }
 .box{ background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:13px 15px; }
