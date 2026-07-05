@@ -36,13 +36,18 @@ function buildContactBar(s){
   var phones = [s.company_phone, s.company_phone2].filter(Boolean);
   var emails = [s.company_email, s.company_email2].filter(Boolean);
   var addrs  = [s.company_address, s.company_address2, s.company_address3].filter(Boolean);
-  var items = '';
-  if (phones.length) items += '<div class="cb-g">'+CB_ICONS.phone+'<span>'+phones.map(esc).join('<br>')+'</span></div>';
-  if (emails.length) items += '<div class="cb-g">'+CB_ICONS.mail+'<span>'+emails.map(esc).join('<br>')+'</span></div>';
-  if (s.company_instagram) items += '<div class="cb-g">'+CB_ICONS.ig+'<span>@'+esc(String(s.company_instagram).replace(/^@/,''))+'</span></div>';
-  var html = '';
-  if (items) html += '<div class="contactbar">'+items+'</div>';
-  if (addrs.length) html += '<div class="cb-addr">'+addrs.map(function(a){ return '<div class="cb-g">'+CB_ICONS.pin+'<span>'+esc(a)+'</span></div>'; }).join('')+'</div>';
+  var top = '';
+  if (phones.length) top += '<div class="cp-item">'+CB_ICONS.phone+'<span>'+phones.map(esc).join('<br>')+'</span></div>';
+  if (emails.length) top += '<div class="cp-item">'+CB_ICONS.mail+'<span>'+emails.map(esc).join('<br>')+'</span></div>';
+  if (s.company_instagram) top += '<div class="cp-item">'+CB_ICONS.ig+'<span>@'+esc(String(s.company_instagram).replace(/^@/,''))+'</span></div>';
+  var addrHtml = '';
+  if (addrs.length) addrHtml = '<div class="cp-addr">'+addrs.map(function(a){ return '<div class="cp-item">'+CB_ICONS.pin+'<span>'+esc(a)+'</span></div>'; }).join('')+'</div>';
+  if (!top && !addrHtml) return '';
+  var html = '<div class="contactpanel">';
+  if (top) html += '<div class="cp-top">'+top+'</div>';
+  if (top && addrHtml) html += '<div class="cp-divider"></div>';
+  html += addrHtml;
+  html += '</div>';
   return html;
 }
 

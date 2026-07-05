@@ -35,14 +35,15 @@ body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-s
 .doctype .t{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); letter-spacing:.01em; }
 .doctype .meta{ font-size:11.5px; color:var(--muted); margin-top:3px; }
 
-/* Barra de contacto (letterhead) en la parte superior de la cotización */
-.contactbar{ margin-top:14px; display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:8px 30px; font-size:11px; color:var(--txt); }
-.cb-g{ display:flex; align-items:center; gap:7px; }
-.cb-g span{ line-height:1.35; }
-.cb-ic{ width:15px; height:15px; flex-shrink:0; }
-.cb-addr{ margin-top:8px; display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:center; gap:6px 22px; font-size:10.5px; color:var(--muted); }
-.cb-addr .cb-g{ align-items:flex-start; }
-.cb-addr .cb-ic{ width:13px; height:13px; margin-top:1px; }
+/* Panel de contacto (letterhead) en la parte superior de la cotización:
+   contenido en un recuadro, organizado en columnas y compacto. */
+.contactpanel{ margin-top:12px; background:var(--soft); border:1px solid var(--border); border-radius:9px; padding:8px 16px; font-size:10.5px; color:var(--txt); }
+.cp-top{ display:flex; justify-content:space-between; gap:18px; align-items:flex-start; }
+.cp-item{ display:flex; align-items:flex-start; gap:6px; }
+.cp-item svg{ width:14px; height:14px; flex-shrink:0; margin-top:1px; }
+.cp-item span{ line-height:1.4; }
+.cp-divider{ border-top:1px solid var(--border); margin:7px 0; }
+.cp-addr{ display:flex; flex-wrap:wrap; justify-content:center; gap:4px 20px; color:var(--muted); }
 
 .parties{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:14px; }
 .box{ background:var(--soft); border:1px solid var(--border); border-radius:9px; padding:9px 12px; }
