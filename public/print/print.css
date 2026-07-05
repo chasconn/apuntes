@@ -30,8 +30,8 @@ body{ background:#ececf3; color:var(--txt); font-family:'Inter',system-ui,sans-s
 .head--corner .doctype .t{ font-size:19px; }
 .head--corner .doctype .meta{ margin-top:2px; font-size:12px; }
 /* Banderas (Chile / USA) en la esquina superior izquierda del encabezado */
-.head-flags{ position:absolute; left:0; top:6px; display:flex; gap:6px; align-items:center; }
-.head-flags svg{ width:30px; height:auto; border:1px solid var(--border); border-radius:2px; display:block; }
+.head-flags{ position:absolute; left:0; top:8px; display:flex; gap:8px; align-items:center; }
+.head-flags svg{ width:46px; height:auto; border:1px solid var(--border); border-radius:3px; display:block; }
 .doctype .t{ font-family:var(--serif); font-weight:700; font-size:22px; color:var(--accent-d); letter-spacing:.01em; }
 .doctype .meta{ font-size:11.5px; color:var(--muted); margin-top:3px; }
 
