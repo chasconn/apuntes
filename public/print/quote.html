@@ -87,7 +87,7 @@ function render(q, brandLogos){
   content.innerHTML = ''
   + '<div class="sheet" style="position:relative;overflow:hidden">'
   + (s.logo_path ? '<div class="page-watermark"><img src="'+esc(s.logo_path)+'"></div>' : '')
-  + '  <div class="head">'
+  + '  <div class="head head--corner">'
   + (s.logo_path ? '<img class="logo" src="'+esc(s.logo_path)+'">' : '')
   + '    <div class="doctype"><div class="t">COTIZACIÓN</div><div class="meta">N° '+esc(q.number)+' · '+fmtDate(q.quote_date)+'</div></div>'
   + '  </div>'
