@@ -165,12 +165,17 @@ tbody tr:nth-child(even){ background:#fbfcfe; }
 .spectable td .chip-1{ background:#E1F4FC; color:#1487BC; }
 .spectable td .chip-2{ background:#E4EFF9; color:#1B5E96; }
 .spectable td .chip-3{ background:#E8F6E9; color:#3C9440; }
+/* Valor largo (descripción): a lo ancho de la hoja, texto normal, sin caja */
+.spectable td.rowdesc, .spectable tr.rowdesc td{ }
+.spectable .lbl-inline{ font-weight:700; color:var(--accent-d); }
+.spectable .specdesc{ font-weight:400; color:var(--txt); font-size:12px; line-height:1.55; }
 /* Sello FSBC Business Spa — solo en la ficha técnica, en su propia línea al pie */
 .foot--note{ align-items:flex-start; }
 .foot--note .l{ max-width:100%; }
 .fsbc-row{ margin-top:14px; display:flex; justify-content:flex-end; align-items:center; }
 .fsbc-row .fsbc-badge{ width:48mm; max-width:48mm; height:auto; display:block; object-fit:contain; }
 .foot-contact{ display:block; margin-top:4px; font-style:normal; color:var(--accent-d); font-weight:600; }
+.foot-mails{ display:block; margin-top:2px; font-style:normal; color:var(--accent-d); font-weight:600; }
 
 .loading, .errbox{ width:210mm; margin:60px auto; text-align:center; color:#666; font-size:14px; }
 

@@ -37,6 +37,11 @@ function render(p, s){
   var chipIdx = 0;
   var sections = Object.keys(bySection).map(function(sec){
     var rows = bySection[sec].map(function(r){
+      // Valores largos (descripciones) van a lo ancho de la hoja, como texto normal.
+      // Valores cortos van en un chip de color.
+      if (r.value && String(r.value).length > 45){
+        return '<tr class="rowdesc"><td colspan="2"><span class="lbl-inline">'+esc(r.label)+':</span> <span class="specdesc">'+esc(r.value)+'</span></td></tr>';
+      }
       var chipCls = 'chip chip-' + (chipIdx++ % 4);
       var val = r.value ? '<span class="'+chipCls+'">'+esc(r.value)+'</span>' : '—';
       return '<tr><td class="lbl">'+esc(r.label)+'</td><td>'+val+'</td></tr>';
@@ -56,15 +61,16 @@ function render(p, s){
   + '    <div class="info">'
   + '      <h1>'+esc(p.name)+'</h1>'
   + '      <div class="meta"><b>Código / SKU:</b> '+esc(p.code||'—')+'</div>'
-  + '      <div class="meta"><b>Categoría:</b> '+esc(p.category||'—')+'</div>'
-  + '      <div class="meta"><b>Precio referencial:</b> '+fmtCLP(p.price)+'</div>'
+  + '      <div class="meta"><b>Número de Parte:</b> '+esc(p.category||'—')+'</div>'
+  + '      <div class="meta"><b>Precio:</b> '+fmtCLP(p.price)+'</div>'
   + (p.description ? '<div class="desc">'+esc(p.description)+'</div>' : '')
   + '    </div>'
   + '  </div>'
   + (sections || '<div class="notes" style="margin-top:16px">Aún no se han completado especificaciones para este producto.</div>')
   + '  <div class="foot foot--note">'
   + '    <div class="l">Especificaciones referenciales sujetas a cambio sin previo aviso. Imagen ilustrativa.'
-  +      ((s.company_web||s.company_email) ? '<span class="foot-contact">'+esc(s.company_web||'')+((s.company_web&&s.company_email)?' · ':'')+esc(s.company_email||'')+'</span>' : '')
+  +      '<span class="foot-contact">'+esc(s.company_web||'www.fluidsolutionsbc.com')+'</span>'
+  +      '<span class="foot-mails">ventas@fluidsolutions.com · ventas2@fluidsolutions.com</span>'
   +    '</div>'
   + '  </div>'
   + '  <div class="premium-footbar">'+esc(s.company_name||'')+'</div>'
