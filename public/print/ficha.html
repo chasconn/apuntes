@@ -62,13 +62,13 @@ function render(p, s){
   + '    </div>'
   + '  </div>'
   + (sections || '<div class="notes" style="margin-top:16px">Aún no se han completado especificaciones para este producto.</div>')
-  + '  <div class="foot">'
+  + '  <div class="foot foot--note">'
   + '    <div class="l">Especificaciones referenciales sujetas a cambio sin previo aviso. Imagen ilustrativa.'
   +      ((s.company_web||s.company_email) ? '<span class="foot-contact">'+esc(s.company_web||'')+((s.company_web&&s.company_email)?' · ':'')+esc(s.company_email||'')+'</span>' : '')
   +    '</div>'
-  + '    <div class="r"><img class="fsbc-badge" src="/img/fsbc-business-spa.svg" alt="FSBC Business Spa" onerror="this.style.display=\'none\'"></div>'
   + '  </div>'
   + '  <div class="premium-footbar">'+esc(s.company_name||'')+'</div>'
+  + '  <div class="fsbc-row"><img class="fsbc-badge" src="/img/fsbc-business-spa.svg" alt="FSBC Business Spa" onerror="this.style.display=\'none\'"></div>'
   + '</div>';
   document.title = 'Ficha técnica — ' + p.name;
 }
