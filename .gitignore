@@ -7,6 +7,5 @@ data/uploads/*
 node_modules/
 .env
 
-.claude/
-
-.claude/
+.claude/*
+!.claude/skills/
