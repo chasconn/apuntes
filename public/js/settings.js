@@ -35,6 +35,7 @@ const Settings = {
       document.getElementById('s_quote_prefix').value = this.data.quote_prefix || 'COT';
       document.getElementById('s_next_quote_seq').value = this.data.next_quote_seq || '1';
       document.getElementById('s_legal_notice').value = this.data.legal_notice || '';
+      document.getElementById('s_enable_full_document').checked = this.data.enable_full_document === '1';
       document.getElementById('s_bank_name').value = this.data.bank_name || '';
       document.getElementById('s_bank_account_type').value = this.data.bank_account_type || '';
       document.getElementById('s_bank_account_number').value = this.data.bank_account_number || '';
@@ -88,6 +89,7 @@ const Settings = {
       quote_prefix: document.getElementById('s_quote_prefix').value.trim() || 'COT',
       next_quote_seq: document.getElementById('s_next_quote_seq').value || '1',
       legal_notice: document.getElementById('s_legal_notice').value.trim(),
+      enable_full_document: document.getElementById('s_enable_full_document').checked ? '1' : '0',
       logo_path: this.pendingLogoPath
     };
     try {

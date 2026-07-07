@@ -106,7 +106,8 @@ const COMPANY_FIELDS = [
   'bank_name', 'bank_account_type', 'bank_account_number', 'bank_rut', 'bank_holder', 'bank_email',
   'terms_delivery', 'terms_payment', 'terms_startup', 'terms_scope', 'terms_warranty', 'terms_docs', 'terms_link',
   'letter_intro', 'letter_signer_name', 'letter_signer_role',
-  'company_phone2', 'company_email2', 'company_address2', 'company_address3', 'company_instagram'
+  'company_phone2', 'company_email2', 'company_address2', 'company_address3', 'company_instagram',
+  'enable_full_document'
 ];
 
 // Estos 7 campos existen a nivel empresa (valor por defecto) y a nivel cotización (anula el

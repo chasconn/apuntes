@@ -177,6 +177,14 @@ for (const stmt of [
   try { db.exec(stmt); } catch (e) { /* ya existe */ }
 }
 
+// Interruptor por empresa para habilitar el "Documento completo" (función opcional/premium).
+// Por defecto apagado ('0'): se activa desde Configuración cuando el cliente lo contrata.
+for (const stmt of [
+  "ALTER TABLE companies ADD COLUMN enable_full_document TEXT DEFAULT '0'",
+]) {
+  try { db.exec(stmt); } catch (e) { /* ya existe */ }
+}
+
 // Términos y Condiciones por cotización: NULL = usa el valor por defecto de la empresa,
 // texto = anula el de la empresa solo para este documento (ej. una licitación pide una
 // redacción distinta de garantía, sin tener que tocar la configuración general).

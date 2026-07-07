@@ -97,7 +97,7 @@ const Quotes = {
       const q = await API.get('/api/quotes/' + id);
       document.getElementById('quoteModalTitle').textContent = 'Editar cotización ' + q.number;
       document.getElementById('q_id').value = q.id;
-      document.getElementById('quoteFullDocRow').style.display = 'flex';
+      document.getElementById('quoteFullDocRow').style.display = (q.settings && q.settings.enable_full_document === '1') ? 'flex' : 'none';
       document.getElementById('q_client_name').value = q.client_name || '';
       document.getElementById('q_client_rut').value = q.client_rut || '';
       document.getElementById('q_client_contact').value = q.client_contact || '';
