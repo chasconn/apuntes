@@ -31,7 +31,9 @@
   p { margin: 8px 0; text-align: justify; }
   ul { margin: 6px 0 6px 4px; padding-left: 20px; }
   li { margin: 3px 0; }
-  .campo { background: #fff8d6; padding: 0 3px; border-bottom: 1px dashed #b8860b; }
+  .campo { background: #fff8d6; padding: 0 3px; border-bottom: 1px dashed #b8860b; cursor: text; }
+  .campo:hover { background: #fff0a8; }
+  .campo:focus { background: #fff0a8; outline: 2px solid #b8860b; border-radius: 2px; }
   .firma { margin-top: 70px; }
   .linea-firma { border-top: 1px solid #000; width: 60%; margin-top: 40px; padding-top: 4px; }
   .firma-datos { line-height: 1.4; }
@@ -51,11 +53,11 @@
 <body>
 
 <div class="nota-print">
-  🖨️ <strong>Para imprimir o guardar como PDF:</strong> presiona <strong>Ctrl+P</strong> (Windows) o <strong>⌘+P</strong> (Mac) y elige tu impresora o "Guardar como PDF". Los campos resaltados en amarillo (<span class="campo">así</span>) debes completarlos antes de imprimir. Esta nota no aparece en la impresión.
+  ✏️ <strong>Haz clic sobre cualquier campo amarillo y escribe</strong> para completarlo. Cuando termines: <strong>Ctrl+P</strong> (Windows) o <strong>⌘+P</strong> (Mac) → tu impresora o "Guardar como PDF". Esta nota y los recuadros amarillos no aparecen en la impresión.
 </div>
 
 <div class="hoja">
-  <p class="fecha"><span class="campo">[Ciudad]</span>, <span class="campo">[__]</span> de julio de 2026</p>
+  <p class="fecha"><span class="campo" contenteditable="true" spellcheck="false">[Ciudad]</span>, <span class="campo" contenteditable="true" spellcheck="false">[__]</span> de julio de 2026</p>
 
   <div class="ref">
     <p style="margin:0"><strong>Señores</strong><br>
@@ -66,29 +68,29 @@
 
   <p>De mi consideración:</p>
 
-  <p>Junto con saludar, y en respuesta a la solicitud de antecedentes del trámite de Verificación de Actividades individualizado en la referencia, vengo en exponer y explicar la forma en que <strong>DS TACTICAL SECURITY SPA</strong>, RUT <span class="campo">[XX.XXX.XXX-X]</span>, desarrolla su actividad económica.</p>
+  <p>Junto con saludar, y en respuesta a la solicitud de antecedentes del trámite de Verificación de Actividades individualizado en la referencia, vengo en exponer y explicar la forma en que <strong>DS TACTICAL SECURITY SPA</strong>, RUT <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span>, desarrolla su actividad económica.</p>
 
   <h2>1. Identificación de la empresa</h2>
   <ul>
     <li><strong>Razón social:</strong> DS TACTICAL SECURITY SPA</li>
-    <li><strong>RUT:</strong> <span class="campo">[XX.XXX.XXX-X]</span></li>
-    <li><strong>Representante legal:</strong> <span class="campo">[Nombre completo]</span>, RUT <span class="campo">[XX.XXX.XXX-X]</span></li>
-    <li><strong>Domicilio comercial:</strong> <span class="campo">[Dirección]</span>, <span class="campo">[Comuna]</span>, <span class="campo">[Región]</span></li>
-    <li><strong>Giro / actividades:</strong> <span class="campo">[consultoría en ciberseguridad, capacitación, etc.]</span></li>
+    <li><strong>RUT:</strong> <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span></li>
+    <li><strong>Representante legal:</strong> <span class="campo" contenteditable="true" spellcheck="false">[Nombre completo]</span>, RUT <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span></li>
+    <li><strong>Domicilio comercial:</strong> <span class="campo" contenteditable="true" spellcheck="false">[Dirección]</span>, <span class="campo" contenteditable="true" spellcheck="false">[Comuna]</span>, <span class="campo" contenteditable="true" spellcheck="false">[Región]</span></li>
+    <li><strong>Giro / actividades:</strong> <span class="campo" contenteditable="true" spellcheck="false">[consultoría en ciberseguridad, capacitación, etc.]</span></li>
   </ul>
 
   <h2>2. Descripción de la actividad económica</h2>
-  <p>DS TACTICAL SECURITY SPA es una empresa dedicada a la prestación de servicios de consultoría en ciberseguridad y capacitación, orientados a <span class="campo">[tipo de clientes]</span>. Las principales actividades que desarrolla son las siguientes:</p>
+  <p>DS TACTICAL SECURITY SPA es una empresa dedicada a la prestación de servicios de consultoría en ciberseguridad y capacitación, orientados a <span class="campo" contenteditable="true" spellcheck="false">[tipo de clientes]</span>. Las principales actividades que desarrolla son las siguientes:</p>
 
-  <p><strong>a) Consultoría en ciberseguridad.</strong> La empresa presta servicios de asesoría y consultoría en materia de seguridad de la información y ciberseguridad, tales como <span class="campo">[diagnósticos de seguridad, análisis de vulnerabilidades, asesorías]</span>. Estos servicios se realizan mediante el uso de equipos y herramientas propias de la empresa, según se acredita en la declaración jurada adjunta.</p>
+  <p><strong>a) Consultoría en ciberseguridad.</strong> La empresa presta servicios de asesoría y consultoría en materia de seguridad de la información y ciberseguridad, tales como <span class="campo" contenteditable="true" spellcheck="false">[diagnósticos de seguridad, análisis de vulnerabilidades, asesorías]</span>. Estos servicios se realizan mediante el uso de equipos y herramientas propias de la empresa, según se acredita en la declaración jurada adjunta.</p>
 
-  <p><strong>b) Capacitación.</strong> Conforme a la orden de compra N° <span class="campo">[____]</span>, la empresa realiza actividades de capacitación en <span class="campo">[temática]</span>. Para ello cuenta con el código de capacitación <span class="campo">[N° / código]</span>, el cual ha sido incorporado en la pestaña "Descripción de actividad" de la aplicación.</p>
+  <p><strong>b) Capacitación.</strong> Conforme a la orden de compra N° <span class="campo" contenteditable="true" spellcheck="false">[____]</span>, la empresa realiza actividades de capacitación en <span class="campo" contenteditable="true" spellcheck="false">[temática]</span>. Para ello cuenta con el código de capacitación <span class="campo" contenteditable="true" spellcheck="false">[N° / código]</span>, el cual ha sido incorporado en la pestaña "Descripción de actividad" de la aplicación.</p>
 
   <h2>3. Forma en que se desarrolla la actividad</h2>
   <p>Los servicios se ejecutan de la siguiente manera:</p>
   <ul>
     <li>El cliente solicita el servicio y la empresa entrega una cotización.</li>
-    <li>Aceptada la propuesta, la empresa ejecuta el servicio <span class="campo">[en dependencias del cliente / de forma remota]</span>, utilizando equipos y herramientas de su propiedad.</li>
+    <li>Aceptada la propuesta, la empresa ejecuta el servicio <span class="campo" contenteditable="true" spellcheck="false">[en dependencias del cliente / de forma remota]</span>, utilizando equipos y herramientas de su propiedad.</li>
     <li>Se entrega el resultado del servicio y se emite la documentación tributaria correspondiente.</li>
   </ul>
 
@@ -96,7 +98,7 @@
   <ul>
     <li>Equipos computacionales y tecnológicos de su propiedad (detallados en la declaración jurada adjunta).</li>
     <li>Herramientas de software y licencias necesarias para la prestación de los servicios.</li>
-    <li><span class="campo">[Personal / oficina, si corresponde]</span>.</li>
+    <li><span class="campo" contenteditable="true" spellcheck="false">[Personal / oficina, si corresponde]</span>.</li>
   </ul>
 
   <h2>5. Documentos que se acompañan</h2>
@@ -111,13 +113,20 @@
   <div class="firma">
     <div class="linea-firma"></div>
     <div class="firma-datos">
-      <strong><span class="campo">[Nombre completo del representante legal]</span></strong><br>
+      <strong><span class="campo" contenteditable="true" spellcheck="false">[Nombre completo del representante legal]</span></strong><br>
       Representante Legal<br>
       DS TACTICAL SECURITY SPA<br>
-      RUT: <span class="campo">[XX.XXX.XXX-X]</span>
+      RUT: <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span>
     </div>
   </div>
 </div>
+
+<script>
+  document.querySelectorAll('.campo').forEach(function (el) {
+    el.setAttribute('contenteditable', 'true');
+    el.setAttribute('spellcheck', 'false');
+  });
+</script>
 
 </body>
 </html>

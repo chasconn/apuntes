@@ -27,7 +27,9 @@
   .sub { text-align: center; font-size: 12pt; margin: 0 0 34px; color: #333; }
   p { margin: 12px 0; text-align: justify; }
   .clausula { margin-top: 16px; }
-  .campo { background: #fff8d6; padding: 0 3px; border-bottom: 1px dashed #b8860b; }
+  .campo { background: #fff8d6; padding: 0 3px; border-bottom: 1px dashed #b8860b; cursor: text; }
+  .campo:hover { background: #fff0a8; }
+  .campo:focus { background: #fff0a8; outline: 2px solid #b8860b; border-radius: 2px; }
   table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 11pt; }
   th, td { border: 1px solid #333; padding: 7px 6px; text-align: left; }
   th { background: #f0f0f0; }
@@ -52,14 +54,14 @@
 <body>
 
 <div class="nota-print">
-  🖨️ <strong>Para imprimir o guardar como PDF:</strong> presiona <strong>Ctrl+P</strong> (Windows) o <strong>⌘+P</strong> (Mac) y elige tu impresora o "Guardar como PDF". Completa los campos resaltados en amarillo (<span class="campo">así</span>) y la tabla de equipos antes de imprimir. Esta nota no se imprime.
+  ✏️ <strong>Haz clic sobre cualquier campo amarillo (incluidas las celdas de la tabla) y escribe</strong> para completarlo. Cuando termines: <strong>Ctrl+P</strong> (Windows) o <strong>⌘+P</strong> (Mac) → tu impresora o "Guardar como PDF". Esta nota y los recuadros amarillos no aparecen en la impresión.
 </div>
 
 <div class="hoja">
   <h1>DECLARACIÓN JURADA SIMPLE</h1>
   <p class="sub">Sobre equipos y herramientas de propiedad de la empresa</p>
 
-  <p>En <span class="campo">[Ciudad]</span>, a <span class="campo">[__]</span> de julio de 2026, yo, <strong><span class="campo">[Nombre completo del representante legal]</span></strong>, cédula nacional de identidad N° <span class="campo">[XX.XXX.XXX-X]</span>, en mi calidad de <strong>representante legal</strong> de la sociedad <strong>DS TACTICAL SECURITY SPA</strong>, RUT <span class="campo">[XX.XXX.XXX-X]</span>, con domicilio en <span class="campo">[Dirección]</span>, <span class="campo">[Comuna]</span>, <span class="campo">[Región]</span>, vengo en <strong>declarar bajo juramento</strong> lo siguiente:</p>
+  <p>En <span class="campo" contenteditable="true" spellcheck="false">[Ciudad]</span>, a <span class="campo" contenteditable="true" spellcheck="false">[__]</span> de julio de 2026, yo, <strong><span class="campo" contenteditable="true" spellcheck="false">[Nombre completo del representante legal]</span></strong>, cédula nacional de identidad N° <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span>, en mi calidad de <strong>representante legal</strong> de la sociedad <strong>DS TACTICAL SECURITY SPA</strong>, RUT <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span>, con domicilio en <span class="campo" contenteditable="true" spellcheck="false">[Dirección]</span>, <span class="campo" contenteditable="true" spellcheck="false">[Comuna]</span>, <span class="campo" contenteditable="true" spellcheck="false">[Región]</span>, vengo en <strong>declarar bajo juramento</strong> lo siguiente:</p>
 
   <p class="clausula"><strong>PRIMERO:</strong> Que la sociedad DS TACTICAL SECURITY SPA desarrolla, entre sus actividades, la prestación de servicios de <strong>consultoría en ciberseguridad</strong>.</p>
 
@@ -76,11 +78,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr><td class="n">1</td><td><span class="campo">[Notebook]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
-      <tr><td class="n">2</td><td><span class="campo">[PC escritorio]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
-      <tr><td class="n">3</td><td><span class="campo">[Licencia software]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
-      <tr><td class="n">4</td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
-      <tr><td class="n">5</td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
+      <tr><td class="n">1</td><td><span class="campo" contenteditable="true" spellcheck="false">[Notebook]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td></tr>
+      <tr><td class="n">2</td><td><span class="campo" contenteditable="true" spellcheck="false">[PC escritorio]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td></tr>
+      <tr><td class="n">3</td><td><span class="campo" contenteditable="true" spellcheck="false">[Licencia software]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td></tr>
+      <tr><td class="n">4</td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td></tr>
+      <tr><td class="n">5</td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td><td><span class="campo" contenteditable="true" spellcheck="false">[___]</span></td></tr>
     </tbody>
   </table>
 
@@ -93,14 +95,21 @@
   <div class="firma">
     <div class="linea-firma"></div>
     <div class="firma-datos">
-      <strong><span class="campo">[Nombre completo del representante legal]</span></strong><br>
+      <strong><span class="campo" contenteditable="true" spellcheck="false">[Nombre completo del representante legal]</span></strong><br>
       Representante Legal<br>
       DS TACTICAL SECURITY SPA<br>
-      RUT: <span class="campo">[XX.XXX.XXX-X]</span><br>
-      C.I.: <span class="campo">[XX.XXX.XXX-X]</span>
+      RUT: <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span><br>
+      C.I.: <span class="campo" contenteditable="true" spellcheck="false">[XX.XXX.XXX-X]</span>
     </div>
   </div>
 </div>
+
+<script>
+  document.querySelectorAll('.campo').forEach(function (el) {
+    el.setAttribute('contenteditable', 'true');
+    el.setAttribute('spellcheck', 'false');
+  });
+</script>
 
 </body>
 </html>
