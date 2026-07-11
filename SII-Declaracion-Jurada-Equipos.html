@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Declaración Jurada - SII</title>
+<style>
+  :root { --tinta:#1a1a1a; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Times New Roman", Georgia, serif;
+    color: var(--tinta);
+    background: #eaeaea;
+    margin: 0;
+    padding: 24px;
+    line-height: 1.7;
+  }
+  .hoja {
+    background: #fff;
+    max-width: 21cm;
+    min-height: 29.7cm;
+    margin: 0 auto;
+    padding: 2.5cm 2.5cm 2cm;
+    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+  }
+  h1 { font-size: 15pt; text-align: center; margin: 0 0 2px; letter-spacing: .5px; }
+  .sub { text-align: center; font-size: 12pt; margin: 0 0 34px; color: #333; }
+  p { margin: 12px 0; text-align: justify; }
+  .clausula { margin-top: 16px; }
+  .campo { background: #fff8d6; padding: 0 3px; border-bottom: 1px dashed #b8860b; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 11pt; }
+  th, td { border: 1px solid #333; padding: 7px 6px; text-align: left; }
+  th { background: #f0f0f0; }
+  td.n { text-align: center; width: 34px; }
+  .firma { margin-top: 80px; }
+  .linea-firma { border-top: 1px solid #000; width: 60%; margin-top: 40px; padding-top: 4px; }
+  .firma-datos { line-height: 1.4; }
+  .nota-print {
+    max-width: 21cm; margin: 0 auto 14px; padding: 10px 14px;
+    background: #fff3cd; border: 1px solid #e0c66b; border-radius: 6px;
+    font-family: Arial, sans-serif; font-size: 13px; color: #6b5900;
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .hoja { box-shadow: none; margin: 0; max-width: none; padding: 2cm; }
+    .nota-print { display: none; }
+    .campo { background: none; }
+    th { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nota-print">
+  🖨️ <strong>Para imprimir o guardar como PDF:</strong> presiona <strong>Ctrl+P</strong> (Windows) o <strong>⌘+P</strong> (Mac) y elige tu impresora o "Guardar como PDF". Completa los campos resaltados en amarillo (<span class="campo">así</span>) y la tabla de equipos antes de imprimir. Esta nota no se imprime.
+</div>
+
+<div class="hoja">
+  <h1>DECLARACIÓN JURADA SIMPLE</h1>
+  <p class="sub">Sobre equipos y herramientas de propiedad de la empresa</p>
+
+  <p>En <span class="campo">[Ciudad]</span>, a <span class="campo">[__]</span> de julio de 2026, yo, <strong><span class="campo">[Nombre completo del representante legal]</span></strong>, cédula nacional de identidad N° <span class="campo">[XX.XXX.XXX-X]</span>, en mi calidad de <strong>representante legal</strong> de la sociedad <strong>DS TACTICAL SECURITY SPA</strong>, RUT <span class="campo">[XX.XXX.XXX-X]</span>, con domicilio en <span class="campo">[Dirección]</span>, <span class="campo">[Comuna]</span>, <span class="campo">[Región]</span>, vengo en <strong>declarar bajo juramento</strong> lo siguiente:</p>
+
+  <p class="clausula"><strong>PRIMERO:</strong> Que la sociedad DS TACTICAL SECURITY SPA desarrolla, entre sus actividades, la prestación de servicios de <strong>consultoría en ciberseguridad</strong>.</p>
+
+  <p class="clausula"><strong>SEGUNDO:</strong> Que para el desarrollo de dicha actividad, la empresa cuenta con los siguientes equipos y herramientas, los cuales son de <strong>propiedad de la empresa</strong>:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="n">N°</th>
+        <th>Equipo / Herramienta</th>
+        <th>Marca / Modelo</th>
+        <th>N° serie / Identificación</th>
+        <th>Uso en la actividad</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="n">1</td><td><span class="campo">[Notebook]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
+      <tr><td class="n">2</td><td><span class="campo">[PC escritorio]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
+      <tr><td class="n">3</td><td><span class="campo">[Licencia software]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
+      <tr><td class="n">4</td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
+      <tr><td class="n">5</td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td><td><span class="campo">[___]</span></td></tr>
+    </tbody>
+  </table>
+
+  <p class="clausula"><strong>TERCERO:</strong> Que declaro que todos los equipos y herramientas individualizados en el numeral anterior son de <strong>propiedad de DS TACTICAL SECURITY SPA</strong> y se destinan al desarrollo de su actividad económica.</p>
+
+  <p class="clausula"><strong>CUARTO:</strong> Que efectúo la presente declaración para ser presentada ante el <strong>Servicio de Impuestos Internos (SII)</strong>, en el marco de la Solicitud N° 16539648 de Verificación de Actividades, y me hago responsable de la veracidad de lo aquí declarado.</p>
+
+  <p>Es todo cuanto puedo declarar.</p>
+
+  <div class="firma">
+    <div class="linea-firma"></div>
+    <div class="firma-datos">
+      <strong><span class="campo">[Nombre completo del representante legal]</span></strong><br>
+      Representante Legal<br>
+      DS TACTICAL SECURITY SPA<br>
+      RUT: <span class="campo">[XX.XXX.XXX-X]</span><br>
+      C.I.: <span class="campo">[XX.XXX.XXX-X]</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
