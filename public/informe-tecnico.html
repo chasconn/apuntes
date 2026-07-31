@@ -7,8 +7,7 @@
 <style>
   :root{
     --rojo:#e11b22;
-    --rojo-osc:#b3141a;
-    --rojo-claro:#f24d52;
+    --rojo-osc:#9c1015;
     --gris-oscuro:#2b2b2b;
     --texto:#222;
     --gris-linea:#e7e7e7;
@@ -39,54 +38,73 @@
     color:var(--texto);
   }
 
-  /* ---- Formas decorativas de fondo (arriba-izquierda) ---- */
+  /* ---- Fondo rosado suave diagonal (izquierda) ---- */
   .bg-soft1{ position:absolute; top:-200px; left:-320px; width:640px; height:640px;
     background:#fbeaea; transform:rotate(35deg); z-index:0; }
 
-  /* Zig-zag común para foto y respaldo rojo */
+  /* ---- Esquina roja superior-izquierda: triángulo + trazo separado ---- */
+  .tl{ position:absolute; top:0; left:0; width:300px; height:300px;
+    background:var(--rojo); z-index:6; pointer-events:none; }
+  .tl.a{ -webkit-clip-path:polygon(0 0,36% 0,0 36%); clip-path:polygon(0 0,36% 0,0 36%); }
+  .tl.b{ -webkit-clip-path:polygon(44% 0,54% 0,0 54%,0 44%); clip-path:polygon(44% 0,54% 0,0 54%,0 44%); }
+
+  /* ---- Panel de foto con borde rojo en zig-zag (llega hasta arriba) ---- */
   .zigzag{
-    -webkit-clip-path:polygon(28% 0, 100% 0, 100% 100%, 20% 100%, 16% 84%, 25% 66%, 16% 48%, 26% 28%);
-    clip-path:polygon(28% 0, 100% 0, 100% 100%, 20% 100%, 16% 84%, 25% 66%, 16% 48%, 26% 28%);
+    -webkit-clip-path:polygon(58% 0, 100% 0, 100% 100%, 20% 100%, 16% 86%, 25% 69%, 16% 52%, 26% 32%);
+    clip-path:polygon(58% 0, 100% 0, 100% 100%, 20% 100%, 16% 86%, 25% 69%, 16% 52%, 26% 32%);
   }
-  /* Respaldo rojo: mismo recorte, desplazado a la izquierda → borde rojo en zig-zag */
   .photo-back{
-    position:absolute; top:180px; right:26px; width:600px; height:1170px; z-index:1;
+    position:absolute; top:0; right:30px; width:600px; height:1375px; z-index:1;
     background:var(--rojo);
   }
-  /* Panel de la foto (derecha) */
   .photo-panel{
-    position:absolute; top:180px; right:0; width:600px; height:1170px; z-index:2;
-    background:#8b9099;
+    position:absolute; top:0; right:0; width:600px; height:1375px; z-index:2;
+    background:#3a4149;
   }
   .photo-panel img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .photo-panel .ph{
-    width:100%; height:100%;
-    background:linear-gradient(135deg,#6f7580 0%,#565b64 45%,#3f434b 100%);
-    display:flex; align-items:center; justify-content:center;
-    color:#e9e9e9; font-size:18px; text-align:center; padding:0 40px 120px;
+  .photo-panel .ph{ width:100%; height:100%; position:relative; }
+  .photo-panel .ph svg{ width:100%; height:100%; display:block; }
+  .ph-hint{
+    position:absolute; left:50%; bottom:70px; transform:translateX(-38%);
+    background:rgba(0,0,0,.55); color:#fff; font-size:14px; font-weight:600;
+    padding:7px 14px; border-radius:20px; white-space:nowrap;
   }
-  /* Acentos rojos diagonales (dos barras finas junto a la foto) */
-  .accent-bar{ position:absolute; z-index:3; background:var(--rojo); transform:skewX(-20deg); }
-  .accent-bar.a1{ top:210px; right:392px; width:52px; height:250px; }
-  .accent-bar.a2{ top:250px; right:352px; width:26px; height:210px; }
+
+  /* Trazos rojos diagonales junto al título (paralelos al borde de la foto) */
+  .accent-bar{ position:absolute; z-index:3; background:var(--rojo); transform:skewX(-27deg); }
+  .accent-bar.a1{ top:230px; right:390px; width:42px; height:270px; }
+  .accent-bar.a2{ top:275px; right:344px; width:20px; height:230px; }
+
+  /* Cuña roja inferior-izquierda (paralela a la banda de valores) */
+  .bl-wedge{
+    position:absolute; left:0; bottom:160px; width:600px; height:150px; z-index:5;
+    background:var(--rojo); pointer-events:none;
+    -webkit-clip-path:polygon(0 0,100% 70%,100% 100%,0 30%);
+    clip-path:polygon(0 0,100% 70%,100% 100%,0 30%);
+  }
 
   /* ====== Contenido de la izquierda ====== */
   .content{ position:relative; z-index:5; padding:70px 0 0 70px; width:600px; }
 
   /* Logo */
-  .brand{ display:flex; align-items:center; gap:16px; margin-bottom:80px; }
-  .brand .gear{ width:74px; height:74px; color:var(--rojo); flex:0 0 auto; }
+  .brand{ display:flex; align-items:center; gap:16px; margin-bottom:78px; }
+  .brand .gear{ width:76px; height:76px; color:var(--rojo); flex:0 0 auto; }
   .brand .name{ line-height:1; }
   .brand .name b{ font-size:52px; font-weight:900; letter-spacing:1px; color:var(--gris-oscuro);
     font-family:Arial,Helvetica,sans-serif; }
   .brand .name span{ display:block; font-size:16.5px; font-weight:800; letter-spacing:4.5px;
     color:var(--rojo); margin-top:4px; }
 
-  /* Insignia EDITABLE 100% (arriba-derecha) */
-  .editable-badge{ position:absolute; top:78px; right:56px; z-index:6; text-align:center; color:var(--gris-oscuro); }
-  .editable-badge svg{ width:52px; height:52px; color:var(--gris-oscuro); }
-  .editable-badge b{ display:block; font-size:19px; font-weight:800; color:var(--rojo); margin-top:6px; letter-spacing:1px; }
-  .editable-badge small{ display:block; font-size:17px; font-weight:800; color:var(--rojo); }
+  /* Insignia EDITABLE 100% (cuadro blanco con lápiz rojo, sobre la esquina roja) */
+  .editable-badge{ position:absolute; top:46px; right:44px; z-index:7; text-align:center; }
+  .editable-badge .box{
+    width:78px; height:78px; margin:0 auto; background:#fff; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+  }
+  .editable-badge .box svg{ width:42px; height:42px; color:var(--rojo); }
+  .editable-badge b{ display:block; font-size:20px; font-weight:800; color:#fff; margin-top:10px; letter-spacing:1px; }
+  .editable-badge small{ display:block; font-size:18px; font-weight:800; color:#fff; }
 
   /* Título */
   .title h1{ font-family:Arial,Helvetica,sans-serif; font-weight:900; line-height:.9; letter-spacing:1px; white-space:nowrap; }
@@ -94,8 +112,8 @@
   .title .l2{ font-size:104px; color:var(--rojo); }
   .title .rule{ width:330px; height:7px; background:var(--rojo); margin:24px 0 34px; }
 
-  .subtitle{ font-size:29px; font-weight:800; color:var(--gris-oscuro); line-height:1.25;
-    letter-spacing:.5px; margin-bottom:46px; text-transform:uppercase; }
+  .subtitle{ font-size:28px; font-weight:700; color:#333; line-height:1.28;
+    letter-spacing:.5px; margin-bottom:44px; text-transform:uppercase; }
 
   /* Lista de campos */
   .fields{ width:440px; }
@@ -113,8 +131,8 @@
   .values{
     height:110px; background:var(--rojo);
     display:flex; align-items:center; justify-content:space-around;
-    -webkit-clip-path:polygon(0 26%,100% 0,100% 100%,0 100%);
-    clip-path:polygon(0 26%,100% 0,100% 100%,0 100%);
+    -webkit-clip-path:polygon(0 0,100% 22%,100% 100%,0 100%);
+    clip-path:polygon(0 0,100% 22%,100% 100%,0 100%);
     padding-top:14px;
   }
   .value{ display:flex; flex-direction:column; align-items:center; gap:8px; color:#fff; }
@@ -146,6 +164,7 @@
     @page{ size:1024px 1536px; margin:0; }
     html,body{ background:#fff; }
     .toolbar{ display:none !important; }
+    .ph-hint{ display:none !important; }
     .poster{ margin:0; box-shadow:none; }
     body.editing [contenteditable="true"]{ box-shadow:none; }
   }
@@ -163,22 +182,98 @@
 
 <div class="poster" id="poster">
 
-  <!-- Formas de fondo -->
+  <!-- Fondo -->
   <div class="bg-soft1"></div>
 
-  <!-- Respaldo rojo + panel de foto (borde en zig-zag) -->
+  <!-- Foto con marco rojo en zig-zag -->
   <div class="photo-back zigzag"></div>
   <div class="photo-panel zigzag" id="photoPanel">
-    <div class="ph" id="photoPlaceholder">Haz clic en «Cambiar imagen»<br>para colocar la foto del equipo</div>
+    <div class="ph">
+      <svg viewBox="0 0 600 1180" preserveAspectRatio="xMidYMid slice" aria-label="Equipo industrial">
+        <defs>
+          <linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#4a5058"/><stop offset=".5" stop-color="#31363d"/><stop offset="1" stop-color="#1f2329"/>
+          </linearGradient>
+          <linearGradient id="shaftG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#e4e8ec"/><stop offset=".45" stop-color="#9aa1a8"/><stop offset="1" stop-color="#4e545b"/>
+          </linearGradient>
+          <linearGradient id="housG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#8a919b"/><stop offset="1" stop-color="#565c66"/>
+          </linearGradient>
+          <radialGradient id="hubG">
+            <stop offset="0" stop-color="#c3c8ce"/><stop offset="1" stop-color="#6a7077"/>
+          </radialGradient>
+        </defs>
+        <rect width="600" height="1180" fill="url(#bgG)"/>
+        <!-- techo de nave industrial con luces -->
+        <rect width="600" height="120" fill="#23272d"/>
+        <rect y="120" width="600" height="18" fill="#151a20" opacity=".8"/>
+        <ellipse cx="118" cy="46" rx="95" ry="28" fill="#ffec9e" opacity=".16"/>
+        <ellipse cx="338" cy="60" rx="95" ry="28" fill="#ffec9e" opacity=".14"/>
+        <ellipse cx="518" cy="40" rx="95" ry="28" fill="#ffec9e" opacity=".16"/>
+        <rect x="70" y="36" width="96" height="14" rx="7" fill="#ffe9a0"/>
+        <rect x="290" y="52" width="96" height="14" rx="7" fill="#fff3bd"/>
+        <rect x="470" y="30" width="96" height="14" rx="7" fill="#ffe9a0"/>
+        <rect x="30" y="138" width="16" height="520" fill="#262b31"/>
+        <rect x="544" y="138" width="18" height="430" fill="#262b31"/>
+        <!-- carcasa de la máquina -->
+        <rect x="368" y="120" width="180" height="120" rx="10" fill="#6f7680"/>
+        <rect x="386" y="138" width="144" height="84" rx="6" fill="#7d848e"/>
+        <rect x="300" y="220" width="300" height="600" rx="16" fill="url(#housG)"/>
+        <rect x="470" y="250" width="104" height="220" rx="8" fill="#666d77" opacity=".7"/>
+        <!-- brida roja con pernos -->
+        <circle cx="400" cy="470" r="218" fill="#9e1116"/>
+        <circle cx="400" cy="470" r="200" fill="#c8161d"/>
+        <circle cx="578" cy="470" r="11" fill="#23262b"/><circle cx="567" cy="531" r="11" fill="#23262b"/>
+        <circle cx="536" cy="584" r="11" fill="#23262b"/><circle cx="489" cy="624" r="11" fill="#23262b"/>
+        <circle cx="431" cy="645" r="11" fill="#23262b"/><circle cx="369" cy="645" r="11" fill="#23262b"/>
+        <circle cx="311" cy="624" r="11" fill="#23262b"/><circle cx="264" cy="584" r="11" fill="#23262b"/>
+        <circle cx="233" cy="531" r="11" fill="#23262b"/><circle cx="222" cy="470" r="11" fill="#23262b"/>
+        <circle cx="233" cy="409" r="11" fill="#23262b"/><circle cx="264" cy="356" r="11" fill="#23262b"/>
+        <circle cx="311" cy="316" r="11" fill="#23262b"/><circle cx="369" cy="295" r="11" fill="#23262b"/>
+        <circle cx="431" cy="295" r="11" fill="#23262b"/><circle cx="489" cy="316" r="11" fill="#23262b"/>
+        <circle cx="536" cy="356" r="11" fill="#23262b"/><circle cx="567" cy="409" r="11" fill="#23262b"/>
+        <circle cx="400" cy="470" r="140" fill="#7a8089"/>
+        <circle cx="400" cy="470" r="106" fill="#5d636c"/>
+        <circle cx="514" cy="501" r="7" fill="#2c3036"/><circle cx="483" cy="553" r="7" fill="#2c3036"/>
+        <circle cx="431" cy="584" r="7" fill="#2c3036"/><circle cx="369" cy="584" r="7" fill="#2c3036"/>
+        <circle cx="317" cy="553" r="7" fill="#2c3036"/><circle cx="286" cy="501" r="7" fill="#2c3036"/>
+        <circle cx="286" cy="439" r="7" fill="#2c3036"/><circle cx="317" cy="387" r="7" fill="#2c3036"/>
+        <circle cx="369" cy="356" r="7" fill="#2c3036"/><circle cx="431" cy="356" r="7" fill="#2c3036"/>
+        <circle cx="483" cy="387" r="7" fill="#2c3036"/><circle cx="514" cy="439" r="7" fill="#2c3036"/>
+        <!-- eje saliente -->
+        <rect x="16" y="438" width="384" height="64" rx="6" fill="url(#shaftG)"/>
+        <rect x="16" y="448" width="384" height="9" fill="#f4f6f8" opacity=".55"/>
+        <rect x="118" y="426" width="36" height="88" rx="5" fill="#8a9099"/>
+        <circle cx="400" cy="470" r="64" fill="url(#hubG)"/>
+        <circle cx="400" cy="470" r="20" fill="#383d44"/>
+        <!-- base -->
+        <polygon points="240,820 600,820 600,980 210,980" fill="#4a505a"/>
+        <rect x="250" y="850" width="330" height="18" fill="#3a4049"/>
+        <rect x="250" y="980" width="60" height="60" fill="#343a42"/>
+        <rect x="500" y="980" width="60" height="60" fill="#343a42"/>
+        <rect y="1040" width="600" height="140" fill="#181c21"/>
+        <rect y="1040" width="600" height="10" fill="#2b3138"/>
+      </svg>
+      <div class="ph-hint">🖼️ Usa «Cambiar imagen» para poner tu foto</div>
+    </div>
   </div>
   <div class="accent-bar a1"></div>
   <div class="accent-bar a2"></div>
 
+  <!-- Esquina roja superior-izquierda -->
+  <div class="tl a"></div><div class="tl b"></div>
+
+  <!-- Cuña roja inferior-izquierda -->
+  <div class="bl-wedge"></div>
+
   <!-- Insignia EDITABLE 100% -->
   <div class="editable-badge">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
-    </svg>
+    <div class="box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+      </svg>
+    </div>
     <b contenteditable="true">EDITABLE</b>
     <small contenteditable="true">100%</small>
   </div>
@@ -189,9 +284,23 @@
     <!-- Logo -->
     <div class="brand">
       <svg class="gear" viewBox="0 0 100 100" fill="currentColor" aria-label="logo">
-        <path d="M50 4l7 9 11-4 3 11 11 2-3 11 9 8-8 8 4 11-11 2-2 11-11-3-8 9-8-9-11 3-2-11-11-2 4-11-9-8 9-8-4-11 11-2 2-11 11 4z"/>
-        <circle cx="50" cy="50" r="20" fill="#fff"/>
-        <path fill="currentColor" d="M50 34a16 16 0 1 0 12 26l-12-10V34z"/>
+        <g>
+          <rect x="43" y="0" width="14" height="20" rx="4"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(30 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(60 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(90 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(120 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(150 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(180 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(210 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(240 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(270 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(300 50 50)"/>
+          <rect x="43" y="0" width="14" height="20" rx="4" transform="rotate(330 50 50)"/>
+          <circle cx="50" cy="50" r="38"/>
+        </g>
+        <circle cx="50" cy="50" r="25" fill="#fff"/>
+        <text x="50" y="64" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="900" fill="currentColor">G</text>
       </svg>
       <div class="name">
         <b contenteditable="true">GIOPUR</b>
@@ -213,8 +322,9 @@
       <div class="field">
         <div class="ic">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="7" y="4" width="10" height="16" rx="2"/><path d="M9 4a2 2 0 0 1 4 0"/><path d="M9 4h4"/>
-            <circle cx="12" cy="13" r="3"/><path d="M12 11.5V13l1 .8"/>
+            <rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 4h6"/>
+            <path d="M8.5 10h7"/><path d="M8.5 13h4"/>
+            <circle cx="15.3" cy="16.3" r="3"/><path d="M14 16.4l1 1 1.6-2"/>
           </svg>
         </div>
         <div class="txt"><div class="lbl" contenteditable="true">INFORME N°</div><div class="val" contenteditable="true">[NÚMERO DE INFORME]</div></div>
@@ -233,8 +343,8 @@
       <div class="field">
         <div class="ic">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="9" width="13" height="9" rx="1"/><path d="M16 12h3l2 3v3h-5"/>
-            <circle cx="7" cy="19" r="1.8"/><circle cx="17" cy="19" r="1.8"/><path d="M6 9V6h7v3"/>
+            <path d="M3.5 20h17"/><rect x="5" y="11" width="10" height="6.5" rx="1.5"/>
+            <circle cx="18" cy="14.5" r="2.6"/><path d="M8 11V7.5"/><path d="M12 11V7.5"/><path d="M6.5 7.5h7"/>
           </svg>
         </div>
         <div class="txt"><div class="lbl" contenteditable="true">EQUIPO</div><div class="val" contenteditable="true">[NOMBRE DEL EQUIPO]</div></div>
@@ -354,7 +464,7 @@
   // --- Guardado automático del texto ---
   function saveText(){
     var data = {};
-    document.querySelectorAll('[contenteditable="true"]').forEach(function(el, i){
+    poster.querySelectorAll('[contenteditable="true"]').forEach(function(el, i){
       data[i] = el.innerHTML;
     });
     try{ localStorage.setItem(STORE_TXT, JSON.stringify(data)); }catch(e){}
@@ -363,7 +473,7 @@
     try{
       var data = JSON.parse(localStorage.getItem(STORE_TXT) || 'null');
       if(!data) return;
-      document.querySelectorAll('[contenteditable="true"]').forEach(function(el, i){
+      poster.querySelectorAll('[contenteditable="true"]').forEach(function(el, i){
         if(data[i] != null) el.innerHTML = data[i];
       });
     }catch(e){}
