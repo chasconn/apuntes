@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informe Técnico — GIOPUR</title>
+<style>
+  :root{
+    --rojo:#e11b22;
+    --rojo-osc:#b3141a;
+    --rojo-claro:#f24d52;
+    --gris-oscuro:#2b2b2b;
+    --texto:#222;
+    --gris-linea:#e7e7e7;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ background:#4a4a4a; font-family:'Segoe UI',Arial,Helvetica,sans-serif; }
+
+  /* ====== Barra de herramientas (no se imprime) ====== */
+  .toolbar{
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    padding:12px 16px; background:#333; color:#fff;
+  }
+  .toolbar button{
+    background:var(--rojo); color:#fff; border:0; border-radius:6px;
+    padding:9px 14px; font-weight:700; cursor:pointer; font-size:14px;
+  }
+  .toolbar button.alt{ background:#555; }
+  .toolbar .hint{ color:#cfcfcf; font-size:13px; }
+
+  /* ====== Lienzo del póster ====== */
+  .poster{
+    position:relative;
+    width:1024px; height:1536px;
+    margin:24px auto;
+    background:#ffffff;
+    overflow:hidden;
+    box-shadow:0 10px 40px rgba(0,0,0,.4);
+    color:var(--texto);
+  }
+
+  /* ---- Formas decorativas de fondo (arriba-izquierda) ---- */
+  .bg-soft1{ position:absolute; top:-200px; left:-320px; width:640px; height:640px;
+    background:#fbeaea; transform:rotate(35deg); z-index:0; }
+
+  /* Zig-zag común para foto y respaldo rojo */
+  .zigzag{
+    -webkit-clip-path:polygon(28% 0, 100% 0, 100% 100%, 20% 100%, 16% 84%, 25% 66%, 16% 48%, 26% 28%);
+    clip-path:polygon(28% 0, 100% 0, 100% 100%, 20% 100%, 16% 84%, 25% 66%, 16% 48%, 26% 28%);
+  }
+  /* Respaldo rojo: mismo recorte, desplazado a la izquierda → borde rojo en zig-zag */
+  .photo-back{
+    position:absolute; top:180px; right:26px; width:600px; height:1170px; z-index:1;
+    background:var(--rojo);
+  }
+  /* Panel de la foto (derecha) */
+  .photo-panel{
+    position:absolute; top:180px; right:0; width:600px; height:1170px; z-index:2;
+    background:#8b9099;
+  }
+  .photo-panel img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-panel .ph{
+    width:100%; height:100%;
+    background:linear-gradient(135deg,#6f7580 0%,#565b64 45%,#3f434b 100%);
+    display:flex; align-items:center; justify-content:center;
+    color:#e9e9e9; font-size:18px; text-align:center; padding:0 40px 120px;
+  }
+  /* Acentos rojos diagonales (dos barras finas junto a la foto) */
+  .accent-bar{ position:absolute; z-index:3; background:var(--rojo); transform:skewX(-20deg); }
+  .accent-bar.a1{ top:210px; right:392px; width:52px; height:250px; }
+  .accent-bar.a2{ top:250px; right:352px; width:26px; height:210px; }
+
+  /* ====== Contenido de la izquierda ====== */
+  .content{ position:relative; z-index:5; padding:70px 0 0 70px; width:600px; }
+
+  /* Logo */
+  .brand{ display:flex; align-items:center; gap:16px; margin-bottom:80px; }
+  .brand .gear{ width:74px; height:74px; color:var(--rojo); flex:0 0 auto; }
+  .brand .name{ line-height:1; }
+  .brand .name b{ font-size:52px; font-weight:900; letter-spacing:1px; color:var(--gris-oscuro);
+    font-family:Arial,Helvetica,sans-serif; }
+  .brand .name span{ display:block; font-size:16.5px; font-weight:800; letter-spacing:4.5px;
+    color:var(--rojo); margin-top:4px; }
+
+  /* Insignia EDITABLE 100% (arriba-derecha) */
+  .editable-badge{ position:absolute; top:78px; right:56px; z-index:6; text-align:center; color:var(--gris-oscuro); }
+  .editable-badge svg{ width:52px; height:52px; color:var(--gris-oscuro); }
+  .editable-badge b{ display:block; font-size:19px; font-weight:800; color:var(--rojo); margin-top:6px; letter-spacing:1px; }
+  .editable-badge small{ display:block; font-size:17px; font-weight:800; color:var(--rojo); }
+
+  /* Título */
+  .title h1{ font-family:Arial,Helvetica,sans-serif; font-weight:900; line-height:.9; letter-spacing:1px; white-space:nowrap; }
+  .title .l1{ font-size:104px; color:var(--gris-oscuro); }
+  .title .l2{ font-size:104px; color:var(--rojo); }
+  .title .rule{ width:330px; height:7px; background:var(--rojo); margin:24px 0 34px; }
+
+  .subtitle{ font-size:29px; font-weight:800; color:var(--gris-oscuro); line-height:1.25;
+    letter-spacing:.5px; margin-bottom:46px; text-transform:uppercase; }
+
+  /* Lista de campos */
+  .fields{ width:440px; }
+  .field{ display:flex; align-items:center; gap:22px; padding:16px 0; border-bottom:1px solid var(--gris-linea); }
+  .field:last-child{ border-bottom:0; }
+  .field .ic{ width:58px; height:58px; border-radius:50%; background:var(--rojo);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .field .ic svg{ width:30px; height:30px; color:#fff; }
+  .field .txt .lbl{ font-size:21px; font-weight:800; color:var(--rojo); letter-spacing:1px; }
+  .field .txt .val{ font-size:20px; font-weight:600; color:#4a4a4a; margin-top:3px; }
+
+  /* ====== Zona inferior (valores + pie), anclada al fondo ====== */
+  .bottom{ position:absolute; left:0; right:0; bottom:0; z-index:6; }
+
+  .values{
+    height:110px; background:var(--rojo);
+    display:flex; align-items:center; justify-content:space-around;
+    -webkit-clip-path:polygon(0 26%,100% 0,100% 100%,0 100%);
+    clip-path:polygon(0 26%,100% 0,100% 100%,0 100%);
+    padding-top:14px;
+  }
+  .value{ display:flex; flex-direction:column; align-items:center; gap:8px; color:#fff; }
+  .value svg{ width:40px; height:40px; color:#fff; }
+  .value b{ font-size:19px; font-weight:800; letter-spacing:2px; }
+  .values .sep{ width:1px; height:56px; background:rgba(255,255,255,.4); }
+
+  /* ====== Pie de página ====== */
+  .footer{
+    height:82px; background:var(--rojo-osc); color:#fff;
+    display:flex; align-items:center; justify-content:space-around; padding:0 40px;
+  }
+  .foot{ display:flex; align-items:center; gap:12px; font-size:19px; font-weight:600; }
+  .foot .fic{ width:40px; height:40px; border-radius:50%; border:2px solid #fff;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .foot .fic svg{ width:20px; height:20px; color:#fff; }
+
+  /* ====== Edición ====== */
+  [contenteditable="true"]{ outline:none; cursor:text; }
+  body.editing [contenteditable="true"]{
+    box-shadow:0 0 0 1.5px rgba(225,27,34,.45); border-radius:3px;
+  }
+  body.editing [contenteditable="true"]:focus{
+    box-shadow:0 0 0 2px var(--rojo); background:rgba(225,27,34,.05);
+  }
+
+  /* ====== Impresión ====== */
+  @media print{
+    @page{ size:1024px 1536px; margin:0; }
+    html,body{ background:#fff; }
+    .toolbar{ display:none !important; }
+    .poster{ margin:0; box-shadow:none; }
+    body.editing [contenteditable="true"]{ box-shadow:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button type="button" id="btnEdit">✏️ Activar edición</button>
+  <button type="button" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+  <button type="button" class="alt" id="btnImg">🖼️ Cambiar imagen</button>
+  <input type="file" id="fileImg" accept="image/*" hidden>
+  <span class="hint">Haz clic en cualquier texto para editarlo. Los cambios se guardan en este navegador.</span>
+</div>
+
+<div class="poster" id="poster">
+
+  <!-- Formas de fondo -->
+  <div class="bg-soft1"></div>
+
+  <!-- Respaldo rojo + panel de foto (borde en zig-zag) -->
+  <div class="photo-back zigzag"></div>
+  <div class="photo-panel zigzag" id="photoPanel">
+    <div class="ph" id="photoPlaceholder">Haz clic en «Cambiar imagen»<br>para colocar la foto del equipo</div>
+  </div>
+  <div class="accent-bar a1"></div>
+  <div class="accent-bar a2"></div>
+
+  <!-- Insignia EDITABLE 100% -->
+  <div class="editable-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+    </svg>
+    <b contenteditable="true">EDITABLE</b>
+    <small contenteditable="true">100%</small>
+  </div>
+
+  <!-- Contenido izquierda -->
+  <div class="content">
+
+    <!-- Logo -->
+    <div class="brand">
+      <svg class="gear" viewBox="0 0 100 100" fill="currentColor" aria-label="logo">
+        <path d="M50 4l7 9 11-4 3 11 11 2-3 11 9 8-8 8 4 11-11 2-2 11-11-3-8 9-8-9-11 3-2-11-11-2 4-11-9-8 9-8-4-11 11-2 2-11 11 4z"/>
+        <circle cx="50" cy="50" r="20" fill="#fff"/>
+        <path fill="currentColor" d="M50 34a16 16 0 1 0 12 26l-12-10V34z"/>
+      </svg>
+      <div class="name">
+        <b contenteditable="true">GIOPUR</b>
+        <span contenteditable="true">SOLUCIONES INDUSTRIALES</span>
+      </div>
+    </div>
+
+    <!-- Título -->
+    <div class="title">
+      <h1><span class="l1" contenteditable="true">INFORME</span><br><span class="l2" contenteditable="true">TÉCNICO</span></h1>
+      <div class="rule"></div>
+    </div>
+
+    <div class="subtitle" contenteditable="true">Evaluación y reparación<br>de equipos industriales</div>
+
+    <!-- Campos -->
+    <div class="fields">
+
+      <div class="field">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="7" y="4" width="10" height="16" rx="2"/><path d="M9 4a2 2 0 0 1 4 0"/><path d="M9 4h4"/>
+            <circle cx="12" cy="13" r="3"/><path d="M12 11.5V13l1 .8"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="lbl" contenteditable="true">INFORME N°</div><div class="val" contenteditable="true">[NÚMERO DE INFORME]</div></div>
+      </div>
+
+      <div class="field">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 3v4"/><path d="M16 3v4"/>
+            <rect x="6.5" y="12" width="3" height="3"/><rect x="11" y="12" width="3" height="3"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="lbl" contenteditable="true">FECHA</div><div class="val" contenteditable="true">[DD / MM / AAAA]</div></div>
+      </div>
+
+      <div class="field">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="9" width="13" height="9" rx="1"/><path d="M16 12h3l2 3v3h-5"/>
+            <circle cx="7" cy="19" r="1.8"/><circle cx="17" cy="19" r="1.8"/><path d="M6 9V6h7v3"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="lbl" contenteditable="true">EQUIPO</div><div class="val" contenteditable="true">[NOMBRE DEL EQUIPO]</div></div>
+      </div>
+
+      <div class="field">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="lbl" contenteditable="true">CLIENTE</div><div class="val" contenteditable="true">[NOMBRE DEL CLIENTE]</div></div>
+      </div>
+
+      <div class="field">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3.2"/>
+            <path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 13H4.4a2 2 0 0 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 11 3.6V3.4a2 2 0 0 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8Z"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="lbl" contenteditable="true">ÁREA</div><div class="val" contenteditable="true">[ÁREA / ESPECIALIDAD]</div></div>
+      </div>
+
+      <div class="field">
+        <div class="ic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s7-6.4 7-11a7 7 0 0 0-14 0c0 4.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="lbl" contenteditable="true">UBICACIÓN</div><div class="val" contenteditable="true">[UBICACIÓN DEL PROYECTO]</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Zona inferior: valores + pie -->
+  <div class="bottom">
+  <div class="values">
+    <div class="value">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="M9.5 12l2 2 3.5-4"/>
+      </svg>
+      <b contenteditable="true">CALIDAD</b>
+    </div>
+    <div class="sep"></div>
+    <div class="value">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 16a8 8 0 0 1 16 0"/><path d="M2.5 16h19"/><path d="M9 8.2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2.2"/><path d="M6.5 9.5A8 8 0 0 1 9 8.2M17.5 9.5A8 8 0 0 0 15 8.2"/>
+      </svg>
+      <b contenteditable="true">SEGURIDAD</b>
+    </div>
+    <div class="sep"></div>
+    <div class="value">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20V10"/><path d="M9 20V13"/><path d="M14 20v-4"/><path d="M4 20h16"/>
+        <path d="M6 9l5-4 3 2 5-4"/><path d="M19 3v3h-3"/>
+      </svg>
+      <b contenteditable="true">EFICIENCIA</b>
+    </div>
+    <div class="sep"></div>
+    <div class="value">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 14l-2.5 2.5a1.5 1.5 0 0 1-2-2L10 11l2-2 3 3"/>
+        <path d="M13 10l3 3 4-4-3-4-4 2-3-1-4 3"/><path d="M2 14l3-3"/>
+      </svg>
+      <b contenteditable="true">COMPROMISO</b>
+    </div>
+  </div>
+
+  <!-- Pie -->
+  <div class="footer">
+    <div class="foot">
+      <span class="fic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z"/>
+        </svg>
+      </span>
+      <span contenteditable="true">[WWW.SITIOWEB.COM]</span>
+    </div>
+    <div class="foot">
+      <span class="fic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>
+        </svg>
+      </span>
+      <span contenteditable="true">[CORREO@EMPRESA.COM]</span>
+    </div>
+    <div class="foot">
+      <span class="fic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>
+        </svg>
+      </span>
+      <span contenteditable="true">[+56 9 1234 5678]</span>
+    </div>
+  </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var STORE_TXT = 'giopur_informe_txt';
+  var STORE_IMG = 'giopur_informe_img';
+  var poster = document.getElementById('poster');
+  var editing = false;
+
+  // --- Activar / desactivar edición ---
+  var btnEdit = document.getElementById('btnEdit');
+  btnEdit.addEventListener('click', function(){
+    editing = !editing;
+    document.body.classList.toggle('editing', editing);
+    btnEdit.textContent = editing ? '✅ Terminar edición' : '✏️ Activar edición';
+  });
+
+  // --- Guardado automático del texto ---
+  function saveText(){
+    var data = {};
+    document.querySelectorAll('[contenteditable="true"]').forEach(function(el, i){
+      data[i] = el.innerHTML;
+    });
+    try{ localStorage.setItem(STORE_TXT, JSON.stringify(data)); }catch(e){}
+  }
+  function loadText(){
+    try{
+      var data = JSON.parse(localStorage.getItem(STORE_TXT) || 'null');
+      if(!data) return;
+      document.querySelectorAll('[contenteditable="true"]').forEach(function(el, i){
+        if(data[i] != null) el.innerHTML = data[i];
+      });
+    }catch(e){}
+  }
+  poster.addEventListener('input', saveText);
+
+  // --- Imagen del equipo ---
+  var btnImg = document.getElementById('btnImg');
+  var fileImg = document.getElementById('fileImg');
+  var panel = document.getElementById('photoPanel');
+
+  function setImage(src){
+    panel.innerHTML = '';
+    var img = document.createElement('img');
+    img.src = src;
+    panel.appendChild(img);
+  }
+  btnImg.addEventListener('click', function(){ fileImg.click(); });
+  fileImg.addEventListener('change', function(){
+    var f = fileImg.files && fileImg.files[0];
+    if(!f) return;
+    var r = new FileReader();
+    r.onload = function(){
+      setImage(r.result);
+      try{ localStorage.setItem(STORE_IMG, r.result); }catch(e){}
+    };
+    r.readAsDataURL(f);
+  });
+
+  // --- Restaurar al cargar ---
+  loadText();
+  try{
+    var savedImg = localStorage.getItem(STORE_IMG);
+    if(savedImg) setImage(savedImg);
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
