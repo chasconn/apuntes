@@ -974,6 +974,13 @@ body:not(.show-new) .tag-new{ display:none }
   <div id="mMesBody"></div>
   <div class="foot"><button class="btn" type="button" onclick="closeAll()">Cerrar</button></div>
 </div></div>
+
+<div class="overlay" id="mDoc"><div class="modal wide">
+  <h2 id="docTit" style="margin-bottom:10px">Documento</h2>
+  <div id="docBody"></div>
+  <div class="foot"><button class="btn ghost" type="button" onclick="toast('Documento enviado a impresión / PDF')">🖨️ Imprimir / PDF</button>
+    <button class="btn" type="button" onclick="closeAll()">Cerrar</button></div>
+</div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.45.1/apexcharts.min.js"></script>
 <script>
 /* ============ PERFILES ============ */
@@ -1323,9 +1330,7 @@ function pintarQuotes(){
       +'<td style="font-variant-numeric:tabular-nums"><b>'+money(r.tot,r.cur)+'</b></td>'
       +col(can('ver_margen'),'colMargen','<span class="mg '+mgClass(m)+'">'+pct(m)+'</span>')
       +'<td><span class="badge '+r.st+'">'+r.st+'</span></td>'
-      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="'
-      +(can('editar_cotiz')?'toast(\'Editor de la cotización\')':'denied()')+'">'
-      +(can('editar_cotiz')?'Editar':'Ver')+'</button>'
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="verCotiz(\''+r.n+'\')">📄 Ver</button>'
       +(r.st==='aceptada'?'<button class="btn sm ghost" onclick="'
         +(can('editar_cotiz')?'toast(\'Nota de venta creada desde \'+\''+r.n+'\'\')':'denied()')
         +'">→ Nota de venta</button>':'')+'</div></td></tr>'; }).join('');
@@ -1421,7 +1426,103 @@ function pintarDisp(){
       +'<td><span style="color:var(--accent-d)">'+d.org+'</span></td><td>'+d.f+'</td>'
       +'<td>'+esc(d.dst)+'</td><td>'+esc(d.tr)+'</td>'
       +'<td><span class="badge '+(d.st==='entregada'?'aceptada':'enviada')+'">'+d.st+'</span></td>'
-      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="toast(\'PDF de la guía\')">PDF</button></div></td></tr>'; }).join('');
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="verGuia(\''+d.g+'\')">📄 Ver</button></div></td></tr>'; }).join('');
+}
+
+/* ============ VISOR DE DOCUMENTOS (cotización / guía de despacho) ============ */
+var RUTS={
+ 'Minera Escondida Ltda. (BHP)':'76.543.210-K','SQM Salar S.A.':'96.111.222-3',
+ 'Salmones Camanchaca S.A.':'77.888.999-1','Multiexport Foods S.A.':'96.777.888-9',
+ 'Aguas Antofagasta S.A.':'99.512.000-5','Minera Centinela SpA':'76.255.733-2'
+};
+function rutOf(n){ return RUTS[n]||'—'; }
+function docMoney(v,cur){
+  if(cur==='USD') return 'US$ '+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return clp(Math.round(v));
+}
+var QLINES={
+ 'COT-2026-0012':[{d:'Bomba centrífuga horizontal 3x2-8',c:'BC-3208',q:3,pu:1850000},{d:'Sello mecánico para BC-3208',c:'SE-3208',q:8,pu:95000},{d:'Filtro de línea 10 micrones',c:'FL-10M',q:3,pu:93400}],
+ 'COT-2026-0011':[{d:'Válvula mariposa wafer 6"',c:'VM-6W',q:60,pu:185.00},{d:'Flete y seguro internacional (CIF)',c:'—',q:1,pu:874.79}],
+ 'COT-2026-0010':[{d:'Manguera hidráulica SAE 100 R2 1/2"',c:'MH-R2-12',q:9,pu:265000},{d:'Fittings y acoples',c:'—',q:1,pu:237605}],
+ 'COT-2026-0009':[{d:'Filtro de línea 10 micrones',c:'FL-10M',q:15,pu:96400},{d:'Kit de sellos y repuestos',c:'—',q:1,pu:104420}],
+ 'COT-2026-0007':[{d:'Bomba centrífuga horizontal 3x2-8',c:'BC-3208',q:5,pu:1890000},{d:'Sello mecánico para BC-3208',c:'SE-3208',q:6,pu:98000},{d:'Puesta en marcha y capacitación',c:'—',q:1,pu:449395}],
+ 'COT-2026-0006':[{d:'Válvula mariposa wafer 6"',c:'VM-6W',q:5,pu:142500},{d:'Repuestos varios',c:'—',q:1,pu:77836}]
+};
+var GLINES={
+ 'GD-2026-0044':[{n:'Bomba centrífuga horizontal 3x2-8',c:'BC-3208',cant:5},{n:'Sello mecánico para BC-3208',c:'SE-3208',cant:6}],
+ 'GD-2026-0043':[{n:'Válvula mariposa wafer 6"',c:'VM-6W',cant:20}],
+ 'GD-2026-0042':[{n:'Filtro de línea 10 micrones',c:'FL-10M',cant:15},{n:'Kit de sellos y repuestos',c:'—',cant:1}]
+};
+function docSheet(o){
+  return '<div style="background:#fff;color:#1a2230;border-radius:10px;padding:24px 26px;font-size:13px;line-height:1.5">'
+   +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:2px solid '+o.color+';padding-bottom:14px">'
+     +'<div><div style="font-weight:800;font-size:16px;color:#16212c">Fluid Solutions Business Center SpA</div>'
+       +'<div style="font-size:11.5px;color:#5a6775;margin-top:3px">Importación y distribución de soluciones fluídicas<br>'
+       +'RUT 77.456.789-0 · Antofagasta, Chile<br>ventas@fluidsolutionsbc.com · +56 55 234 5678</div></div>'
+     +'<div style="text-align:right;flex-shrink:0"><div style="display:inline-block;border:1.5px solid '+o.color+';border-radius:8px;padding:8px 14px">'
+       +'<div style="font-size:10px;letter-spacing:.1em;color:'+o.color+';font-weight:700">'+o.tipo+'</div>'
+       +'<div style="font-weight:800;font-size:15px;color:#16212c;font-variant-numeric:tabular-nums">'+o.num+'</div>'
+       +'<div style="font-size:11px;color:#5a6775;margin-top:2px">Fecha: '+o.fecha+'</div></div></div>'
+   +'</div>'
+   +'<div style="margin-top:14px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#5a6775">Señor(es)</div>'
+     +'<div style="font-weight:700;margin-top:2px">'+esc(o.cli)+'</div>'
+     +'<div style="color:#5a6775">RUT '+rutOf(o.cli)+'</div></div>'
+   +o.extra
+   +'</div>';
+}
+function openDoc(title,html){
+  document.getElementById('docTit').textContent=title;
+  document.getElementById('docBody').innerHTML=html;
+  open_('mDoc');
+}
+function verCotiz(n){
+  var q=null,i; for(i=0;i<QUOTES.length;i++){ if(QUOTES[i].n===n) q=QUOTES[i]; }
+  if(!q) return;
+  var L=QLINES[n]||[], neto=0, cur=q.cur;
+  L.forEach(function(l){ neto+=l.q*l.pu; });
+  var total=q.tot, iva=total-neto;
+  var rows=L.map(function(l){
+    return '<tr><td style="padding:7px 8px;border-bottom:1px solid #e6eaef">'+(l.c&&l.c!=='—'?'<b style="color:#0f6f8c">'+l.c+'</b> · ':'')+esc(l.d)+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid #e6eaef;text-align:center">'+l.q+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid #e6eaef;text-align:right;font-variant-numeric:tabular-nums">'+docMoney(l.pu,cur)+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid #e6eaef;text-align:right;font-variant-numeric:tabular-nums">'+docMoney(l.q*l.pu,cur)+'</td></tr>';
+  }).join('');
+  var extra='<div style="margin-top:16px"><table style="width:100%;border-collapse:collapse;font-size:12.5px">'
+    +'<thead><tr style="background:#f1f5f8;color:#5a6775;text-transform:uppercase;font-size:10px;letter-spacing:.05em">'
+    +'<th style="text-align:left;padding:7px 8px">Detalle</th><th style="padding:7px 8px">Cant.</th>'
+    +'<th style="text-align:right;padding:7px 8px">P. unit.</th><th style="text-align:right;padding:7px 8px">Total</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +'<div style="display:flex;justify-content:flex-end;margin-top:14px"><table style="font-size:13px;min-width:250px"><tbody>'
+    +'<tr><td style="padding:3px 10px;color:#5a6775">Neto</td><td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">'+docMoney(neto,cur)+'</td></tr>'
+    +'<tr><td style="padding:3px 10px;color:#5a6775">IVA 19%</td><td style="padding:3px 10px;text-align:right;font-variant-numeric:tabular-nums">'+docMoney(iva,cur)+'</td></tr>'
+    +'<tr><td style="padding:7px 10px;font-weight:700;border-top:2px solid #0f6f8c">Total '+cur+'</td><td style="padding:7px 10px;text-align:right;font-weight:800;color:#0f6f8c;border-top:2px solid #0f6f8c;font-variant-numeric:tabular-nums">'+docMoney(total,cur)+'</td></tr>'
+    +'</tbody></table></div>'
+    +(cur==='USD'?'<div style="font-size:11px;color:#5a6775;margin-top:8px">Valores en dólares de los EE.UU. Conversión a CLP según dólar observado del día de la facturación.</div>':'')
+    +'<div style="font-size:11.5px;color:#5a6775;margin-top:14px;border-top:1px solid #e6eaef;padding-top:10px">'
+    +'<b style="color:#1a2230">Validez:</b> 15 días · <b style="color:#1a2230">Despacho:</b> 5 a 7 días hábiles · <b style="color:#1a2230">Pago:</b> 30 días contra factura.<br>'
+    +'Documento no tributario. Precios sujetos a disponibilidad de stock.</div>';
+  openDoc('Cotización '+n, docSheet({tipo:'COTIZACIÓN',color:'#0f6f8c',num:n+(q.v>1?' · v'+q.v:''),fecha:q.f,cli:q.cli,extra:extra}));
+}
+function verGuia(g){
+  var d=null,i; for(i=0;i<DISP.length;i++){ if(DISP[i].g===g) d=DISP[i]; }
+  if(!d) return;
+  var L=GLINES[g]||[];
+  var rows=L.map(function(l){
+    return '<tr><td style="padding:7px 8px;border-bottom:1px solid #e6eaef">'+(l.c&&l.c!=='—'?'<b style="color:#0f9b96">'+l.c+'</b> · ':'')+esc(l.n)+'</td>'
+      +'<td style="padding:7px 8px;border-bottom:1px solid #e6eaef;text-align:center;font-variant-numeric:tabular-nums">'+l.cant+'</td></tr>';
+  }).join('');
+  var extra='<div style="display:flex;gap:30px;margin-top:12px;font-size:12.5px;flex-wrap:wrap">'
+    +'<div><div style="font-size:10px;text-transform:uppercase;color:#5a6775">Destino</div><div style="font-weight:600">'+esc(d.dst)+'</div></div>'
+    +'<div><div style="font-size:10px;text-transform:uppercase;color:#5a6775">Transporte</div><div style="font-weight:600">'+esc(d.tr)+'</div></div>'
+    +'<div><div style="font-size:10px;text-transform:uppercase;color:#5a6775">Origen</div><div style="font-weight:600">'+esc(d.org)+'</div></div></div>'
+    +'<div style="margin-top:16px"><table style="width:100%;border-collapse:collapse;font-size:12.5px">'
+    +'<thead><tr style="background:#f1f5f8;color:#5a6775;text-transform:uppercase;font-size:10px;letter-spacing:.05em">'
+    +'<th style="text-align:left;padding:7px 8px">Producto</th><th style="padding:7px 8px">Cantidad</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody></table></div>'
+    +'<div style="font-size:11.5px;color:#5a6775;margin-top:14px;border-top:1px solid #e6eaef;padding-top:10px">'
+    +'<b style="color:#1a2230">Motivo:</b> Venta · <b style="color:#1a2230">Estado:</b> '+esc(d.st)+'.<br>'
+    +'Guía de despacho (respaldo interno). La factura electrónica se emite en el portal del SII.</div>';
+  openDoc('Guía de despacho '+g, docSheet({tipo:'GUÍA DE DESPACHO',color:'#0f9b96',num:g,fecha:d.f,cli:d.cli,extra:extra}));
 }
 function pintarTreasury(){
   document.getElementById('mvList').innerHTML=MOV.map(function(m){
