@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+
+<title>ERP Fluid Solutions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* ===== CSS REAL DE LA APP ===== */
+
+@page { size: A4; margin: 14mm; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --soft:#f6f8fc; --border:#e2e6f0; --line:#dde2ee;
+  --txt:#171b2b; --muted:#666f89; --accent:#1478A6; --accent2:#17A6A0; --accent-d:#0e5b7c;
+  --grad: linear-gradient(120deg, #1478A6 0%, #17A6A0 100%);
+  --green:#1f9d5f; --red:#c62a40; --yellow:#B9860B;
+  --radius:12px;
+  --sidebar-bg:#0f1826; --sidebar-txt:#c3cde0; --sidebar-hover:rgba(255,255,255,.06);
+  --overlay-bg:rgba(10,14,24,.55); --toast-bg:#1a2233;
+  color-scheme: light;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+[data-theme="dark"]{
+  --bg:#0d1117; --panel:#161b26; --soft:#1c2230; --border:#2a3244; --line:#2a3244;
+  --txt:#e7ebf3; --muted:#8b96ab; --accent:#3fb6de; --accent2:#2ed8c9; --accent-d:#6fd3ef;
+  --grad: linear-gradient(120deg, #1478A6 0%, #17A6A0 100%);
+  --green:#3ccb82; --red:#ef6577; --yellow:#e0ac3f;
+  --sidebar-bg:#060a12; --sidebar-txt:#a9b4c9; --sidebar-hover:rgba(255,255,255,.06);
+  --overlay-bg:rgba(0,0,0,.7); --toast-bg:#222c3e;
+  color-scheme: dark;
+}
+html,body{ height:100%; }
+body{ background:var(--bg); color:var(--txt); font-family:'Inter',system-ui,sans-serif; font-size:13.5px; line-height:1.5; }
+
+/* ---------- App shell ---------- */
+.app{ display:flex; min-height:100vh; }
+.sidebar{ width:230px; flex:0 0 230px; background:var(--sidebar-bg); color:#fff; display:flex; flex-direction:column; padding:22px 16px; }
+.sidebar .brand{ display:flex; align-items:center; gap:10px; margin-bottom:28px; }
+.sidebar .brand img{ height:30px; width:auto; flex-shrink:0; }
+.sidebar .brand .name{ font-family:'Poppins',sans-serif; font-weight:700; font-size:11.5px; line-height:1.3;
+  overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+.sidebar .brand .name small{ display:block; font-weight:500; font-size:9.5px; color:#9fb0c9; letter-spacing:.04em; margin-top:2px; -webkit-line-clamp:unset; }
+.nav{ display:flex; flex-direction:column; gap:4px; }
+.nav button{ all:unset; cursor:pointer; padding:11px 14px; border-radius:10px; font-weight:600; font-size:13px;
+  color:#c3cde0; display:flex; align-items:center; gap:10px; }
+.nav button:hover{ background:var(--sidebar-hover); color:#fff; }
+.nav button.active{ background:var(--grad); color:#fff; }
+.nav .ico{ font-size:15px; width:18px; text-align:center; }
+.theme-toggle{ all:unset; cursor:pointer; margin-top:auto; display:flex; align-items:center; gap:8px;
+  width:100%; padding:9px 12px; border-radius:9px; color:var(--sidebar-txt); font-size:12px; font-weight:600;
+  border:1px solid rgba(255,255,255,.08); box-sizing:border-box; }
+.theme-toggle:hover{ background:var(--sidebar-hover); color:#fff; }
+.sidebar .foot{ margin-top:12px; font-size:10.5px; color:#5f6d85; line-height:1.6; }
+
+.main{ flex:1; padding:26px 32px; max-width:1400px; min-width:0; }
+.hamb{ display:none; all:unset; cursor:pointer; font-size:20px; line-height:1; padding:3px 9px; border-radius:8px; color:inherit; }
+.hamb:hover{ background:rgba(255,255,255,.1); }
+.nav-backdrop{ display:none; }
+@media(max-width:820px){
+  .hamb{ display:inline-flex; align-items:center; justify-content:center; }
+  .demobar{ position:sticky; top:0; z-index:100; }
+  .app{ display:block; min-height:auto; }
+  .sidebar{ position:fixed; top:0; left:0; bottom:0; width:250px; flex:none; z-index:130;
+    transform:translateX(-103%); transition:transform .26s ease; box-shadow:0 18px 60px rgba(0,0,0,.55); overflow-y:auto; }
+  body.navopen .sidebar{ transform:none; }
+  .nav-backdrop{ position:fixed; inset:0; background:rgba(6,9,15,.55); z-index:120;
+    opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  body.navopen .nav-backdrop{ display:block; opacity:1; pointer-events:auto; }
+  .main{ padding:18px 16px; max-width:none; }
+  .panelgrid{ grid-template-columns:1fr !important; }
+}
+.view{ display:none; }
+.view.active{ display:block; }
+
+h1.pagetitle{ font-family:'Poppins',sans-serif; font-size:21px; font-weight:700; margin-bottom:4px; }
+.pagesub{ color:var(--muted); font-size:12.5px; margin-bottom:20px; }
+
+/* ---------- Buttons ---------- */
+button{ font-family:'Inter',sans-serif; }
+.btn{ cursor:pointer; border:none; border-radius:9px; padding:9px 16px; font-weight:600; font-size:12.5px;
+  color:#fff; background:var(--grad); display:inline-flex; align-items:center; gap:6px; }
+.btn.alt{ background:#232a3d; }
+.btn.ghost{ background:transparent; color:var(--accent-d); border:1px solid var(--border); }
+.btn.danger{ background:var(--red); }
+.btn.sm{ padding:6px 11px; font-size:11.5px; border-radius:7px; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+.toolbar .spacer{ flex:1; }
+.search{ display:flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--border); border-radius:9px; padding:8px 12px; min-width:230px; }
+.search input{ border:none; outline:none; font-size:13px; flex:1; background:transparent; }
+
+/* ---------- Cards / tables ---------- */
+.card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
+.grid-cards{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:14px; }
+.pcard{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; display:flex; flex-direction:column; }
+.pcard .thumb{ height:130px; background:var(--soft); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.pcard .thumb img{ width:100%; height:100%; object-fit:cover; }
+.pcard .thumb .noimg{ color:#a9b2c6; font-size:11px; text-align:center; }
+.pcard .body{ padding:12px 13px 14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+.pcard .code{ font-size:10.5px; color:var(--muted); font-weight:600; letter-spacing:.03em; }
+.pcard .name{ font-weight:700; font-size:13.5px; line-height:1.3; }
+.pcard .cat{ font-size:11px; color:var(--muted); }
+.pcard .price{ margin-top:auto; font-family:'Poppins',sans-serif; font-weight:700; color:var(--accent-d); font-size:15px; padding-top:6px; }
+.pcard .actions{ display:flex; gap:6px; padding:10px 13px; border-top:1px solid var(--border); }
+.pcard .actions .btn{ flex:1; justify-content:center; }
+
+.tablescroll{ overflow-x:auto; border-radius:var(--radius); }
+table.list{ width:100%; min-width:760px; border-collapse:collapse; background:var(--panel); border-radius:var(--radius); overflow:hidden; }
+table.list thead th{ background:var(--soft); color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
+  font-weight:700; text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); }
+table.list tbody td{ padding:11px 12px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+table.list tbody tr:last-child td{ border-bottom:none; }
+table.list tbody tr:hover{ background:var(--soft); }
+.badge{ display:inline-block; padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:700; }
+.badge.borrador{ background:var(--soft); color:var(--muted); }
+.badge.enviada{ background:rgba(20,120,166,.15); color:var(--accent-d); }
+.badge.aceptada{ background:rgba(31,157,95,.15); color:var(--green); }
+.badge.rechazada{ background:rgba(198,42,64,.15); color:var(--red); }
+.rowactions{ display:flex; gap:6px; flex-wrap:wrap; white-space:nowrap; }
+.empty{ text-align:center; padding:50px 20px; color:var(--muted); }
+.empty .big{ font-size:34px; margin-bottom:10px; }
+
+/* ---------- Forms / modal ---------- */
+.field{ margin-bottom:13px; }
+.field label{ display:block; font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--accent-d); margin-bottom:5px; }
+.field input, .field select, .field textarea{ width:100%; font-family:'Inter',sans-serif; font-size:13px;
+  border:1px solid var(--border); border-radius:8px; padding:9px 11px; outline:none; background:var(--panel); color:var(--txt); }
+.field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 3px rgba(20,120,166,.12); }
+.field textarea{ resize:vertical; min-height:64px; }
+.field .hint{ font-size:10.5px; color:var(--muted); margin-top:4px; }
+.row2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+.overlay{ position:fixed; inset:0; background:var(--overlay-bg); display:none; align-items:flex-start;
+  justify-content:center; padding:36px 16px; overflow:auto; z-index:50; }
+.overlay.open{ display:flex; }
+.modal{ background:var(--panel); border-radius:14px; width:100%; max-width:640px; padding:24px 26px 22px; box-shadow:0 24px 70px rgba(0,0,0,.35); }
+.modal.wide{ max-width:920px; }
+.modal h2{ font-family:'Poppins',sans-serif; font-size:17px; margin-bottom:16px; }
+.modal .foot{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; padding-top:16px; border-top:1px solid var(--border); }
+.modal .close{ position:absolute; }
+
+.imgpick{ display:flex; align-items:center; gap:12px; }
+.imgpick .prev{ width:74px; height:74px; border-radius:9px; background:var(--soft); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; }
+.imgpick .prev img{ width:100%; height:100%; object-fit:cover; }
+
+/* ---------- Toast ---------- */
+#toast{ position:fixed; bottom:22px; right:22px; z-index:99; display:flex; flex-direction:column; gap:8px; }
+.toastmsg{ background:var(--toast-bg); color:#fff; padding:11px 16px; border-radius:9px; font-size:12.5px; font-weight:600;
+  box-shadow:0 8px 24px rgba(0,0,0,.3); border-left:4px solid var(--accent2); animation:slidein .2s ease; }
+.toastmsg.error{ border-left-color:var(--red); }
+@keyframes slidein{ from{ transform:translateX(30px); opacity:0; } to{ transform:none; opacity:1; } }
+
+/* ---------- Quote editor ---------- */
+.qmeta{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+.itemsbox table.items{ width:100%; border-collapse:collapse; }
+table.items thead th{ background:var(--accent-d); color:#fff; font-size:10px; text-transform:uppercase; letter-spacing:.04em;
+  padding:9px 10px; text-align:left; }
+table.items tbody td{ padding:8px 8px; border-bottom:1px solid var(--border); vertical-align:middle; }
+table.items input, table.items select{ width:100%; border:1px solid transparent; border-radius:6px; padding:6px 7px; font-size:12.5px; background:var(--soft); }
+table.items input:focus{ border-color:var(--accent); background:var(--panel); }
+table.items td.num input{ text-align:right; }
+.itemthumb{ width:38px; height:38px; border-radius:6px; object-fit:cover; background:var(--soft); }
+.proddesc{ display:flex; flex-direction:column; gap:4px; }
+.proddesc select{ font-weight:600; cursor:pointer; }
+.proddesc .desc-main-input{ font-weight:600; }
+.proddesc .desc-sub-input{ font-size:11.5px; color:var(--muted); }
+.additem{ margin-top:10px; cursor:pointer; font-weight:700; font-size:12px; color:var(--accent-d);
+  background:rgba(20,120,166,.10); border:1.5px dashed var(--accent); border-radius:8px; padding:8px 13px; display:inline-block; }
+.delbtn{ cursor:pointer; color:var(--red); border:1px solid rgba(198,42,64,.35); background:rgba(198,42,64,.06);
+  border-radius:6px; width:24px; height:24px; font-weight:700; }
+.totalsbox{ margin-top:14px; margin-left:auto; width:280px; }
+.totalsbox .r{ display:flex; justify-content:space-between; padding:6px 4px; color:var(--muted); font-size:13px; }
+.totalsbox .r b{ color:var(--txt); }
+.totalsbox .grand{ margin-top:6px; border-top:2px solid var(--accent); padding-top:10px; }
+.totalsbox .grand span{ font-weight:700; color:var(--accent-d); text-transform:uppercase; letter-spacing:.04em; font-size:13px; }
+.totalsbox .grand b{ font-size:19px; color:var(--accent-d); font-family:'Poppins',sans-serif; }
+
+.autocomplete{ position:relative; }
+.ac-list{ position:absolute; top:100%; left:0; right:0; background:var(--panel); border:1px solid var(--border);
+  border-radius:9px; box-shadow:0 12px 30px rgba(0,0,0,.14); max-height:220px; overflow:auto; z-index:20; display:none; }
+.ac-list.open{ display:block; }
+.ac-item{ padding:9px 12px; cursor:pointer; display:flex; gap:10px; align-items:center; font-size:12.5px; }
+.ac-item:hover{ background:var(--soft); }
+.ac-item img{ width:28px; height:28px; border-radius:5px; object-fit:cover; background:var(--soft); }
+.ac-item .meta{ color:var(--muted); font-size:11px; }
+
+/* ---------- Specs editor (fichas) ---------- */
+.specsection{ border:1px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:12px; background:var(--soft); }
+.specsection .sechead{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.specsection .sechead input{ font-weight:700; font-size:12.5px; border:1px solid var(--border); border-radius:7px; padding:6px 9px; background:var(--panel); flex:1; }
+.specrow{ display:grid; grid-template-columns:1fr 1fr auto; gap:8px; margin-bottom:6px; }
+.specrow input{ border:1px solid var(--border); border-radius:7px; padding:7px 9px; font-size:12.5px; background:var(--panel); }
+.addspec, .addsection{ cursor:pointer; font-size:11.5px; font-weight:700; color:var(--accent-d); background:rgba(20,120,166,.10);
+  border:1px dashed var(--accent); border-radius:7px; padding:6px 10px; display:inline-block; }
+
+/* ---------- Print pages ---------- */
+.printlink{ font-size:11px; color:var(--muted); }
+@media print{
+  .sidebar, .toolbar, #toast{ display:none !important; }
+  .main{ padding:0; max-width:none; }
+  body{ background:#fff; }
+}
+
+</style>
+<script>window.__LOGO__="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3NjQgMjE0IiBmb250LWZhbWlseT0iQXJpYWwsICdIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImRvdGciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMUM3RkI5Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNDVCNkUxIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJ0eHRnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzFCNkZBOCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzNBQTlERCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgZmlsbD0idXJsKCNkb3RnKSI+PGNpcmNsZSBjeD0iMTEyLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTM2LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQyLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTU0LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTYwLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTcyLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTc4LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTkwLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTk2LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjAyLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjA4LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjE0LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjIwLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjgwLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzgyLjAiIGN5PSIxMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODIuMCIgY3k9IjE4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4OC4wIiBjeT0iMTguMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTA2LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTcyLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTc4LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTkwLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTk2LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjAyLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjA4LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjE0LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzM0LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzgyLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzg4LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzk0LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDAwLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDA2LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQyLjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQ4LjAiIGN5PSIxOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNzYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4Mi4wIiBjeT0iMjQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijg4LjAiIGN5PSIyNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iOTQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMTIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMjQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMzAuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMzYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxODQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxOTAuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxOTYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMDIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMDguMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMTQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNDYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTguMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNjQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzAuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODguMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzOTQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDAuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MjQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzYuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDIuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDguMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NTQuMCIgY3k9IjI0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNi4wIiBjeT0iMzAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjIyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjguMCIgY3k9IjMwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNC4wIiBjeT0iMzAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDYuMCIgY3k9IjMwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI1Mi4wIiBjeT0iMzAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjU4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNjQuMCIgY3k9IjMwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI3MC4wIiBjeT0iMzAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijc2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODIuMCIgY3k9IjMwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4OC4wIiBjeT0iMzAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTAwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTA2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTEyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTI0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTU0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTcyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTc4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTkwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTk2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjgwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjk4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzA0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzEwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzIyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzI4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzM0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQ2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzUyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzU4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzY0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzcwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzc2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzgyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzg4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzk0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDAwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDA2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDEyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDE4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDI0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDMwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDM2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQ4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDU0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDYwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDY2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDcyLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDc4LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDg0LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDkwLjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDk2LjAiIGN5PSIzMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTYuMCIgY3k9IjM2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4LjAiIGN5PSIzNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQuMCIgY3k9IjM2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ2LjAiIGN5PSIzNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNTIuMCIgY3k9IjM2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI1OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjY0LjAiIGN5PSIzNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNzAuMCIgY3k9IjM2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI3Ni4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjgyLjAiIGN5PSIzNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODguMCIgY3k9IjM2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwMC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwNi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExMi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExOC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE4NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2Mi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4Ni4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMwNC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxMC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxNi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyMi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyOC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMzNC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0MC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0Ni4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1Mi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM2NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3MC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3Ni4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4Mi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM5NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwMC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwNi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxMi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxOC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzMC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzNi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0Mi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ1NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ2MC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ2Ni4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ3Mi4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ3OC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ4NC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ5MC4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ5Ni4wIiBjeT0iMzYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4LjAiIGN5PSI0Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNTIuMCIgY3k9IjQyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI1OC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjY0LjAiIGN5PSI0Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNzAuMCIgY3k9IjQyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI3Ni4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjgyLjAiIGN5PSI0Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODguMCIgY3k9IjQyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwMC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwNi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExMi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0Mi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI1Ni4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2OC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4Ni4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMwNC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxMC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxNi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyMi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyOC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMzNC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0MC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0Ni4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1Mi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1OC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM2NC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3MC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3Ni4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4Mi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4OC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM5NC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwMC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwNi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxMi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxOC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzMC4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzNi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0Mi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ3Mi4wIiBjeT0iNDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjY0LjAiIGN5PSI0OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNzAuMCIgY3k9IjQ4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI3Ni4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjgyLjAiIGN5PSI0OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODguMCIgY3k9IjQ4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwMC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwNi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExMi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExOC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEyNC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEzMC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEzNi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0Mi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE2MC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjIzOC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI0NC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4Ni4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMwNC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxMC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxNi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyMi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyOC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMzNC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0MC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0Ni4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1Mi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1OC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM2NC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3MC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3Ni4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4Mi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4OC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM5NC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwMC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwNi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxMi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxOC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzMC4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzNi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ2Ni4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ3Mi4wIiBjeT0iNDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijc2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODIuMCIgY3k9IjU0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4OC4wIiBjeT0iNTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTAwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTA2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTEyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTI0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTM2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTYwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjUwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjU2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjYyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjgwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjk4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzA0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzEwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzIyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzI4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzM0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQ2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzUyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzU4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzY0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzcwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzc2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzgyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzg4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzk0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDAwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDA2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDEyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDE4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDI0LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDMwLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDM2LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQyLjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQ4LjAiIGN5PSI1NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNzYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4Mi4wIiBjeT0iNjAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijg4LjAiIGN5PSI2MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iOTQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMTIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMTguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMjQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMzAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMzYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNTQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNzQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMDQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMzQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNDAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNDYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNjQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzOTQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTIuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MjQuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzAuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzYuMCIgY3k9IjYwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI3Ni4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjgyLjAiIGN5PSI2Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODguMCIgY3k9IjY2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI5NC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwMC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEwNi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExMi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjExOC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEyNC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEzMC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEzNi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0Mi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjIzOC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI0NC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI1MC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2OC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4Ni4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxMC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMyOC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMzNC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0MC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM0Ni4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1Mi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1OC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM2NC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3MC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM3Ni4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4Mi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4OC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM5NC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwMC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQwNi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxMi4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxOC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iNjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijc2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODIuMCIgY3k9IjcyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4OC4wIiBjeT0iNzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTAwLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTA2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTEyLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTI0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTM2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjM4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjQ0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjk4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzA0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzEwLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzI4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzM0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQwLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQ2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzUyLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzU4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzY0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzcwLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzc2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzgyLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzg4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzk0LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDAwLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDA2LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDEyLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDE4LjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQyLjAiIGN5PSI3Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iODIuMCIgY3k9Ijc4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI4OC4wIiBjeT0iNzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9Ijk0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTAwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTA2LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTEyLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTI0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTMwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjM4LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjQ0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjUwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjU2LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjYyLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjk4LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzA0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzEwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzIyLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzI4LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzM0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzQ2LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzUyLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzU4LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzY0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzcwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzc2LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzgyLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzg4LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzk0LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDAwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDA2LjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDEyLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDMwLjAiIGN5PSI3OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iOTQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDYuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMTIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMzAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNDQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTYuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNzQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMDQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMzQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNDAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNDYuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNjQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzYuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzOTQuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDAuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDYuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTIuMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9Ijg0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDAuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMjYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzIuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzguMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNDQuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTAuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjIuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNzQuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTIuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMDQuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNDYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTIuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTguMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNjQuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzAuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNzYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODIuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODguMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzOTQuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDAuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDYuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTIuMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9IjkwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDAuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMDYuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMjYuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzIuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzguMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNDQuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTAuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTYuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjIuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNzQuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTIuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTguMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMDQuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTYuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjIuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMjguMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTIuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTguMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNjQuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODIuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzODguMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzOTQuMCIgY3k9Ijk2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxMTIuMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTE4LjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjIyNi4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzIuMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjM4LjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI0NC4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTAuMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjU2LjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2Mi4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM1Mi4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzNTguMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzg4LjAiIGN5PSIxMDIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM5NC4wIiBjeT0iMTAyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9IjEwMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxMDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjIyNi4wIiBjeT0iMTA4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzIuMCIgY3k9IjEwOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjM4LjAiIGN5PSIxMDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI0NC4wIiBjeT0iMTA4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTAuMCIgY3k9IjEwOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjU2LjAiIGN5PSIxMDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2Mi4wIiBjeT0iMTA4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9IjEwOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSIxMDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iMTA4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9IjEwOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSIxMDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iMTA4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMDQuMCIgY3k9IjEwOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzU4LjAiIGN5PSIxMDguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM5NC4wIiBjeT0iMTA4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDAuMCIgY3k9IjEwOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQyLjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNTQuMCIgY3k9IjExNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTYwLjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjIzMi4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyMzguMCIgY3k9IjExNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjQ0LjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI1MC4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNTYuMCIgY3k9IjExNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjYyLjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2OC4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNzQuMCIgY3k9IjExNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjgwLjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4Ni4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTIuMCIgY3k9IjExNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjk4LjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMwNC4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9IjExNC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSIxMTQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iMTE0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjEyMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxMjAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTIwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjEyMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxMjAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTIwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjIuMCIgY3k9IjEyMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSIxMjAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iMTIwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjEyMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIxMjAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iMTIwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTguMCIgY3k9IjEyMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzA0LjAiIGN5PSIxMjAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjMxMC4wIiBjeT0iMTIwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDYuMCIgY3k9IjEyMC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTM2LjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0Mi4wIiBjeT0iMTI2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDguMCIgY3k9IjEyNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTU0LjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE2MC4wIiBjeT0iMTI2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjYuMCIgY3k9IjEyNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTcyLjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3OC4wIiBjeT0iMTI2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjIuMCIgY3k9IjEyNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iMTI2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjEyNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iMTI2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTguMCIgY3k9IjEyNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzA0LjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjM4OC4wIiBjeT0iMTI2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MDYuMCIgY3k9IjEyNi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDE4LjAiIGN5PSIxMjYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEzNi4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE5MC4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxOTYuMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTguMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzk0LjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0Mi4wIiBjeT0iMTMyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDguMCIgY3k9IjEzMi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDYwLjAiIGN5PSIxMzIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjEzNi4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjEzOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxMzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjEzOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxMzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjEzOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxMzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE5MC4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxOTYuMCIgY3k9IjEzOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSIxMzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjEzOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIxMzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTguMCIgY3k9IjEzOC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDU0LjAiIGN5PSIxMzguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ3Mi4wIiBjeT0iMTM4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxNDQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTQ0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxNDQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTQ0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxNDQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE5MC4wIiBjeT0iMTQ0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSIxNDQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iMTQ0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSIxNDQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iMTQ0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTYuMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDMwLjAiIGN5PSIxNDQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzNi4wIiBjeT0iMTQ0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDguMCIgY3k9IjE0NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE5MC4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNjguMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjc0LjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4MC4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODYuMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjkyLjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5OC4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIzMTAuMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzE2LjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzAuMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDM2LjAiIGN5PSIxNTAuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0Mi4wIiBjeT0iMTUwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDguMCIgY3k9IjE1MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTg0LjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI2OC4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyNzQuMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjgwLjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI4Ni4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyOTIuMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMzEwLjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxMi4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDI0LjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzMC4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzYuMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQyLjAiIGN5PSIxNTYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0OC4wIiBjeT0iMTU2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NTQuMCIgY3k9IjE1Ni4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjAuMCIgY3k9IjE2Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTY2LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE3Mi4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNzguMCIgY3k9IjE2Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjY4LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjE2Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI5Mi4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTIuMCIgY3k9IjE2Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDE4LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQyNC4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzAuMCIgY3k9IjE2Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDM2LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0Mi4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDguMCIgY3k9IjE2Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDU0LjAiIGN5PSIxNjIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ2MC4wIiBjeT0iMTYyLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDguMCIgY3k9IjE2OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTU0LjAiIGN5PSIxNjguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE2MC4wIiBjeT0iMTY4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNjYuMCIgY3k9IjE2OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTcyLjAiIGN5PSIxNjguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjI3NC4wIiBjeT0iMTY4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIyODAuMCIgY3k9IjE2OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMjg2LjAiIGN5PSIxNjguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQxMi4wIiBjeT0iMTY4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MTguMCIgY3k9IjE2OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDI0LjAiIGN5PSIxNjguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQzMC4wIiBjeT0iMTY4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0MzYuMCIgY3k9IjE2OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDQyLjAiIGN5PSIxNjguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0OC4wIiBjeT0iMTY4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NTQuMCIgY3k9IjE2OC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDYwLjAiIGN5PSIxNjguMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iMTc0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNTQuMCIgY3k9IjE3NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTYwLjAiIGN5PSIxNzQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjQ0Mi4wIiBjeT0iMTc0LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSI0NDguMCIgY3k9IjE3NC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iNDU0LjAiIGN5PSIxNzQuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0OC4wIiBjeT0iMTgwLjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNTQuMCIgY3k9IjE4MC4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxODYuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE1NC4wIiBjeT0iMTg2LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDIuMCIgY3k9IjE5Mi4wIiByPSIyIi8+PGNpcmNsZSBjeD0iMTQ4LjAiIGN5PSIxOTIuMCIgcj0iMiIvPjxjaXJjbGUgY3g9IjE0Mi4wIiBjeT0iMTk4LjAiIHI9IjIiLz48Y2lyY2xlIGN4PSIxNDguMCIgY3k9IjE5OC4wIiByPSIyIi8+PC9nPgogIDxnIGZpbGw9InVybCgjdHh0ZykiIGZvbnQtc3R5bGU9Iml0YWxpYyIgZm9udC13ZWlnaHQ9IjgwMCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTMyLDc3KSI+CiAgICA8dGV4dCB4PSIwIiB5PSIzNCIgZm9udC1zaXplPSI4MCIgbGV0dGVyLXNwYWNpbmc9IjEiPkZTQkM8L3RleHQ+CiAgICA8dGV4dCB4PSIzIiB5PSI3MCIgZm9udC1zaXplPSIzNyIgbGV0dGVyLXNwYWNpbmc9IjAuNSI+QlVTSU5FU1M8L3RleHQ+CiAgICA8dGV4dCB4PSIzIiB5PSI5OSIgZm9udC1zaXplPSIyNyIgbGV0dGVyLXNwYWNpbmc9IjEiPlNQQS48L3RleHQ+CiAgPC9nPgo8L3N2Zz4=";</script>
+<style>
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1117; --panel:#161b26; --soft:#1c2230; --border:#2a3244; --line:#2a3244;
+    --txt:#e7ebf3; --muted:#8b96ab; --accent:#3fb6de; --accent2:#2ed8c9; --accent-d:#6fd3ef;
+    --green:#3ccb82; --red:#ef6577; --yellow:#e0ac3f;
+    --sidebar-bg:#060a12; --sidebar-txt:#a9b4c9; --overlay-bg:rgba(0,0,0,.7); --toast-bg:#222c3e;
+    color-scheme: dark;
+    --st-borrador:#b98526; --st-enviada:#2e93b8; --st-aceptada:#2fae6f; --st-rechazada:#d24259;
+    --gridline:rgba(255,255,255,.07);
+  }
+}
+:root{ --st-borrador:#B9860B; --st-enviada:#1478A6; --st-aceptada:#1f9d5f; --st-rechazada:#c62a40;
+       --gridline:rgba(23,27,43,.08) }
+:root[data-theme="dark"]{ --st-borrador:#b98526; --st-enviada:#2e93b8; --st-aceptada:#2fae6f;
+       --st-rechazada:#d24259; --gridline:rgba(255,255,255,.07) }
+
+.demobar{ background:var(--toast-bg); color:#dbe3f2; display:flex; align-items:center; gap:14px;
+  padding:9px 18px; font-size:12px; flex-wrap:wrap }
+.demobar b{ color:#fff } .demobar .sep{ flex:1 }
+.demobar label{ display:flex; align-items:center; gap:7px; cursor:pointer; user-select:none }
+.demobar input[type=checkbox]{ accent-color:#2ed8c9; width:15px; height:15px; cursor:pointer }
+.demobar select{ background:#1a2333; color:#fff; border:1px solid rgba(255,255,255,.15);
+  border-radius:7px; padding:4px 8px; font-size:12px; font-family:'Inter',sans-serif }
+
+/* portal */
+.login{ position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; padding:24px;
+  background:radial-gradient(1100px 620px at 78% -8%, rgba(23,166,160,.22), transparent 62%),
+             radial-gradient(900px 560px at 12% 108%, rgba(20,120,166,.26), transparent 60%), #0b1220 }
+.login.hide{ display:none }
+.loginbox{ width:100%; max-width:412px; background:var(--panel); border-radius:16px; padding:30px 30px 24px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5); max-height:94vh; overflow:auto }
+.loginbox .lg{ display:flex; justify-content:center; margin-bottom:13px }
+.loginbox .lg img{ height:42px }
+.loginbox h2{ font-family:'Poppins',sans-serif; font-size:18px; text-align:center; margin-bottom:3px }
+.loginbox .sub{ text-align:center; color:var(--muted); font-size:12px; margin-bottom:19px }
+.loginbox .err{ background:rgba(198,42,64,.12); color:var(--red); border:1px solid rgba(198,42,64,.3);
+  border-radius:9px; padding:9px 12px; font-size:12px; margin-bottom:13px; display:none }
+.loginbox .err.on{ display:block }
+.demo-users{ margin-top:19px; padding-top:15px; border-top:1px solid var(--border) }
+.demo-users .cap{ font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+  font-weight:700; margin-bottom:9px }
+.duser{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; cursor:pointer;
+  background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:8px 11px;
+  margin-bottom:6px; font-family:'Inter',sans-serif; font-size:12.5px; color:var(--txt) }
+.duser:hover{ border-color:var(--accent) }
+.duser .av{ width:28px; height:28px; border-radius:99px; background:var(--grad); color:#fff; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px }
+.duser .rl{ margin-left:auto; color:var(--muted); font-size:10.5px; text-align:right }
+
+.userbar{ display:flex; align-items:center; gap:10px; margin-top:auto; padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.08) }
+.userbar .av{ width:32px; height:32px; border-radius:99px; background:var(--grad); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; flex:0 0 auto }
+.userbar .nm{ font-size:12px; font-weight:600; color:#fff; line-height:1.25 }
+.userbar .rl{ font-size:10.5px; color:#8ea3c2 }
+.userbar .out{ all:unset; cursor:pointer; margin-left:auto; color:#8ea3c2; font-size:15px; padding:4px }
+.userbar .out:hover{ color:#fff }
+.sidebar{ overflow-y:auto }
+.navgroup{ font-size:9.5px; text-transform:uppercase; letter-spacing:.09em; color:#5f6d85;
+  font-weight:700; margin:14px 0 5px 14px }
+.nav button[disabled]{ opacity:.32; cursor:not-allowed }
+.nav button{ padding:9px 13px }
+
+.tiles{ display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:13px; margin-bottom:18px }
+.tile{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px }
+.tile .lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700 }
+.tile .val{ font-family:'Poppins',sans-serif; font-size:23px; font-weight:700; margin-top:4px;
+  font-variant-numeric:tabular-nums; letter-spacing:-.02em }
+.tile .sub{ font-size:11.5px; color:var(--muted); margin-top:3px }
+.tile .sub .up{ color:var(--green); font-weight:700 } .tile .sub .down{ color:var(--red); font-weight:700 }
+.tile.warn{ border-left:3px solid var(--yellow) } .tile.bad{ border-left:3px solid var(--red) }
+.card2{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px 15px }
+.card2 h3{ font-family:'Poppins',sans-serif; font-size:13.5px; font-weight:600; margin-bottom:2px }
+.card2 .hint{ font-size:11.5px; color:var(--muted); margin-bottom:14px }
+.panelgrid{ display:grid; grid-template-columns:1.55fr 1fr; gap:16px; align-items:start }
+@media (max-width:1000px){ .panelgrid{ grid-template-columns:1fr } }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
+@media (max-width:760px){ .grid2{ grid-template-columns:1fr } }
+
+.chartwrap{ position:relative }
+.apexbox{ width:100%; min-height:270px }
+.apexcharts-tooltip{ font-family:inherit!important; box-shadow:0 10px 30px rgba(0,0,0,.18)!important }
+.apexcharts-tooltip-title{ font-weight:700!important }
+.apexcharts-legend-text{ color:var(--muted)!important }
+.tile.clickable,.alert.clickable{ cursor:pointer; transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease }
+.tile.clickable:hover{ transform:translateY(-2px); border-color:var(--accent); box-shadow:0 10px 24px rgba(20,120,166,.16) }
+.alert.clickable:hover{ border-color:var(--accent) }
+.mesgrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+.mescell{ background:var(--soft); border:1px solid var(--border); border-radius:10px; padding:12px 14px }
+.mescell .k{ font-size:11px; color:var(--muted); font-weight:600; letter-spacing:.02em; text-transform:uppercase }
+.mescell .v{ font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; color:var(--accent-d); margin-top:3px }
+@media(max-width:520px){ .mesgrid{ grid-template-columns:1fr } }
+svg.chart{ display:block; width:100%; height:auto; overflow:visible }
+svg.chart text{ font-family:'Inter',sans-serif; fill:var(--muted); font-size:10px }
+svg.chart .gl{ stroke:var(--gridline); stroke-width:1 }
+svg.chart .bar{ fill:var(--accent) } svg.chart .bar.dim{ opacity:.38 }
+svg.chart .bar.late{ fill:var(--red) } svg.chart .bar:hover{ opacity:.82 }
+.tip{ position:absolute; pointer-events:none; background:var(--toast-bg); color:#eef3fb; font-size:11.5px;
+  padding:7px 10px; border-radius:8px; white-space:nowrap; opacity:0; transform:translate(-50%,-118%);
+  transition:opacity .12s; box-shadow:0 6px 20px rgba(0,0,0,.3); z-index:5 }
+.tip b{ display:block; font-size:12.5px; font-variant-numeric:tabular-nums }
+.rank{ display:flex; flex-direction:column; gap:11px }
+.rank .top{ display:flex; justify-content:space-between; gap:10px; font-size:12px; margin-bottom:4px }
+.rank .top b{ font-variant-numeric:tabular-nums; font-weight:600 }
+.rank .track{ height:7px; background:var(--soft); border-radius:99px; overflow:hidden }
+.rank .fill{ height:100%; border-radius:99px; background:var(--accent) }
+.alerts{ display:flex; flex-direction:column; gap:9px }
+.alert{ display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px;
+  background:var(--soft); border-left:3px solid var(--yellow); font-size:12.5px }
+.alert.urgent{ border-left-color:var(--red) }
+.alert .when{ margin-left:auto; color:var(--muted); font-size:11.5px; white-space:nowrap }
+
+/* diagrama del circuito */
+figure.flow{ margin:0 }
+figure.flow svg{ width:100%; height:auto; max-width:100%; color:var(--txt) }
+figure.flow .bx{ fill:var(--panel); stroke:currentColor; stroke-width:1.3; opacity:.95 }
+figure.flow .bx.hot{ fill:rgba(20,120,166,.12); stroke:var(--accent); stroke-width:2 }
+figure.flow .bx.ext2{ fill:var(--soft); stroke:currentColor; stroke-dasharray:5 4; stroke-width:1.2 }
+figure.flow .lb{ fill:currentColor; font-family:'Inter',sans-serif; font-size:12px; font-weight:600 }
+figure.flow .sm{ fill:var(--muted); font-family:'Inter',sans-serif; font-size:10px }
+figure.flow .ar{ stroke:currentColor; stroke-width:1.4; fill:none; opacity:.75 }
+figure.flow .ar.key{ stroke:var(--accent); stroke-width:2; opacity:1 }
+figure.flow .al{ fill:var(--muted); font-family:'Inter',sans-serif; font-size:9.5px }
+figcaption{ color:var(--muted); font-size:11.5px; margin-top:11px; text-align:center }
+
+.chips{ display:flex; gap:7px; flex-wrap:wrap }
+.chip{ cursor:pointer; border:1px solid var(--border); background:var(--panel); color:var(--muted);
+  border-radius:99px; padding:5px 13px; font-size:11.5px; font-weight:600; font-family:'Inter',sans-serif }
+.chip:hover{ border-color:var(--accent) } .chip.on{ background:var(--grad); color:#fff; border-color:transparent }
+.cur{ display:inline-flex; align-items:center; gap:5px; font-variant-numeric:tabular-nums }
+.cur .flag{ width:17px; height:11px; border-radius:2px; flex:0 0 auto }
+.mg{ font-weight:700; font-variant-numeric:tabular-nums }
+.mg.good{ color:var(--green) } .mg.mid{ color:var(--yellow) } .mg.bad{ color:var(--red) }
+.ver{ display:inline-block; background:var(--soft); border:1px solid var(--border); border-radius:6px;
+  padding:1px 6px; font-size:10.5px; font-weight:700; color:var(--muted); margin-left:5px }
+.badge.sii{ background:rgba(31,157,95,.15); color:var(--green) }
+.badge.siipend{ background:rgba(185,134,11,.16); color:var(--yellow) }
+.badge.siierr{ background:rgba(198,42,64,.15); color:var(--red) }
+.badge.stockok{ background:rgba(31,157,95,.15); color:var(--green) }
+.badge.stockbajo{ background:rgba(185,134,11,.16); color:var(--yellow) }
+.badge.stockcero{ background:rgba(198,42,64,.15); color:var(--red) }
+.bar-mini{ height:6px; background:var(--soft); border-radius:99px; overflow:hidden; min-width:70px }
+.bar-mini i{ display:block; height:100% }
+.tl{ position:relative; padding-left:26px }
+.tl::before{ content:''; position:absolute; left:7px; top:6px; bottom:6px; width:2px; background:var(--border) }
+.tl .ev{ position:relative; padding-bottom:15px } .tl .ev:last-child{ padding-bottom:0 }
+.tl .ev::before{ content:''; position:absolute; left:-24px; top:4px; width:12px; height:12px; border-radius:99px;
+  background:var(--panel); border:2px solid var(--accent) }
+.tl .ev.done::before{ background:var(--accent) } .tl .ev.pend::before{ border-color:var(--muted) }
+.tl .ev .t{ font-size:12.5px; font-weight:600 } .tl .ev .d{ font-size:11.5px; color:var(--muted) }
+.sent{ display:flex; align-items:center; gap:10px; font-size:12px; padding:8px 0; border-bottom:1px solid var(--border) }
+.sent:last-child{ border-bottom:none } .sent .ok{ color:var(--green); font-weight:700 }
+.attach{ display:flex; align-items:center; gap:9px; padding:9px 11px; border:1px solid var(--border);
+  border-radius:9px; margin-bottom:7px; font-size:12.5px }
+.attach input{ accent-color:var(--accent); width:15px; height:15px }
+.matrix td.y{ color:var(--green); font-weight:700; text-align:center }
+.matrix td.n{ color:var(--muted); text-align:center }
+.news{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:13px }
+.news .n{ background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--accent2);
+  border-radius:var(--radius); padding:14px 16px }
+.news .n h4{ font-family:'Poppins',sans-serif; font-size:13px; margin-bottom:4px }
+.news .n p{ font-size:12px; color:var(--muted); line-height:1.5 }
+.news .n .tagm{ display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.05em;
+  text-transform:uppercase; color:var(--accent-d); margin-bottom:6px }
+.overlay{ position:fixed; inset:0; background:var(--overlay-bg); display:none; align-items:center;
+  justify-content:center; padding:22px; z-index:40; overflow:auto }
+.overlay.open{ display:flex }
+.toast{ position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(120%); background:var(--toast-bg);
+  color:#fff; padding:11px 20px; border-radius:10px; font-size:12.5px; z-index:60; visibility:hidden;
+  transition:transform .3s, visibility .3s; box-shadow:0 10px 34px rgba(0,0,0,.35) }
+.toast.show{ transform:translateX(-50%) translateY(0); visibility:visible }
+.tag-new{ display:inline-block; background:linear-gradient(120deg,#1478A6,#17A6A0); color:#fff;
+  font-size:9px; font-weight:700; letter-spacing:.06em; padding:2px 6px; border-radius:5px;
+  vertical-align:middle; margin-left:6px }
+body.show-new .is-new{ outline:2px dashed var(--accent2); outline-offset:4px; border-radius:10px }
+body:not(.show-new) .tag-new{ display:none }
+.roleinfo{ display:flex; align-items:center; gap:10px; background:var(--soft); border:1px solid var(--border);
+  border-radius:10px; padding:10px 13px; font-size:12.5px; color:var(--muted); margin-bottom:16px }
+.nota{ background:rgba(185,134,11,.10); border:1px solid rgba(185,134,11,.32); border-radius:10px;
+  padding:11px 14px; font-size:12px; color:var(--txt); margin-bottom:15px; line-height:1.55 }
+.fx .field{ width:auto; flex:0 0 auto }
+.fx .field select{ min-width:170px }
+#view-restock .rank .top span .ver{ margin-left:4px }
+:focus-visible{ outline:2px solid var(--accent2); outline-offset:2px }
+@media (prefers-reduced-motion:reduce){ *{ transition:none !important } }
+</style>
+
+<!-- ========== PORTAL ========== -->
+<div class="login" id="login">
+  <div class="loginbox">
+    <div class="lg"><img id="loginLogo" alt="FSBC"></div>
+    <h2>ERP Fluid Solutions</h2>
+    <div class="sub">Ingrese con su usuario para continuar</div>
+    <div class="err" id="loginErr"></div>
+    <div class="field"><label>Usuario</label><input id="inUser" placeholder="usuario" autocomplete="username"></div>
+    <div class="field" style="margin-top:11px"><label>Contraseña</label>
+      <input id="inPass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn" style="width:100%;justify-content:center;margin-top:15px" id="btnLogin">Entrar</button>
+    <div class="demo-users"><div class="cap">Usuarios de la demostración · clic para completar</div>
+      <div id="duserList"></div></div>
+  </div>
+</div>
+
+<!-- ========== APP ========== -->
+<div id="shell" style="display:none">
+<div class="demobar">
+  <button class="hamb" id="hamb" type="button" aria-label="Menú">☰</button>
+  <b>Prototipo ERP</b><span>Datos de ejemplo · nada se guarda</span><span class="sep"></span>
+  <label>Perfil <select id="selRole"></select></label>
+  <label><input type="checkbox" id="chkNew" checked> Resaltar lo nuevo</label>
+  <label><input type="checkbox" id="chkDark"> Modo oscuro</label>
+</div>
+<div class="app">
+  <div class="nav-backdrop" id="navBackdrop"></div>
+  <aside class="sidebar">
+    <div class="brand"><img id="sbLogo" alt="FSBC">
+      <div class="name">Fluid Solutions <small>ERP · VERSIÓN 3</small></div></div>
+    <div class="field" style="margin-bottom:8px">
+      <label style="color:#8ea3c2">Empresa activa</label>
+      <select style="width:100%;background:#1a2333;color:#fff;border-color:rgba(255,255,255,.15)">
+        <option>Fluid Solutions Business Center SpA</option><option>Importparts SPA</option></select></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="userbar"><div class="av" id="ubAv">DC</div>
+      <div><div class="nm" id="ubName">—</div><div class="rl" id="ubRole">—</div></div>
+      <button class="out" id="btnOut" title="Cerrar sesión">⏻</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="roleinfo" id="roleInfo"></div>
+
+    <!-- PANEL -->
+    <section class="view" id="view-panel">
+      <h1 class="pagetitle">Panel</h1>
+      <div class="pagesub">Ventas, cobranza, abastecimiento e inventario en una sola vista.</div>
+      <div class="tiles" id="tiles"></div>
+      <div class="panelgrid">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card2"><h3>Ventas facturadas por mes</h3>
+            <div class="hint">Últimos seis meses, en millones de pesos. Haga clic en un mes para ver su detalle.</div>
+            <div class="chartwrap"><div id="chartMes" class="apexbox"></div></div></div>
+          <div class="card2 is-new"><h3>Antigüedad de la deuda <span class="tag-new">NUEVO</span></h3>
+            <div class="hint">Cuánto se debe y hace cuánto. En rojo, lo vencido.</div>
+            <div class="chartwrap"><div id="chartAge" class="apexbox"></div></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card2 is-new"><h3>Requiere atención <span class="tag-new">NUEVO</span></h3>
+            <div class="hint">Lo que está frenado o vencido, en todos los módulos.</div>
+            <div class="alerts" id="alerts"></div></div>
+          <div class="card2"><h3>Clientes del mes</h3><div class="hint">Por monto facturado.</div>
+            <div class="rank" id="rankCli"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CIRCUITO -->
+    <section class="view" id="view-flow">
+      <h1 class="pagetitle">El circuito completo</h1>
+      <div class="pagesub">Cómo se encadenan los documentos, el stock y el dinero. La factura se emite en el portal del SII y vuelve al sistema como folio.</div>
+      <div class="card2">
+        <figure class="flow">
+        <svg viewBox="0 0 980 432" role="img" aria-label="Circuito del ERP: la cotización aceptada genera una nota de venta; si falta stock se emite una orden de compra al proveedor cuya recepción ingresa al inventario; la nota de venta descuenta stock y emite guía de despacho; la factura se emite en el portal del SII y su folio se registra en el sistema, generando una cuenta por cobrar que al pagarse ingresa a tesorería.">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>
+            <marker id="ahk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#1478A6"/></marker></defs>
+
+          <text class="sm" x="12" y="24">VENTA</text>
+          <g><rect class="bx" x="12" y="36" width="140" height="52" rx="9"/>
+            <text class="lb" x="82" y="60" text-anchor="middle">Cotización</text>
+            <text class="sm" x="82" y="76" text-anchor="middle">v1 · v2 · v3</text></g>
+          <g><rect class="bx hot" x="212" y="36" width="140" height="52" rx="9"/>
+            <text class="lb" x="282" y="60" text-anchor="middle">Nota de venta</text>
+            <text class="sm" x="282" y="76" text-anchor="middle">OC del cliente</text></g>
+          <g><rect class="bx" x="466" y="36" width="140" height="52" rx="9"/>
+            <text class="lb" x="536" y="60" text-anchor="middle">Guía de despacho</text>
+            <text class="sm" x="536" y="76" text-anchor="middle">mueve la mercadería</text></g>
+          <g><rect class="bx ext2" x="666" y="36" width="140" height="52" rx="9"/>
+            <text class="lb" x="736" y="60" text-anchor="middle">Portal del SII</text>
+            <text class="sm" x="736" y="76" text-anchor="middle">emite la factura</text></g>
+          <g><rect class="bx" x="856" y="36" width="112" height="52" rx="9"/>
+            <text class="lb" x="912" y="60" text-anchor="middle">Folio</text>
+            <text class="sm" x="912" y="76" text-anchor="middle">se registra aquí</text></g>
+
+          <line class="ar key" x1="152" y1="62" x2="206" y2="62" marker-end="url(#ahk)"/>
+          <text class="al" x="179" y="54" text-anchor="middle">aceptada</text>
+          <line class="ar" x1="352" y1="62" x2="460" y2="62" marker-end="url(#ah)"/>
+          <text class="al" x="406" y="54" text-anchor="middle">descuenta stock</text>
+          <line class="ar" x1="606" y1="62" x2="660" y2="62" marker-end="url(#ah)"/>
+          <text class="al" x="633" y="54" text-anchor="middle">se factura afuera</text>
+          <line class="ar" x1="806" y1="62" x2="850" y2="62" marker-end="url(#ah)"/>
+
+          <text class="sm" x="12" y="186">ABASTECIMIENTO</text>
+          <g><rect class="bx" x="212" y="198" width="140" height="52" rx="9"/>
+            <text class="lb" x="282" y="222" text-anchor="middle">Orden de compra</text>
+            <text class="sm" x="282" y="238" text-anchor="middle">al proveedor</text></g>
+          <g><rect class="bx" x="392" y="198" width="140" height="52" rx="9"/>
+            <text class="lb" x="462" y="222" text-anchor="middle">Recepción</text>
+            <text class="sm" x="462" y="238" text-anchor="middle">total o parcial</text></g>
+          <g><rect class="bx hot" x="572" y="198" width="140" height="52" rx="9"/>
+            <text class="lb" x="642" y="222" text-anchor="middle">Inventario</text>
+            <text class="sm" x="642" y="238" text-anchor="middle">stock por bodega</text></g>
+
+          <path class="ar" d="M282 92 L282 192" marker-end="url(#ah)"/>
+          <text class="al" x="292" y="146">si falta stock</text>
+          <line class="ar" x1="352" y1="224" x2="386" y2="224" marker-end="url(#ah)"/>
+          <line class="ar key" x1="532" y1="224" x2="566" y2="224" marker-end="url(#ahk)"/>
+          <text class="al" x="549" y="216" text-anchor="middle">+ stock</text>
+          <path class="ar key" d="M642 192 L642 150 L536 150 L536 94" marker-end="url(#ahk)"/>
+          <text class="al" x="590" y="143" text-anchor="middle">− stock al despachar</text>
+
+          <text class="sm" x="12" y="318">DINERO</text>
+          <g><rect class="bx" x="666" y="330" width="140" height="52" rx="9"/>
+            <text class="lb" x="736" y="354" text-anchor="middle">Cuenta por cobrar</text>
+            <text class="sm" x="736" y="370" text-anchor="middle">vence a 30 días</text></g>
+          <g><rect class="bx" x="856" y="330" width="112" height="52" rx="9"/>
+            <text class="lb" x="912" y="354" text-anchor="middle">Tesorería</text>
+            <text class="sm" x="912" y="370" text-anchor="middle">pago recibido</text></g>
+          <g><rect class="bx" x="212" y="330" width="140" height="52" rx="9"/>
+            <text class="lb" x="282" y="354" text-anchor="middle">Cuenta por pagar</text>
+            <text class="sm" x="282" y="370" text-anchor="middle">factura del proveedor</text></g>
+
+          <path class="ar" d="M912 92 L912 150 L806 150 L806 324" marker-end="url(#ah)"/>
+          <text class="al" x="816" y="240">genera</text>
+          <text class="al" x="700" y="112" text-anchor="middle">el folio vuelve al sistema</text>
+          <line class="ar" x1="806" y1="356" x2="850" y2="356" marker-end="url(#ah)"/>
+          <text class="al" x="828" y="348" text-anchor="middle">abona</text>
+          <path class="ar" d="M282 254 L282 324" marker-end="url(#ah)"/>
+          <path class="ar" d="M282 384 L282 414 L912 414 L912 390" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+          <text class="al" x="597" y="408" text-anchor="middle">egreso · sale de tesorería</text>
+        </svg>
+        <figcaption>Cada documento nace del anterior: nadie vuelve a escribir los ítems, y el stock y el dinero se mueven solos.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- COTIZACIONES -->
+    <section class="view" id="view-quotes">
+      <h1 class="pagetitle">Cotizaciones</h1>
+      <div class="pagesub" id="qSub">Cree, edite e imprima cotizaciones para sus clientes.</div>
+      <div class="toolbar"><div class="search"><span>🔎</span><input placeholder="Buscar por N° o cliente…" id="qSearch"></div>
+        <div class="spacer"></div><button class="btn" id="btnNewQ">＋ Nueva cotización</button></div>
+      <div class="chips" style="margin-bottom:14px">
+        <button class="chip on" data-f="todas">Todas</button><button class="chip" data-f="borrador">Borradores</button>
+        <button class="chip" data-f="enviada">Enviadas</button><button class="chip" data-f="aceptada">Aceptadas</button>
+        <button class="chip" data-f="rechazada">Rechazadas</button></div>
+      <div class="tablescroll"><table class="list" style="min-width:1000px"><thead><tr>
+        <th>N°</th><th>Cliente</th><th>Fecha</th><th>Moneda</th><th>Total</th>
+        <th class="colMargen">Margen</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="qBody"></tbody></table></div>
+    </section>
+
+    <!-- NOTAS DE VENTA -->
+    <section class="view" id="view-sales">
+      <h1 class="pagetitle">Notas de venta</h1>
+      <div class="pagesub">Lo cerrado. Desde aquí sale la guía de despacho y la factura.</div>
+      <div class="tablescroll"><table class="list" style="min-width:1020px"><thead><tr>
+        <th>N°</th><th>Cliente</th><th>Origen</th><th>Fecha</th><th>Total</th>
+        <th class="colMargen">Margen</th><th>Stock</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="sBody"></tbody></table></div>
+    </section>
+
+    <!-- FACTURACIÓN -->
+    <section class="view" id="view-invoices">
+      <h1 class="pagetitle">Facturación <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Las facturas emitidas en el portal del SII, enlazadas con las ventas del sistema.</div>
+      <div class="nota"><b>La factura se emite en el portal gratuito del SII</b>, como se hace hoy. El sistema
+        no emite documentos tributarios: registra el folio de cada factura e importa los registros de ventas y
+        compras que el SII entrega, para cuadrar solo la cobranza y las cuentas por pagar. Así se evita el
+        certificado digital, los folios CAF y la certificación del software.</div>
+      <div class="tiles">
+        <div class="tile"><div class="lbl">Facturado en agosto</div><div class="val">$33.712.400</div>
+          <div class="sub">14 documentos emitidos</div></div>
+        <div class="tile"><div class="lbl">IVA débito</div><div class="val">$5.383.760</div>
+          <div class="sub">del período en curso</div></div>
+        <div class="tile warn"><div class="lbl">Ventas sin facturar</div><div class="val">1</div>
+          <div class="sub">nota de venta lista, falta emitir en el SII</div></div>
+        <div class="tile"><div class="lbl">Último cuadre con el SII</div><div class="val">29-08</div>
+          <div class="sub">registros de ventas y compras al día</div></div>
+      </div>
+      <div class="toolbar"><div class="spacer"></div>
+        <button class="btn ghost" id="btnSII">📥 Importar registros del SII</button>
+        <button class="btn" id="btnEmit">＋ Registrar factura emitida</button></div>
+      <div class="tablescroll"><table class="list" style="min-width:1000px"><thead><tr>
+        <th>Documento</th><th>Cliente</th><th>Origen</th><th>Fecha</th><th>Neto</th><th>Total</th>
+        <th>Registro</th><th>Acciones</th></tr></thead><tbody id="iBody"></tbody></table></div>
+    </section>
+
+    <!-- COBRANZA -->
+    <section class="view" id="view-receivables">
+      <h1 class="pagetitle">Cuentas por cobrar <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Quién debe, cuánto y desde cuándo.</div>
+      <div class="tiles">
+        <div class="tile"><div class="lbl">Total por cobrar</div><div class="val">$26.000.000</div>
+          <div class="sub">9 documentos pendientes</div></div>
+        <div class="tile bad"><div class="lbl">Vencido</div><div class="val">$11.800.000</div>
+          <div class="sub">45% de la cartera</div></div>
+        <div class="tile"><div class="lbl">Días promedio de cobro</div><div class="val">38</div>
+          <div class="sub">condición pactada: 30 días</div></div>
+        <div class="tile"><div class="lbl">Cobrado en agosto</div><div class="val">$21.450.000</div>
+          <div class="sub"><span class="up">▲ 12%</span> vs. julio</div></div>
+      </div>
+      <div class="tablescroll"><table class="list" style="min-width:980px"><thead><tr>
+        <th>Documento</th><th>Cliente</th><th>Emisión</th><th>Vence</th><th>Monto</th><th>Saldo</th>
+        <th>Estado</th><th>Acciones</th></tr></thead><tbody id="rBody"></tbody></table></div>
+    </section>
+
+    <!-- COMPRAS -->
+    <section class="view" id="view-purchases">
+      <h1 class="pagetitle">Órdenes de compra <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Lo que se pidió a proveedores y qué llegó.</div>
+      <div class="tablescroll"><table class="list" style="min-width:980px"><thead><tr>
+        <th>N°</th><th>Proveedor</th><th>Fecha</th><th>Total</th><th>Recibido</th><th>Estado</th>
+        <th>Para</th><th>Acciones</th></tr></thead><tbody id="cBody"></tbody></table></div>
+    </section>
+
+
+    <!-- REPOSICIÓN -->
+    <section class="view" id="view-restock">
+      <h1 class="pagetitle">Reposición <span class="tag-new">ERP</span></h1>
+      <div class="pagesub">Qué se vende, qué se está por acabar y qué hay que comprar hoy.</div>
+      <div class="tiles">
+        <div class="tile bad"><div class="lbl">Bajo el punto</div><div class="val" id="rsN">0</div>
+          <div class="sub">productos que hay que pedir</div></div>
+        <div class="tile"><div class="lbl">Compra sugerida</div><div class="val" id="rsMonto">$0</div>
+          <div class="sub" id="rsProv">en 0 proveedores</div></div>
+        <div class="tile warn"><div class="lbl">Quiebre en curso</div><div class="val" id="rsQ">0</div>
+          <div class="sub">sin stock y con venta</div></div>
+        <div class="tile"><div class="lbl">Clase A</div><div class="val" id="rsA">0</div>
+          <div class="sub">concentran el 70% del consumo</div></div>
+      </div>
+
+      <div class="card2" style="margin-bottom:16px"><h3>Cómo se calcula</h3>
+        <div class="hint">Con la venta real de los últimos 90 días y el plazo de cada proveedor. Ajuste la cobertura y la tabla se recalcula.</div>
+        <div class="fx" style="margin-bottom:0">
+          <div class="field" style="margin:0"><label>Cobertura objetivo (días)</label>
+            <input id="rsObj" value="45" style="width:90px"></div>
+          <div class="field" style="margin:0"><label>Stock de seguridad (días)</label>
+            <input id="rsSS" value="7" style="width:90px"></div>
+          <div class="field" style="margin:0"><label>Analizar</label>
+            <select id="rsPer"><option value="90">Últimos 90 días</option>
+              <option value="180">Últimos 180 días</option><option value="30">Últimos 30 días</option></select></div>
+          <span style="color:var(--muted);max-width:330px;line-height:1.5">
+            Punto de reposición = consumo diario × plazo del proveedor + stock de seguridad.
+            Se pide solo cuando el stock disponible cae a ese punto.</span>
+        </div>
+      </div>
+
+      <div class="panelgrid" style="margin-bottom:16px">
+        <div class="card2"><h3>Lo que más se vende</h3>
+          <div class="hint">Por consumo valorizado de los últimos 90 días. Las clase A son las que no pueden faltar.</div>
+          <div class="rank" id="rsRank"></div></div>
+        <div class="card2"><h3>Cobertura actual</h3>
+          <div class="hint">Días de venta que alcanza a cubrir el stock disponible.</div>
+          <div class="rank" id="rsCob"></div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="chips">
+          <button class="chip on" data-rf="pedir">Hay que pedir</button>
+          <button class="chip" data-rf="todos">Todos</button>
+          <button class="chip" data-rf="A">Solo clase A</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" id="btnGenOC">🛒 Generar órdenes de compra (<span id="rsSel">0</span>)</button>
+      </div>
+      <div class="tablescroll"><table class="list" style="min-width:1160px"><thead><tr>
+        <th style="width:34px"><input type="checkbox" id="rsAll" title="Seleccionar todo"></th>
+        <th>Código</th><th>Producto</th><th>ABC</th><th>Venta 90 d</th><th>Consumo diario</th>
+        <th>Disponible</th><th>Cobertura</th><th>Punto</th><th>Sugerido</th><th>Proveedor</th><th>Costo</th>
+      </tr></thead><tbody id="rsBody"></tbody></table></div>
+      <div class="empty" id="rsEmpty" style="display:none"><div class="big">✅</div>
+        Ningún producto está bajo su punto de reposición.</div>
+    </section>
+
+    <!-- PROVEEDORES -->
+    <section class="view" id="view-suppliers">
+      <h1 class="pagetitle">Proveedores <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Con quién se compra y en qué condiciones.</div>
+      <div class="tablescroll"><table class="list" style="min-width:860px"><thead><tr>
+        <th>Proveedor</th><th>RUT</th><th>Contacto</th><th>Plazo de pago</th><th>Comprado en el año</th>
+        <th>Por pagar</th></tr></thead><tbody id="pvBody"></tbody></table></div>
+    </section>
+
+    <!-- INVENTARIO -->
+    <section class="view" id="view-inventory">
+      <h1 class="pagetitle">Inventario <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Stock por bodega, mínimos y movimientos.</div>
+      <div class="tiles">
+        <div class="tile"><div class="lbl">Valorización</div><div class="val">$42.180.000</div>
+          <div class="sub">al costo, 128 productos</div></div>
+        <div class="tile warn"><div class="lbl">Bajo el mínimo</div><div class="val">2</div>
+          <div class="sub">requieren reposición</div></div>
+        <div class="tile bad"><div class="lbl">Sin stock</div><div class="val">1</div>
+          <div class="sub">con demanda comprometida</div></div>
+        <div class="tile"><div class="lbl">Bodegas</div><div class="val">2</div>
+          <div class="sub">Santiago y Antofagasta</div></div>
+      </div>
+      <div class="toolbar"><div class="search"><span>🔎</span><input placeholder="Buscar producto o código…" id="invSearch"></div>
+        <div class="spacer"></div>
+        <button class="btn ghost" id="btnMove">🔄 Movimiento de stock</button>
+        <button class="btn ghost" onclick="toast('Inventario exportado a Excel')">📊 Exportar</button></div>
+      <div class="tablescroll"><table class="list" style="min-width:960px"><thead><tr>
+        <th>Código</th><th>Producto</th><th>Santiago</th><th>Antofagasta</th><th>Total</th><th>Mínimo</th>
+        <th>Estado</th><th>Acciones</th></tr></thead><tbody id="invBody"></tbody></table></div>
+    </section>
+
+    <!-- DESPACHOS -->
+    <section class="view" id="view-dispatch">
+      <h1 class="pagetitle">Guías de despacho <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Lo que salió de bodega y hacia dónde.</div>
+      <div class="tablescroll"><table class="list" style="min-width:940px"><thead><tr>
+        <th>Guía</th><th>Cliente</th><th>Origen</th><th>Fecha</th><th>Destino</th><th>Transporte</th>
+        <th>Estado</th><th>Acciones</th></tr></thead><tbody id="dBody"></tbody></table></div>
+    </section>
+
+    <!-- TESORERÍA -->
+    <section class="view" id="view-treasury">
+      <h1 class="pagetitle">Tesorería <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Lo que entra, lo que sale y lo que queda.</div>
+      <div class="tiles">
+        <div class="tile"><div class="lbl">Saldo en banco</div><div class="val">$18.940.200</div>
+          <div class="sub">Banco de Chile · cta. corriente</div></div>
+        <div class="tile"><div class="lbl">Por cobrar (30 días)</div><div class="val">$14.200.000</div>
+          <div class="sub">entrada proyectada</div></div>
+        <div class="tile warn"><div class="lbl">Por pagar (30 días)</div><div class="val">$9.860.000</div>
+          <div class="sub">salida proyectada</div></div>
+        <div class="tile"><div class="lbl">Proyección a 30 días</div><div class="val">$23.280.200</div>
+          <div class="sub"><span class="up">▲ positivo</span></div></div>
+      </div>
+      <div class="grid2">
+        <div class="card2"><h3>Últimos movimientos</h3><div class="hint">Ingresos y egresos registrados.</div>
+          <div id="mvList"></div></div>
+        <div class="card2"><h3>Cuentas por pagar</h3><div class="hint">Facturas de proveedores pendientes.</div>
+          <div id="apList"></div></div>
+      </div>
+    </section>
+
+    <!-- INFORMES -->
+    <section class="view" id="view-reports">
+      <h1 class="pagetitle">Informes <span class="tag-new">NUEVO</span></h1>
+      <div class="pagesub">Todo exportable a Excel o PDF.</div>
+      <div class="news" id="repList"></div>
+    </section>
+
+    <!-- PRODUCTOS / CLIENTES / FICHAS -->
+    <section class="view" id="view-products">
+      <h1 class="pagetitle">Catálogo de productos</h1>
+      <div class="pagesub">Base de productos con costo, precio e imagen.</div>
+      <div class="toolbar"><div class="search"><span>🔎</span><input placeholder="Buscar producto o código…" id="pSearch"></div>
+        <div class="spacer"></div>
+        <button class="btn ghost" id="btnImport">📥 Importar Excel</button>
+        <button class="btn ghost" id="btnReprice">📈 Reajustar precios</button></div>
+      <div class="tablescroll"><table class="list" style="min-width:900px"><thead><tr>
+        <th>Código</th><th>Producto</th><th>Categoría</th><th class="colMargen">Costo</th><th>Precio</th>
+        <th class="colMargen">Margen</th><th>Acciones</th></tr></thead><tbody id="pBody"></tbody></table></div>
+    </section>
+    <section class="view" id="view-clients"><h1 class="pagetitle">Clientes</h1>
+      <div class="pagesub">Registro de clientes con RUT, contacto, crédito y deuda.</div>
+      <div class="tablescroll"><table class="list" style="min-width:820px"><thead><tr>
+        <th>Cliente</th><th>RUT</th><th>Contacto</th><th>Línea de crédito</th><th>Deuda actual</th>
+        <th>Estado</th></tr></thead><tbody id="clBody"></tbody></table></div></section>
+    <section class="view" id="view-fichas"><h1 class="pagetitle">Fichas técnicas</h1>
+      <div class="pagesub">Genere la ficha de cualquier producto del catálogo.</div>
+      <div class="empty"><div class="big">📋</div>Sin cambios respecto de la versión actual.</div></section>
+
+    <!-- USUARIOS -->
+    <section class="view" id="view-users">
+      <h1 class="pagetitle">Usuarios y permisos</h1>
+      <div class="pagesub">Con más módulos, los perfiles pasan de tres a cinco.</div>
+      <div class="card2" style="margin-bottom:16px"><h3>Usuarios</h3>
+        <div class="hint">Cada uno con su clave; el perfil decide lo que ve.</div>
+        <div class="tablescroll"><table class="list" style="min-width:640px"><thead><tr>
+          <th>Nombre</th><th>Usuario</th><th>Perfil</th><th>Último ingreso</th></tr></thead>
+          <tbody id="uBody"></tbody></table></div></div>
+      <div class="card2"><h3>Qué puede hacer cada perfil</h3>
+        <div class="hint">Lo mismo que aplica el prototipo al cambiar de perfil arriba.</div>
+        <div class="tablescroll"><table class="list matrix" style="min-width:820px"><thead><tr id="mHead"></tr></thead>
+          <tbody id="mBody"></tbody></table></div></div>
+    </section>
+
+    <!-- RESPALDOS / CONFIG -->
+    <section class="view" id="view-backup">
+      <h1 class="pagetitle">Respaldos</h1>
+      <div class="pagesub">Con un ERP, el respaldo deja de ser opcional.</div>
+      <div class="grid2">
+        <div class="card2"><h3>Respaldo automático</h3><div class="hint">Se ejecuta con la app abierta.</div>
+          <div class="field"><label>Frecuencia</label><select><option>Diario, a las 20:00</option>
+            <option>Cada 6 horas</option><option>Al cerrar la app</option></select></div>
+          <div class="field" style="margin-top:11px"><label>Destino</label><input value="D:\Respaldos\ERP"></div>
+          <button class="btn" style="margin-top:13px" onclick="toast('Respaldo creado · 8,2 MB')">Respaldar ahora</button></div>
+        <div class="card2"><h3>Historial</h3><div class="hint">Puede restaurar cualquiera de estos puntos.</div>
+          <div id="bkList"></div></div></div>
+    </section>
+    <section class="view" id="view-settings">
+      <h1 class="pagetitle">Configuración</h1>
+      <div class="pagesub">Datos de la empresa y módulos habilitados.</div>
+      <div class="grid2">
+        <div class="card2"><h3>Módulos</h3><div class="hint">Se activan por empresa, cuando el cliente los contrata.</div>
+          <div id="modList"></div></div>
+        <div class="card2"><h3>Parámetros</h3><div class="hint">Reglas que aplica el sistema.</div>
+          <div class="field"><label>Tipo de cambio (CLP por USD)</label><input value="967,40"></div>
+          <div class="field" style="margin-top:11px"><label>Margen mínimo aceptable (%)</label><input value="18"></div>
+          <div class="field" style="margin-top:11px"><label>Plazo de pago por defecto</label>
+            <select><option>30 días</option><option>Contado</option><option>60 días</option></select></div>
+          <div class="field" style="margin-top:11px"><label>Bloquear venta si el cliente supera su crédito</label>
+            <select><option>Sí, avisar y bloquear</option><option>Solo avisar</option><option>No</option></select></div>
+        </div></div>
+    </section>
+
+    <!-- ALCANCE -->
+    <section class="view" id="view-news">
+      <h1 class="pagetitle">De cotizador a ERP</h1>
+      <div class="pagesub">Qué existe hoy, qué agrega la v2 y qué agrega el ERP.</div>
+      <div class="news" id="newsList"></div>
+    </section>
+  </main>
+</div>
+</div>
+
+<!-- ========== MODALES ========== -->
+<div class="overlay" id="mPay"><div class="modal">
+  <h2>Registrar pago</h2>
+  <div class="field"><label>Documento</label><input id="payDoc" value="" readonly></div>
+  <div class="grid2" style="margin-top:11px">
+    <div class="field"><label>Fecha</label><input value="31-08-2026"></div>
+    <div class="field"><label>Medio</label><select><option>Transferencia</option><option>Cheque</option><option>Efectivo</option></select></div></div>
+  <div class="field" style="margin-top:11px"><label>Monto</label><input id="payAmt" value=""></div>
+  <div class="field" style="margin-top:11px"><label>Comprobante</label>
+    <div class="attach"><input type="checkbox" checked> <span>Adjuntar comprobante de transferencia</span></div></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('Pago registrado · saldo actualizado y abonado en tesorería')">Registrar</button></div>
+</div></div>
+
+<div class="overlay" id="mRecv"><div class="modal">
+  <h2>Recepción de mercadería</h2>
+  <div class="field"><label>Orden de compra</label><input id="recvOc" value="" readonly></div>
+  <div class="field" style="margin-top:11px"><label>Bodega de ingreso</label>
+    <select><option>Santiago</option><option>Antofagasta</option></select></div>
+  <div class="tablescroll" style="margin-top:12px"><table class="list" style="min-width:420px"><thead><tr>
+    <th>Producto</th><th style="width:78px">Pedido</th><th style="width:88px">Recibe</th></tr></thead>
+    <tbody><tr><td>Bomba centrífuga 3x2-8</td><td>6</td><td><input value="6" style="width:64px"></td></tr>
+    <tr><td>Válvula mariposa 6"</td><td>20</td><td><input value="14" style="width:64px"></td></tr></tbody></table></div>
+  <div class="nota" style="margin:12px 0 0">Recepción parcial: la orden queda abierta por las 6 válvulas que faltan.</div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('Recepción registrada · stock actualizado en Santiago')">Ingresar al stock</button></div>
+</div></div>
+
+<div class="overlay" id="mEmit"><div class="modal">
+  <h2>Registrar factura emitida en el SII</h2>
+  <div class="nota" style="margin-bottom:14px">La factura se emite en el <b>portal del SII</b>. Aquí solo se
+    anota su folio, para que la venta quede enlazada con la cobranza.</div>
+  <div class="field"><label>Nota de venta</label>
+    <select><option>NV-2026-0030 · Salmones Camanchaca S.A. · $3.120.900</option>
+      <option>NV-2026-0031 · Minera Escondida Ltda. (BHP) · $12.480.000</option></select></div>
+  <div class="grid2" style="margin-top:11px">
+    <div class="field"><label>Tipo de documento</label><select><option>Factura</option>
+      <option>Boleta</option><option>Nota de crédito</option></select></div>
+    <div class="field"><label>Folio del SII</label><input placeholder="Ej.: 1248"></div></div>
+  <div class="grid2" style="margin-top:11px">
+    <div class="field"><label>Fecha de emisión</label><input value="31-08-2026"></div>
+    <div class="field"><label>Vence</label><input value="30-09-2026"></div></div>
+  <div class="fx" style="margin-top:12px"><span>Neto $2.622.605 · IVA $498.295</span>
+    <span class="totbox"><span class="t1">$3.120.900</span><span class="t2">Tomado de la nota de venta</span></span></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('Folio registrado · la factura pasó a cuentas por cobrar')">Registrar</button></div>
+</div></div>
+
+<div class="overlay" id="mSII"><div class="modal">
+  <h2>Importar registros del SII</h2>
+  <div class="nota" style="margin-bottom:14px">Se descargan del portal del SII y se cargan aquí. El sistema
+    cuadra solo: las ventas contra las notas de venta, y las compras contra las órdenes de compra.</div>
+  <div class="attach" style="justify-content:center;padding:22px;border-style:dashed">
+    📄 Arrastre aquí el registro de ventas o de compras (.csv)</div>
+  <div class="card2" style="margin-top:14px;padding:13px 15px">
+    <h3 style="font-size:12.5px">registro_ventas_agosto.csv · 14 documentos</h3>
+    <div style="font-size:12.5px;line-height:1.9;margin-top:7px">
+      <div>✅ <b>12</b> cuadran con una nota de venta · se enlazan solas</div>
+      <div>🔎 <b>1</b> no calza con ninguna venta · revisar a mano</div>
+      <div>⚠️ <b>1</b> nota de venta sin factura emitida en el SII</div>
+    </div></div>
+  <div class="card2" style="margin-top:10px;padding:13px 15px">
+    <h3 style="font-size:12.5px">registro_compras_agosto.csv · 9 documentos</h3>
+    <div style="font-size:12.5px;line-height:1.9;margin-top:7px">
+      <div>✅ <b>7</b> cuadran con una orden de compra</div>
+      <div>➕ <b>2</b> facturas de proveedor nuevas · se crean en cuentas por pagar</div>
+    </div></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('Registros importados · cobranza y cuentas por pagar actualizadas')">Importar y cuadrar</button></div>
+</div></div>
+
+<div class="overlay" id="mMove"><div class="modal">
+  <h2>Movimiento de stock</h2>
+  <div class="field"><label>Tipo</label><select><option>Traslado entre bodegas</option>
+    <option>Ajuste por inventario físico</option><option>Merma o baja</option></select></div>
+  <div class="grid2" style="margin-top:11px">
+    <div class="field"><label>Desde</label><select><option>Santiago</option><option>Antofagasta</option></select></div>
+    <div class="field"><label>Hacia</label><select><option>Antofagasta</option><option>Santiago</option></select></div></div>
+  <div class="grid2" style="margin-top:11px">
+    <div class="field"><label>Producto</label><select><option>BC-3208 · Bomba centrífuga 3x2-8</option>
+      <option>VM-6W · Válvula mariposa 6"</option></select></div>
+    <div class="field"><label>Cantidad</label><input value="2"></div></div>
+  <div class="field" style="margin-top:11px"><label>Motivo</label><input placeholder="Ej.: reposición para faena norte"></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('Movimiento registrado · queda en el kardex del producto')">Registrar</button></div>
+</div></div>
+
+<div class="overlay" id="mKardex"><div class="modal wide">
+  <h2 id="kdTitle">Kardex</h2>
+  <div class="hint" style="color:var(--muted);font-size:12px;margin-bottom:12px">Todos los movimientos del producto, con su origen.</div>
+  <div class="tablescroll"><table class="list" style="min-width:560px"><thead><tr>
+    <th>Fecha</th><th>Movimiento</th><th>Documento</th><th>Bodega</th><th>Cant.</th><th>Saldo</th></tr></thead>
+    <tbody id="kdBody"></tbody></table></div>
+  <div class="foot"><button class="btn" onclick="closeAll()">Cerrar</button></div>
+</div></div>
+
+<div class="overlay" id="mImport"><div class="modal">
+  <h2>Importar productos desde Excel</h2>
+  <div class="attach" style="justify-content:center;padding:24px;border-style:dashed">📄 Arrastre aquí su archivo .xlsx o .csv</div>
+  <div class="card2" style="margin-top:14px;padding:13px 15px"><h3 style="font-size:12.5px">catalogo_agosto.xlsx · 128 filas</h3>
+    <div style="font-size:12.5px;line-height:1.9;margin-top:8px">
+      <div>✅ <b>94</b> productos nuevos se crearán</div>
+      <div>🔄 <b>31</b> existentes se actualizarán</div>
+      <div>⚠️ <b>3</b> filas con código repetido se omitirán</div></div></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('125 productos importados')">Importar 125 productos</button></div>
+</div></div>
+
+<div class="overlay" id="mReprice"><div class="modal">
+  <h2>Reajustar precios</h2>
+  <div class="field"><label>Aplicar a</label><select><option>Todo el catálogo (128 productos)</option>
+    <option>Categoría: Bombas (34)</option><option>Categoría: Válvulas (41)</option></select></div>
+  <div class="grid2" style="margin-top:11px">
+    <div class="field"><label>Variación (%)</label><input id="rpPct" value="8"></div>
+    <div class="field"><label>Redondear a</label><select><option>$100</option><option>$1.000</option></select></div></div>
+  <div class="fx" style="margin-top:13px"><span>Ejemplo · Bomba centrífuga 3x2-8</span>
+    <span class="totbox"><span class="t1" id="rpEx">$2.041.200</span><span class="t2">antes $1.890.000</span></span></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" onclick="closeAll();toast('Precios reajustados')">Aplicar</button></div>
+</div></div>
+
+
+<div class="overlay" id="mGenOC"><div class="modal wide">
+  <h2>Generar órdenes de compra</h2>
+  <div class="hint" style="color:var(--muted);font-size:12px;margin-bottom:13px">
+    Los productos seleccionados se agrupan por proveedor: una orden por cada uno, con su plazo de entrega.</div>
+  <div id="genList"></div>
+  <div class="fx" style="margin-top:6px"><span>Total de la compra</span>
+    <span class="totbox"><span class="t1" id="genTot">$0</span>
+      <span class="t2" id="genSub">0 órdenes · 0 productos</span></span></div>
+  <div class="field" style="margin-top:12px"><label>Al generar</label>
+    <div class="attach"><input type="checkbox" checked> <span>Enviar la orden por correo al proveedor</span></div>
+    <div class="attach"><input type="checkbox" checked> <span>Marcar las unidades como “en tránsito”</span></div></div>
+  <div class="foot"><button class="btn ghost" onclick="closeAll()">Cancelar</button>
+    <button class="btn" id="btnGenOK">Generar</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<div class="overlay" id="mMes"><div class="modal">
+  <h2 id="mMesTit">Detalle del mes</h2>
+  <div id="mMesBody"></div>
+  <div class="foot"><button class="btn" type="button" onclick="closeAll()">Cerrar</button></div>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.45.1/apexcharts.min.js"></script>
+<script>
+/* ============ PERFILES ============ */
+var ROLES={
+  admin:{t:'Administrador',d:'Acceso total: márgenes, facturación, cobranza, tesorería y administración.'},
+  vend :{t:'Vendedor',     d:'Cotiza, cierra ventas y consulta stock. No ve costos, márgenes ni dinero.'},
+  bod  :{t:'Bodega',       d:'Inventario, recepciones y despachos. No ve precios de venta ni cobranza.'},
+  cont :{t:'Contabilidad', d:'Facturación, cobranza, tesorería y márgenes. No modifica el catálogo.'},
+  lect :{t:'Solo lectura', d:'Consulta general. No puede crear ni modificar nada.'}
+};
+var RKEYS=['admin','vend','bod','cont','lect'];
+var PERMS=[
+ {k:'ver_cotiz', t:'Ver cotizaciones y ventas',      admin:1,vend:1,bod:1,cont:1,lect:1},
+ {k:'editar_cotiz',t:'Crear y editar cotizaciones',  admin:1,vend:1,bod:0,cont:0,lect:0},
+ {k:'ver_margen',t:'Ver costos y márgenes',          admin:1,vend:0,bod:0,cont:1,lect:0},
+ {k:'facturar', t:'Emitir documentos tributarios',   admin:1,vend:0,bod:0,cont:1,lect:0},
+ {k:'cobranza', t:'Cobranza y registro de pagos',    admin:1,vend:0,bod:0,cont:1,lect:0},
+ {k:'tesoreria',t:'Tesorería y cuentas por pagar',   admin:1,vend:0,bod:0,cont:1,lect:0},
+ {k:'compras',  t:'Órdenes de compra y proveedores', admin:1,vend:0,bod:1,cont:0,lect:0},
+ {k:'inventario',t:'Mover stock y despachar',        admin:1,vend:0,bod:1,cont:0,lect:0},
+ {k:'editar_prod',t:'Editar catálogo y precios',     admin:1,vend:0,bod:0,cont:0,lect:0},
+ {k:'usuarios', t:'Administrar usuarios',            admin:1,vend:0,bod:0,cont:0,lect:0},
+ {k:'config',   t:'Configuración y respaldos',       admin:1,vend:0,bod:0,cont:0,lect:0}
+];
+function can(k){ var p=PERMS.find(function(x){ return x.k===k; }); return !!(p&&p[ROLE]); }
+var USERS=[
+ {u:'diego',   p:'admin123', n:'Diego Chacón', r:'admin',last:'31-08-2026 08:12'},
+ {u:'ventas',  p:'ventas123',n:'Carla Ríos',   r:'vend', last:'30-08-2026 17:40'},
+ {u:'bodega',  p:'bodega123',n:'Luis Farías',  r:'bod',  last:'31-08-2026 07:55'},
+ {u:'conta',   p:'conta123', n:'Paula Soto',   r:'cont', last:'30-08-2026 19:02'},
+ {u:'gerencia',p:'ver123',   n:'Rodrigo Peña', r:'lect', last:'28-08-2026 10:05'}
+];
+var ROLE='admin', USER=USERS[0];
+
+/* ============ DATOS ============ */
+var QUOTES=[
+ {n:'COT-2026-0012',v:2,cli:'Minera Escondida Ltda. (BHP)',f:'28-08-2026',cur:'CLP',tot:7842338,costo:5240000,st:'enviada'},
+ {n:'COT-2026-0011',v:1,cli:'SQM Salar S.A.',f:'26-08-2026',cur:'USD',tot:14250,costo:9800,st:'enviada'},
+ {n:'COT-2026-0010',v:1,cli:'Salmones Camanchaca S.A.',f:'22-08-2026',cur:'CLP',tot:3120900,costo:1990000,st:'aceptada'},
+ {n:'COT-2026-0009',v:3,cli:'Aguas Antofagasta S.A.',f:'20-08-2026',cur:'CLP',tot:1845000,costo:1520000,st:'enviada'},
+ {n:'COT-2026-0007',v:1,cli:'Minera Escondida Ltda. (BHP)',f:'14-08-2026',cur:'CLP',tot:12480000,costo:8100000,st:'aceptada'},
+ {n:'COT-2026-0006',v:1,cli:'Minera Centinela SpA',f:'11-08-2026',cur:'CLP',tot:940500,costo:790000,st:'borrador'}
+];
+var SALES=[
+ {n:'NV-2026-0031',cli:'Minera Escondida Ltda. (BHP)',org:'COT-2026-0007',f:'16-08-2026',tot:12480000,costo:8100000,stock:'ok',st:'facturada'},
+ {n:'NV-2026-0030',cli:'Salmones Camanchaca S.A.',org:'COT-2026-0010',f:'23-08-2026',tot:3120900,costo:1990000,stock:'falta',st:'esperando'},
+ {n:'NV-2026-0029',cli:'SQM Salar S.A.',org:'COT-2026-0004',f:'09-08-2026',tot:5310200,costo:3480000,stock:'ok',st:'despachada'}
+];
+var INVOICES=[
+ {d:'Factura N° 1247',cli:'Minera Escondida Ltda. (BHP)',org:'NV-2026-0031',f:'16-08-2026',neto:10487395,tot:12480000,reg:'sii'},
+ {d:'Factura N° 1246',cli:'SQM Salar S.A.',org:'NV-2026-0029',f:'09-08-2026',neto:4462353,tot:5310200,reg:'sii'},
+ {d:'Factura N° 1245',cli:'Aguas Antofagasta S.A.',org:'NV-2026-0028',f:'05-08-2026',neto:1550420,tot:1845000,reg:'manual'},
+ {d:'Nota de crédito N° 88',cli:'Multiexport Foods S.A.',org:'F-1240',f:'04-08-2026',neto:-420168,tot:-500000,reg:'sii'},
+ {d:'— sin emitir —',cli:'Salmones Camanchaca S.A.',org:'NV-2026-0030',f:'—',neto:2622605,tot:3120900,reg:'falta'}
+];
+var RECV=[
+ {d:'F-1247',cli:'Minera Escondida Ltda. (BHP)',em:'16-08-2026',ven:'15-09-2026',mto:12480000,sal:12480000,dias:-15},
+ {d:'F-1246',cli:'SQM Salar S.A.',em:'09-08-2026',ven:'08-09-2026',mto:5310200,sal:2310200,dias:-8},
+ {d:'F-1245',cli:'Aguas Antofagasta S.A.',em:'05-08-2026',ven:'04-09-2026',mto:1845000,sal:1845000,dias:-4},
+ {d:'F-1238',cli:'Minera Centinela SpA',em:'02-07-2026',ven:'01-08-2026',mto:2940000,sal:2940000,dias:30},
+ {d:'F-1231',cli:'Multiexport Foods S.A.',em:'12-06-2026',ven:'12-07-2026',mto:4180000,sal:4180000,dias:50},
+ {d:'F-1225',cli:'Salmones Camanchaca S.A.',em:'20-05-2026',ven:'19-06-2026',mto:1900000,sal:1900000,dias:73}
+];
+var AGING=[{t:'Por vencer',v:14.2,late:false},{t:'1 a 30 d',v:6.8,late:true},
+           {t:'31 a 60 d',v:3.1,late:true},{t:'+60 d',v:1.9,late:true}];
+var PURCH=[
+ {n:'OC-2026-0088',pv:'Grundfos Chile Ltda.',f:'25-08-2026',tot:7470000,rec:'0 de 2 ítems',st:'enviada',para:'NV-2026-0030'},
+ {n:'OC-2026-0087',pv:'Flowserve Chile SpA',f:'21-08-2026',tot:1960000,rec:'parcial · 14 de 20',st:'parcial',para:'reposición'},
+ {n:'OC-2026-0086',pv:'Parker Hannifin Chile S.A.',f:'12-08-2026',tot:4100000,rec:'completa',st:'recibida',para:'reposición'}
+];
+var SUPP=[
+ {n:'Grundfos Chile Ltda.',r:'78.111.222-3',c:'ventas@grundfos.cl',pl:'30 días',año:48200000,pagar:7470000},
+ {n:'Flowserve Chile SpA',r:'76.333.444-5',c:'ventas@flowserve.cl',pl:'Contado',año:19600000,pagar:0},
+ {n:'Parker Hannifin Chile S.A.',r:'96.555.666-7',c:'ventas@parker.cl',pl:'60 días',año:31400000,pagar:2390000}
+];
+var INV=[
+ {c:'BC-3208',n:'Bomba centrífuga horizontal 3x2-8',stg:4,ant:2,min:3},
+ {c:'VM-6W',  n:'Válvula mariposa wafer 6"',        stg:18,ant:6,min:10},
+ {c:'MH-R2-12',n:'Manguera hidráulica SAE 100 R2 1/2"',stg:2,ant:0,min:5},
+ {c:'FL-10M', n:'Filtro de línea 10 micrones',      stg:0,ant:0,min:4},
+ {c:'SE-3208',n:'Sello mecánico para BC-3208',      stg:11,ant:4,min:6}
+];
+var DISP=[
+ {g:'GD-2026-0044',cli:'Minera Escondida Ltda. (BHP)',org:'NV-2026-0031',f:'16-08-2026',dst:'Faena Escondida, Antofagasta',tr:'Transportes Sotraser',st:'entregada'},
+ {g:'GD-2026-0043',cli:'SQM Salar S.A.',org:'NV-2026-0029',f:'10-08-2026',dst:'Salar de Atacama, Antofagasta',tr:'Retiro en bodega',st:'entregada'},
+ {g:'GD-2026-0042',cli:'Aguas Antofagasta S.A.',org:'NV-2026-0028',f:'06-08-2026',dst:'Planta Coloso, Antofagasta',tr:'Transportes Sotraser',st:'en ruta'}
+];
+var MOV=[
+ {f:'31-08-2026',t:'Pago recibido · F-1246',m:3000000,in:true},
+ {f:'30-08-2026',t:'Pago a proveedor · Parker Hannifin Chile',m:1710000,in:false},
+ {f:'28-08-2026',t:'Pago recibido · F-1244',m:3120900,in:true},
+ {f:'27-08-2026',t:'Gastos de despacho',m:184000,in:false}
+];
+var APAY=[
+ {pv:'Grundfos Chile Ltda.',d:'FC-45120',ven:'24-09-2026',m:7470000},
+ {pv:'Parker Hannifin Chile S.A.',d:'FC-9981',ven:'11-10-2026',m:2390000}
+];
+var PRODS=[
+ {c:'BC-3208',n:'Bomba centrífuga horizontal 3x2-8',cat:'Bombas',costo:1245000,precio:1890000},
+ {c:'VM-6W',n:'Válvula mariposa wafer 6"',cat:'Válvulas',costo:98000,precio:142500},
+ {c:'MH-R2-12',n:'Manguera hidráulica SAE 100 R2 1/2"',cat:'Mangueras',costo:205000,precio:268000},
+ {c:'FL-10M',n:'Filtro de línea 10 micrones',cat:'Filtración',costo:74000,precio:96400},
+ {c:'SE-3208',n:'Sello mecánico para BC-3208',cat:'Repuestos',costo:62000,precio:98000}
+];
+var CLIENTS=[
+ {n:'Minera Escondida Ltda. (BHP)',r:'76.543.210-K',c:'Depto. de Abastecimiento',cred:20000000,deuda:12480000},
+ {n:'SQM Salar S.A.',r:'96.111.222-3',c:'Oficina Técnica',cred:8000000,deuda:2310200},
+ {n:'Salmones Camanchaca S.A.',r:'77.888.999-1',c:'Mantención',cred:5000000,deuda:1900000},
+ {n:'Multiexport Foods S.A.',r:'96.777.888-9',c:'Compras',cred:3000000,deuda:4180000}
+];
+var KARDEX=[
+ {f:'16-08-2026',t:'Salida por despacho',d:'GD-2026-0044',b:'Santiago',q:-2,s:4},
+ {f:'12-08-2026',t:'Ingreso por recepción',d:'OC-2026-0086',b:'Santiago',q:+3,s:6},
+ {f:'05-08-2026',t:'Traslado a Antofagasta',d:'MOV-221',b:'Santiago',q:-1,s:3},
+ {f:'01-08-2026',t:'Ajuste por inventario físico',d:'AJ-18',b:'Santiago',q:-1,s:4}
+];
+var MESES=[{m:'Mar',v:18.4},{m:'Abr',v:22.1},{m:'May',v:19.8},{m:'Jun',v:26.5},{m:'Jul',v:29.2},{m:'Ago',v:33.7}];
+var MESDET=[
+ {m:'Marzo 2026',  fact:18400000, comp:11200000, cob:15100000, cotE:14, cotG:8,  mg:28.5, docs:22},
+ {m:'Abril 2026',  fact:22100000, comp:13600000, cob:19400000, cotE:17, cotG:10, mg:29.8, docs:26},
+ {m:'Mayo 2026',   fact:19800000, comp:12100000, cob:18000000, cotE:15, cotG:9,  mg:30.1, docs:24},
+ {m:'Junio 2026',  fact:26500000, comp:16000000, cob:22300000, cotE:21, cotG:13, mg:31.0, docs:29},
+ {m:'Julio 2026',  fact:29200000, comp:17400000, cob:25600000, cotE:24, cotG:15, mg:31.2, docs:31},
+ {m:'Agosto 2026', fact:33700000, comp:19800000, cob:26000000, cotE:27, cotG:18, mg:31.4, docs:34}
+];
+var CLIRANK=[{t:'Minera Escondida Ltda. (BHP)',v:12480000},{t:'SQM Salar S.A.',v:5310200},
+             {t:'Salmones Camanchaca S.A.',v:3120900},{t:'Aguas Antofagasta S.A.',v:1845000}];
+var BACKUPS=[{f:'31-08-2026 20:00',s:'8,2 MB'},{f:'30-08-2026 20:00',s:'8,1 MB'},{f:'29-08-2026 20:00',s:'8,1 MB'}];
+var MODULOS=[
+ {t:'Cotizaciones, fichas y documento completo',on:true,g:'Actual'},
+ {t:'Panel, seguimiento, dólar y correo',on:true,g:'v2'},
+ {t:'Márgenes, notas de venta y plantillas',on:true,g:'v2'},
+ {t:'Usuarios, permisos y respaldos',on:true,g:'v2'},
+ {t:'Inventario y bodegas',on:true,g:'ERP'},
+ {t:'Compras y proveedores',on:true,g:'ERP'},
+ {t:'Guías de despacho',on:true,g:'ERP'},
+ {t:'Puente con el portal del SII',on:true,g:'ERP'},
+ {t:'Cuentas por cobrar y cobranza',on:true,g:'ERP'},
+ {t:'Tesorería y cuentas por pagar',on:true,g:'ERP'},
+ {t:'Informes y exportación',on:true,g:'ERP'}
+];
+var REPORTS=[
+ {m:'Ventas',t:'Ventas por período',d:'Por cliente, vendedor, producto o categoría, con margen.'},
+ {m:'Ventas',t:'Conversión de cotizaciones',d:'Cuántas se ganan, cuántas se pierden y por qué.'},
+ {m:'Cobranza',t:'Antigüedad de la deuda',d:'Cartera por tramos de vencimiento y por cliente.'},
+ {m:'Inventario',t:'Kardex valorizado',d:'Todos los movimientos de un producto, con saldo y costo.'},
+ {m:'Inventario',t:'Rotación y quiebres',d:'Qué se mueve, qué está detenido y qué se quebró.'},
+ {m:'Compras',t:'Compras por proveedor',d:'Volumen, cumplimiento de plazos y saldo por pagar.'},
+ {m:'Tributario',t:'Libro de ventas y de compras',d:'Formato para el contador, exportable.'},
+ {m:'Gerencia',t:'Estado de resultados simplificado',d:'Ventas, costo de venta, margen y gastos del período.'}
+];
+var NEWS=[
+ {m:'Ya existe',t:'Cotizaciones y fichas',d:'Cotización, ficha técnica y documento completo de 10 páginas. Es la base sobre la que se construye todo.'},
+ {m:'v2',t:'Gestión comercial',d:'Panel, seguimiento y estados, dólar, envío por correo, versiones, márgenes, notas de venta y plantillas.'},
+ {m:'v2',t:'Administración',d:'Usuarios con clave y perfiles, importación desde Excel, reajuste de precios y respaldo automático.'},
+ {m:'ERP',t:'Inventario',d:'Stock por bodega con mínimos, traslados, ajustes y kardex por producto. La venta descuenta stock sola.'},
+ {m:'ERP',t:'Compras',d:'Órdenes de compra a proveedores, recepción total o parcial que ingresa al stock, y saldo por pagar.'},
+ {m:'ERP',t:'Despacho',d:'Guía de despacho generada desde la nota de venta, con destino, transportista y estado de entrega.'},
+ {m:'ERP',t:'Puente con el SII',d:'La factura se emite en el portal gratuito del SII; el sistema registra el folio e importa los registros de ventas y compras para cuadrar solo.'},
+ {m:'ERP',t:'Cobranza',d:'Cartera con antigüedad de la deuda, registro de pagos y línea de crédito por cliente.'},
+ {m:'ERP',t:'Tesorería',d:'Saldo en banco, movimientos, cuentas por pagar y proyección a 30 días.'},
+ {m:'ERP',t:'Informes',d:'Ocho informes exportables, del kardex valorizado al estado de resultados simplificado.'}
+];
+
+/* ============ UTILIDADES ============ */
+function clp(n){ return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('es-CL'); }
+function usd(n){ return 'US$'+Number(n).toLocaleString('es-CL',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function money(n,c){ return c==='USD'?usd(n):clp(n); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function pct(n){ return n.toFixed(1).replace('.',',')+'%'; }
+function mgClass(m){ return m>=25?'good':(m>=18?'mid':'bad'); }
+var FLAG_CL='<svg class="flag" viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><rect y="10" width="30" height="10" fill="#D52B1E"/><rect width="10" height="10" fill="#0039A6"/><path d="M5 2.3 5.76 4.45 8.04 4.51 6.24 5.9 6.88 8.09 5 6.8 3.12 8.09 3.76 5.9 1.96 4.51 4.24 4.45Z" fill="#fff"/></svg>';
+var FLAG_US='<svg class="flag" viewBox="0 0 30 16"><rect width="30" height="16" fill="#fff"/><g fill="#B22234"><rect width="30" height="1.23"/><rect y="2.46" width="30" height="1.23"/><rect y="4.92" width="30" height="1.23"/><rect y="7.38" width="30" height="1.23"/><rect y="9.84" width="30" height="1.23"/><rect y="12.3" width="30" height="1.23"/><rect y="14.76" width="30" height="1.23"/></g><rect width="12" height="8.6" fill="#3C3B6E"/></svg>';
+function toast(m){ var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('show'); },2800); }
+function closeAll(){ document.querySelectorAll('.overlay').forEach(function(o){ o.classList.remove('open'); }); }
+function open_(id){ document.getElementById(id).classList.add('open'); }
+function denied(){ toast('Su perfil no permite esta acción'); }
+function act(perm,fn,label){ return can(perm) ? fn : 'denied()'; }
+
+/* ============ NAVEGACIÓN ============ */
+var NAV=[
+ {g:'Resumen'},
+ {v:'panel', i:'📊', t:'Panel'},
+ {v:'flow',  i:'🔗', t:'El circuito', nuevo:true},
+ {g:'Ventas'},
+ {v:'quotes',i:'🧾', t:'Cotizaciones'},
+ {v:'sales', i:'💼', t:'Notas de venta'},
+ {v:'dispatch',i:'🚚',t:'Despachos', nuevo:true, perm:'ver_cotiz'},
+ {v:'invoices',i:'📄',t:'Facturación · SII', nuevo:true, perm:'facturar'},
+ {v:'receivables',i:'💰',t:'Cobranza', nuevo:true, perm:'cobranza'},
+ {g:'Abastecimiento'},
+ {v:'purchases',i:'📥',t:'Compras', nuevo:true, perm:'compras'},
+ {v:'restock',i:'🔁', t:'Reposición', nuevo:true, perm:'compras'},
+ {v:'suppliers',i:'🏭',t:'Proveedores', nuevo:true, perm:'compras'},
+ {v:'inventory',i:'📦',t:'Inventario', nuevo:true},
+ {g:'Catálogo'},
+ {v:'products',i:'🏷️',t:'Productos'},
+ {v:'fichas', i:'📋', t:'Fichas técnicas'},
+ {v:'clients',i:'👥', t:'Clientes'},
+ {g:'Administración'},
+ {v:'treasury',i:'🏦',t:'Tesorería', nuevo:true, perm:'tesoreria'},
+ {v:'reports',i:'📈', t:'Informes', nuevo:true},
+ {v:'users', i:'🔐', t:'Usuarios', perm:'usuarios'},
+ {v:'backup',i:'💾', t:'Respaldos', perm:'config'},
+ {v:'settings',i:'⚙️',t:'Configuración', perm:'config'},
+ {v:'news',  i:'✨', t:'Alcance del proyecto'}
+];
+var CURV='panel';
+function pintarNav(){
+  document.getElementById('nav').innerHTML=NAV.map(function(x){
+    if(x.g) return '<div class="navgroup">'+x.g+'</div>';
+    var bloq=x.perm&&!can(x.perm);
+    return '<button data-view="'+x.v+'"'+(bloq?' disabled title="Su perfil no tiene acceso"':'')
+      +(x.v===CURV?' class="active"':'')+'><span class="ico">'+x.i+'</span> '+x.t
+      +(x.nuevo?'<span class="tag-new">ERP</span>':'')+'</button>'; }).join('');
+  document.querySelectorAll('.nav button[data-view]').forEach(function(b){
+    b.addEventListener('click',function(){ if(!b.disabled) go(b.dataset.view); }); });
+}
+function go(v){
+  var it=NAV.find(function(x){ return x.v===v; });
+  if(it&&it.perm&&!can(it.perm)){ denied(); return; }
+  CURV=v;
+  document.querySelectorAll('.view').forEach(function(s){ s.classList.remove('active'); });
+  var el=document.getElementById('view-'+v); if(el) el.classList.add('active');
+  document.querySelectorAll('.nav button[data-view]').forEach(function(b){
+    b.classList.toggle('active', b.dataset.view===v); });
+  window.scrollTo(0,0);
+  if(v==='panel' && window.ApexCharts){ requestAnimationFrame(renderCharts); }
+}
+
+/* ============ PINTADO ============ */
+/* --- Graficos modernos (ApexCharts) + drill-down --- */
+function cvar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||''; }
+function isDark(){ var t=document.documentElement.getAttribute('data-theme'); if(t) return t==='dark'; return window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches; }
+var CH={};
+function renderCharts(){
+  if(!window.ApexCharts) return;
+  ['mes','age'].forEach(function(k){ if(CH[k]){ try{CH[k].destroy();}catch(e){} CH[k]=null; } });
+  var A=cvar('--accent')||'#1478A6', A2=cvar('--accent2')||'#17A6A0', MU=cvar('--muted')||'#667', FG=cvar('--txt')||'#171b2b', LN=cvar('--line')||'#dde2ee', PN=cvar('--panel')||'#fff', RD=cvar('--red')||'#c62a40', dk=isDark();
+  var em=document.getElementById('chartMes');
+  if(em){ em.innerHTML='';
+    CH.mes=new ApexCharts(em,{
+      chart:{type:'bar',height:260,fontFamily:'inherit',toolbar:{show:false},animations:{speed:650},
+        events:{dataPointSelection:function(ev,c,o){ openMes(o.dataPointIndex); }}},
+      series:[{name:'Facturación',data:MESES.map(function(x){return x.v;})}],
+      colors:[A],
+      plotOptions:{bar:{borderRadius:7,columnWidth:'55%',dataLabels:{position:'top'}}},
+      fill:{type:'gradient',gradient:{shade:dk?'dark':'light',type:'vertical',shadeIntensity:.2,gradientToColors:[A2],inverseColors:false,opacityFrom:1,opacityTo:.88,stops:[0,100]}},
+      dataLabels:{enabled:true,offsetY:-20,formatter:function(v){return '$'+String(v).replace('.',',')+'M';},style:{fontSize:'11px',fontWeight:700,colors:[FG]},background:{enabled:false}},
+      states:{active:{filter:{type:'none'}}},
+      grid:{borderColor:LN,strokeDashArray:4,padding:{top:16}},
+      xaxis:{categories:MESES.map(function(x){return x.m;}),axisBorder:{show:false},axisTicks:{show:false},labels:{style:{colors:MU,fontSize:'12px'}}},
+      yaxis:{labels:{formatter:function(v){return '$'+Math.round(v)+'M';},style:{colors:MU,fontSize:'11px'}}},
+      tooltip:{theme:dk?'dark':'light',y:{formatter:function(v){return '$'+String(v).replace('.',',')+' millones · clic para el detalle';}}}
+    }); CH.mes.render(); }
+  var ea=document.getElementById('chartAge');
+  if(ea){ ea.innerHTML='';
+    CH.age=new ApexCharts(ea,{
+      chart:{type:'donut',height:270,fontFamily:'inherit'},
+      series:AGING.map(function(x){return x.v;}),
+      labels:AGING.map(function(x){return x.t;}),
+      colors:[A,'#e0a53c','#e07a3a',RD],
+      stroke:{width:2,colors:[PN]},
+      legend:{position:'bottom',fontSize:'12px',labels:{colors:MU},markers:{width:9,height:9}},
+      dataLabels:{enabled:true,formatter:function(v){return Math.round(v)+'%';},style:{fontSize:'11px',fontWeight:700},dropShadow:{enabled:false}},
+      plotOptions:{pie:{donut:{size:'64%',labels:{show:true,
+        total:{show:true,label:'Cartera',fontSize:'12px',color:MU,formatter:function(){return '$26,0 M';}},
+        value:{fontSize:'19px',fontWeight:700,color:FG,formatter:function(v){return '$'+String(v).replace('.',',')+' M';}}}}}},
+      tooltip:{theme:dk?'dark':'light',y:{formatter:function(v){return '$'+String(v).replace('.',',')+' millones';}}}
+    }); CH.age.render(); }
+}
+function openMes(i){
+  var d=MESDET[i]; if(!d) return;
+  var rows=[['Facturación',clp(d.fact)],['Compras',clp(d.comp)],['Cobranza recibida',clp(d.cob)],
+    ['Cotizaciones',d.cotE+' emitidas · '+d.cotG+' ganadas'],['Margen bruto',String(d.mg).replace('.',',')+'%'],['Documentos emitidos',d.docs+' facturas']];
+  document.getElementById('mMesTit').textContent='Detalle de '+d.m;
+  document.getElementById('mMesBody').innerHTML='<div class="mesgrid">'+rows.map(function(r){
+    return '<div class="mescell"><div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div></div>'; }).join('')+'</div>';
+  open_('mMes');
+}
+function pintarTiles(){
+  var t=[{l:'Facturado en agosto',v:'$33.712.400',s:'<span class="up">▲ 15%</span> vs. julio',g:'invoices'},
+         {l:'Por cobrar',v:'$26.000.000',s:'$11,8 M vencidos',c:'bad',g:'receivables'},
+         {l:'Por pagar',v:'$9.860.000',s:'próximos 30 días',c:'warn',g:'treasury'},
+         {l:'Stock bajo mínimo',v:'3',s:'2 bajos · 1 sin stock',c:'warn',g:'inventory'}];
+  if(can('ver_margen')) t.push({l:'Margen del mes',v:'31,4%',s:'mínimo configurado: 18%',cls:'colMargen',g:'reports'});
+  document.getElementById('tiles').innerHTML=t.map(function(x){
+    return '<div class="tile clickable '+(x.c||'')+' '+(x.cls||'')+'" data-go="'+(x.g||'panel')+'"><div class="lbl">'+x.l+'</div>'
+      +'<div class="val">'+x.v+'</div><div class="sub">'+x.s+'</div></div>'; }).join('');
+  document.querySelectorAll('#tiles .tile[data-go]').forEach(function(el){
+    el.addEventListener('click',function(){ go(el.dataset.go); }); });
+}
+function barChart(svgId,tipId,data,maxV,fmt,cls){
+  var W=640,H=(svgId==='chartAge'?195:205),padL=44,padR=8,padT=12,padB=26;
+  var iw=W-padL-padR, ih=H-padT-padB, bw=iw/data.length, bar=Math.min(58,bw*0.55), s=[];
+  var steps=5, stepv=maxV/steps;
+  for(var i=0;i<=steps;i++){ var v=i*stepv, y=padT+ih-(v/maxV)*ih;
+    s.push('<line class="gl" x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'"/>');
+    s.push('<text x="'+(padL-8)+'" y="'+(y+3.5)+'" text-anchor="end">'+String(Math.round(v*10)/10).replace('.',',')+'</text>'); }
+  data.forEach(function(d,i){
+    var h=(d.v/maxV)*ih, x=padL+i*bw+(bw-bar)/2, y=padT+ih-h, last=i===data.length-1;
+    var c=cls==='age' ? (d.late?'bar late':'bar') : ('bar'+(last?'':' dim'));
+    s.push('<rect class="'+c+'" x="'+x+'" y="'+y+'" width="'+bar+'" height="'+h+'" rx="4" data-t="'
+      +(d.m||d.t)+'" data-v="'+d.v+'"><title>'+(d.m||d.t)+': '+fmt(d.v)+'</title></rect>');
+    s.push('<text x="'+(x+bar/2)+'" y="'+(H-8)+'" text-anchor="middle">'+(d.m||d.t)+'</text>');
+    if(cls==='age'||last) s.push('<text x="'+(x+bar/2)+'" y="'+(y-6)+'" text-anchor="middle" style="fill:'
+      +(cls==='age'&&d.late?'var(--red)':'var(--accent)')+';font-weight:700">'+String(d.v).replace('.',',')+'</text>');
+  });
+  var svg=document.getElementById(svgId); svg.innerHTML=s.join('');
+  var tip=document.getElementById(tipId), wrap=svg.parentNode;
+  svg.querySelectorAll('rect').forEach(function(r){
+    r.addEventListener('mousemove',function(e){ var b=wrap.getBoundingClientRect();
+      tip.innerHTML=r.dataset.t+'<b>'+fmt(parseFloat(r.dataset.v))+'</b>';
+      tip.style.left=(e.clientX-b.left)+'px'; tip.style.top=(e.clientY-b.top)+'px'; tip.style.opacity=1; });
+    r.addEventListener('mouseleave',function(){ tip.style.opacity=0; }); });
+}
+function pintarPanel(){
+  var mx=CLIRANK[0].v;
+  document.getElementById('rankCli').innerHTML=CLIRANK.map(function(c){
+    return '<div><div class="top"><span>'+esc(c.t)+'</span><b>'+clp(c.v)+'</b></div>'
+      +'<div class="track"><div class="fill" style="width:'+Math.round(c.v/mx*100)+'%"></div></div></div>'; }).join('');
+  var al=[
+   {u:1,i:'⚠️',t:'Multiexport Foods S.A.',s:'F-1231 · '+clp(4180000),w:'50 días vencida',g:'receivables'},
+   {u:1,i:'⚠️',t:'Filtro de línea 10 micrones',s:'sin stock · comprometido en NV-2026-0030',w:'quiebre',g:'inventory'},
+   {u:0,i:'🕒',t:'OC-2026-0088',s:'Grundfos Chile · '+clp(7470000),w:'sin recibir',g:'purchases'},
+   {u:1,i:'❌',t:'Factura 33 N° 1244',s:'rechazada por el SII',w:'corregir',g:'invoices'},
+   {u:0,i:'🕒',t:'Salmones Camanchaca S.A.',s:'F-1225 · '+clp(1900000),w:'73 días vencida',g:'receivables'}
+  ];
+  document.getElementById('alerts').innerHTML=al.map(function(a){
+    return '<div class="alert clickable'+(a.u?' urgent':'')+'" data-go="'+a.g+'"><span>'+a.i+'</span><span><b>'+esc(a.t)+'</b><br>'
+      +'<span style="color:var(--muted);font-size:11.5px">'+esc(a.s)+'</span></span>'
+      +'<span class="when">'+a.w+'</span></div>'; }).join('');
+  document.querySelectorAll('#alerts .alert[data-go]').forEach(function(a){
+    a.addEventListener('click',function(){ go(a.dataset.go); }); });
+}
+var filtro='todas';
+function pintarQuotes(){
+  var q=(document.getElementById('qSearch').value||'').toLowerCase();
+  document.getElementById('qBody').innerHTML=QUOTES.filter(function(r){
+    return (filtro==='todas'||r.st===filtro) && (!q||r.n.toLowerCase().indexOf(q)>=0||r.cli.toLowerCase().indexOf(q)>=0);
+  }).map(function(r){
+    var m=(r.tot-r.costo)/r.tot*100;
+    return '<tr><td><b>'+r.n+'</b>'+(r.v>1?'<span class="ver">v'+r.v+'</span>':'')+'</td><td>'+esc(r.cli)+'</td>'
+      +'<td>'+r.f+'</td><td><span class="cur">'+(r.cur==='USD'?FLAG_US:FLAG_CL)+' '+r.cur+'</span></td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+money(r.tot,r.cur)+'</b></td>'
+      +col(can('ver_margen'),'colMargen','<span class="mg '+mgClass(m)+'">'+pct(m)+'</span>')
+      +'<td><span class="badge '+r.st+'">'+r.st+'</span></td>'
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="'
+      +(can('editar_cotiz')?'toast(\'Editor de la cotización\')':'denied()')+'">'
+      +(can('editar_cotiz')?'Editar':'Ver')+'</button>'
+      +(r.st==='aceptada'?'<button class="btn sm ghost" onclick="'
+        +(can('editar_cotiz')?'toast(\'Nota de venta creada desde \'+\''+r.n+'\'\')':'denied()')
+        +'">→ Nota de venta</button>':'')+'</div></td></tr>'; }).join('');
+}
+function col(show,cls,html){ return '<td class="'+cls+'"'+(show?'':' style="display:none"')+'>'+html+'</td>'; }
+function pintarSales(){
+  document.getElementById('sBody').innerHTML=SALES.map(function(s){
+    var m=(s.tot-s.costo)/s.tot*100;
+    var stk=s.stock==='ok'?'<span class="badge stockok">completo</span>':'<span class="badge stockcero">falta stock</span>';
+    return '<tr><td><b>'+s.n+'</b></td><td>'+esc(s.cli)+'</td>'
+      +'<td><span style="color:var(--accent-d)">'+s.org+'</span></td><td>'+s.f+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+clp(s.tot)+'</b></td>'
+      +col(can('ver_margen'),'colMargen','<span class="mg '+mgClass(m)+'">'+pct(m)+'</span>')
+      +'<td>'+stk+'</td><td><span class="badge '+(s.st==='facturada'?'aceptada':(s.st==='esperando'?'borrador':'enviada'))+'">'+s.st+'</span></td>'
+      +'<td><div class="rowactions">'
+      +'<button class="btn sm ghost" onclick="'+(can('inventario')?'toast(\'Guía de despacho generada\')':'denied()')+'">Guía</button>'
+      +'<button class="btn sm ghost" onclick="'+(can('facturar')?'open_(\'mEmit\')':'denied()')+'">Facturar</button>'
+      +(s.stock==='falta'?'<button class="btn sm ghost" onclick="'+(can('compras')?'toast(\'Orden de compra sugerida al proveedor\')':'denied()')+'">Comprar</button>':'')
+      +'</div></td></tr>'; }).join('');
+}
+function pintarInvoices(){
+  var E={ sii:  {c:'sii',     t:'✓ cuadrada con el SII'},
+          manual:{c:'siipend',t:'● registrada a mano'},
+          falta:{c:'siierr',  t:'⚠ falta emitir en el SII'} };
+  document.getElementById('iBody').innerHTML=INVOICES.map(function(i){
+    var e=E[i.reg];
+    return '<tr><td><b>'+i.d+'</b></td><td>'+esc(i.cli)+'</td>'
+      +'<td><span style="color:var(--accent-d)">'+i.org+'</span></td><td>'+i.f+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+clp(i.neto)+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+clp(i.tot)+'</b></td>'
+      +'<td><span class="badge '+e.c+'">'+e.t+'</span></td>'
+      +'<td><div class="rowactions">'
+      +(i.reg==='falta'
+        ? '<button class="btn sm ghost" onclick="'+(can('facturar')?'open_(\'mEmit\')':'denied()')+'">Registrar folio</button>'
+        : '<button class="btn sm ghost" onclick="toast(\'Detalle del documento\')">Ver</button>')
+      +'</div></td></tr>'; }).join('');
+}
+function pintarRecv(){
+  document.getElementById('rBody').innerHTML=RECV.map(function(r){
+    var venc=r.dias>0;
+    var est=venc?'<span class="badge rechazada">vencida '+r.dias+' d</span>'
+                :'<span class="badge enviada">vence en '+(-r.dias)+' d</span>';
+    if(r.sal<r.mto) est+=' <span class="badge borrador">abono parcial</span>';
+    return '<tr><td><b>'+r.d+'</b></td><td>'+esc(r.cli)+'</td><td>'+r.em+'</td><td>'+r.ven+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+clp(r.mto)+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+clp(r.sal)+'</b></td><td>'+est+'</td>'
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="'
+      +(can('cobranza')?'openPay(\''+r.d+'\','+r.sal+')':'denied()')+'">Registrar pago</button>'
+      +'<button class="btn sm ghost" onclick="'+(can('cobranza')?'toast(\'Recordatorio enviado al cliente\')':'denied()')+'">Recordar</button>'
+      +'</div></td></tr>'; }).join('');
+}
+function pintarPurch(){
+  document.getElementById('cBody').innerHTML=PURCH.map(function(p){
+    var b=p.st==='recibida'?'aceptada':(p.st==='parcial'?'borrador':'enviada');
+    return '<tr><td><b>'+p.n+'</b></td><td>'+esc(p.pv)+'</td><td>'+p.f+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+clp(p.tot)+'</b></td><td>'+p.rec+'</td>'
+      +'<td><span class="badge '+b+'">'+p.st+'</span></td>'
+      +'<td><span style="color:var(--accent-d)">'+p.para+'</span></td>'
+      +'<td><div class="rowactions">'+(p.st!=='recibida'?'<button class="btn sm ghost" onclick="'
+      +(can('compras')?'openRecv(\''+p.n+'\')':'denied()')+'">Recepcionar</button>':'')
+      +'<button class="btn sm ghost" onclick="toast(\'PDF de la orden de compra\')">PDF</button></div></td></tr>'; }).join('');
+}
+function pintarSupp(){
+  document.getElementById('pvBody').innerHTML=SUPP.map(function(s){
+    return '<tr><td><b>'+esc(s.n)+'</b></td><td>'+s.r+'</td><td>'+esc(s.c)+'</td><td>'+s.pl+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+clp(s.año)+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+(s.pagar?'<b>'+clp(s.pagar)+'</b>':'—')+'</td></tr>'; }).join('');
+}
+function pintarInv(){
+  var q=(document.getElementById('invSearch').value||'').toLowerCase();
+  document.getElementById('invBody').innerHTML=INV.filter(function(p){
+    return !q||p.n.toLowerCase().indexOf(q)>=0||p.c.toLowerCase().indexOf(q)>=0;
+  }).map(function(p){
+    var tot=p.stg+p.ant;
+    var est = tot===0 ? '<span class="badge stockcero">sin stock</span>'
+            : (tot<p.min ? '<span class="badge stockbajo">bajo mínimo</span>'
+            : '<span class="badge stockok">normal</span>');
+    var w=Math.min(100,Math.round(tot/(p.min*2||1)*100));
+    var color = tot===0?'var(--red)':(tot<p.min?'var(--yellow)':'var(--green)');
+    return '<tr><td><b>'+p.c+'</b></td><td>'+esc(p.n)+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.stg+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.ant+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+tot+'</b>'
+      +'<div class="bar-mini"><i style="width:'+w+'%;background:'+color+'"></i></div></td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.min+'</td><td>'+est+'</td>'
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="openKardex(\''+p.c+'\',\''+esc(p.n)+'\')">Kardex</button>'
+      +(tot<p.min?'<button class="btn sm ghost" onclick="'+(can('compras')?'toast(\'Orden de compra sugerida\')':'denied()')+'">Reponer</button>':'')
+      +'</div></td></tr>'; }).join('');
+}
+function pintarDisp(){
+  document.getElementById('dBody').innerHTML=DISP.map(function(d){
+    return '<tr><td><b>'+d.g+'</b></td><td>'+esc(d.cli)+'</td>'
+      +'<td><span style="color:var(--accent-d)">'+d.org+'</span></td><td>'+d.f+'</td>'
+      +'<td>'+esc(d.dst)+'</td><td>'+esc(d.tr)+'</td>'
+      +'<td><span class="badge '+(d.st==='entregada'?'aceptada':'enviada')+'">'+d.st+'</span></td>'
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="toast(\'PDF de la guía\')">PDF</button></div></td></tr>'; }).join('');
+}
+function pintarTreasury(){
+  document.getElementById('mvList').innerHTML=MOV.map(function(m){
+    return '<div class="sent"><span class="'+(m.in?'ok':'')+'" style="'+(m.in?'':'color:var(--red);font-weight:700')+'">'
+      +(m.in?'↓':'↑')+'</span><span>'+esc(m.t)+'<br><span style="color:var(--muted);font-size:11px">'+m.f+'</span></span>'
+      +'<span style="margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;color:'
+      +(m.in?'var(--green)':'var(--red)')+'">'+(m.in?'+':'−')+clp(m.m).replace('$','$')+'</span></div>'; }).join('');
+  document.getElementById('apList').innerHTML=APAY.map(function(a){
+    return '<div class="sent"><span>🏭</span><span>'+esc(a.pv)+'<br>'
+      +'<span style="color:var(--muted);font-size:11px">'+a.d+' · vence '+a.ven+'</span></span>'
+      +'<span style="margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700">'+clp(a.m)+'</span>'
+      +'<button class="btn sm ghost" onclick="'+(can('tesoreria')?'toast(\'Pago programado\')':'denied()')+'">Pagar</button></div>'; }).join('');
+}
+function pintarProds(){
+  var q=(document.getElementById('pSearch').value||'').toLowerCase();
+  document.getElementById('pBody').innerHTML=PRODS.filter(function(p){
+    return !q||p.n.toLowerCase().indexOf(q)>=0||p.c.toLowerCase().indexOf(q)>=0;
+  }).map(function(p){
+    var m=(p.precio-p.costo)/p.precio*100;
+    return '<tr><td><b>'+p.c+'</b></td><td>'+esc(p.n)+'</td><td>'+p.cat+'</td>'
+      +col(can('ver_margen'),'colMargen',clp(p.costo))
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+clp(p.precio)+'</b></td>'
+      +col(can('ver_margen'),'colMargen','<span class="mg '+mgClass(m)+'">'+pct(m)+'</span>')
+      +'<td><div class="rowactions"><button class="btn sm ghost" onclick="'
+      +(can('editar_prod')?'toast(\'Editar producto\')':'denied()')+'">'+(can('editar_prod')?'Editar':'Ver')+'</button></div></td></tr>';
+  }).join('');
+}
+function pintarClients(){
+  document.getElementById('clBody').innerHTML=CLIENTS.map(function(c){
+    var sobre=c.deuda>c.cred;
+    return '<tr><td><b>'+esc(c.n)+'</b></td><td>'+c.r+'</td><td>'+esc(c.c)+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+clp(c.cred)+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+clp(c.deuda)+'</b></td>'
+      +'<td>'+(sobre?'<span class="badge rechazada">excede crédito</span>':'<span class="badge aceptada">al día</span>')+'</td></tr>';
+  }).join('');
+}
+function pintarUsers(){
+  document.getElementById('uBody').innerHTML=USERS.map(function(u){
+    return '<tr><td><b>'+esc(u.n)+'</b></td><td>'+u.u+'</td>'
+      +'<td><span class="badge enviada">'+ROLES[u.r].t+'</span></td>'
+      +'<td style="color:var(--muted)">'+u.last+'</td></tr>'; }).join('');
+  document.getElementById('mHead').innerHTML='<th>Permiso</th>'+RKEYS.map(function(r){
+    return '<th style="text-align:center">'+ROLES[r].t+'</th>'; }).join('');
+  document.getElementById('mBody').innerHTML=PERMS.map(function(p){
+    return '<tr><td>'+p.t+'</td>'+RKEYS.map(function(r){
+      return p[r]?'<td class="y">✓</td>':'<td class="n">—</td>'; }).join('')+'</tr>'; }).join('');
+}
+function pintarResto(){
+  document.getElementById('bkList').innerHTML=BACKUPS.map(function(b){
+    return '<div class="sent"><span class="ok">✓</span><span>'+b.f+'</span>'
+      +'<span style="color:var(--muted);margin-left:auto">'+b.s+'</span>'
+      +'<button class="btn sm ghost" onclick="toast(\'Restaurar respaldo\')">Restaurar</button></div>'; }).join('');
+  document.getElementById('modList').innerHTML=MODULOS.map(function(m){
+    return '<div class="attach'+(m.g==='ERP'?' is-new':'')+'"><input type="checkbox"'+(m.on?' checked':'')+'>'
+      +'<span>'+esc(m.t)+'</span><span class="sz" style="margin-left:auto;color:var(--accent-d);font-weight:700">'+m.g+'</span></div>'; }).join('');
+  document.getElementById('repList').innerHTML=REPORTS.map(function(r){
+    return '<div class="n"><div class="tagm">'+r.m+'</div><h4>'+esc(r.t)+'</h4><p>'+esc(r.d)+'</p>'
+      +'<button class="btn sm ghost" style="margin-top:10px" onclick="toast(\''+esc(r.t)+' generado\')">Generar</button></div>'; }).join('');
+  document.getElementById('newsList').innerHTML=NEWS.map(function(n){
+    return '<div class="n"><div class="tagm">'+n.m+'</div><h4>'+esc(n.t)+'</h4><p>'+esc(n.d)+'</p></div>'; }).join('');
+}
+function pintarTodo(){ pintarTiles(); pintarPanel(); pintarQuotes(); pintarSales(); pintarInvoices();
+  pintarRecv(); pintarPurch(); pintarSupp(); pintarInv(); pintarDisp(); pintarTreasury();
+  pintarProds(); pintarClients(); pintarUsers(); pintarResto(); pintarRepo(); }
+
+var REPO=[
+ {c:'BC-3208', n:'Bomba centrífuga horizontal 3x2-8',   cons90:18, stock:6,  trans:0, plazo:21, costo:1245000, pv:'Grundfos Chile Ltda.'},
+ {c:'VM-6W',   n:'Válvula mariposa wafer 6"',           cons90:96, stock:24, trans:6, plazo:10, costo:98000,   pv:'Flowserve Chile SpA'},
+ {c:'MH-R2-12',n:'Manguera hidráulica SAE 100 R2 1/2"', cons90:42, stock:2,  trans:0, plazo:14, costo:205000,  pv:'Parker Hannifin Chile S.A.'},
+ {c:'FL-10M',  n:'Filtro de línea 10 micrones',         cons90:120,stock:0,  trans:0, plazo:7,  costo:74000,   pv:'Parker Hannifin Chile S.A.'},
+ {c:'SE-3208', n:'Sello mecánico para BC-3208',         cons90:30, stock:15, trans:0, plazo:14, costo:62000,   pv:'Grundfos Chile Ltda.'},
+ {c:'AC-500',  n:'Acoplamiento flexible 500',           cons90:9,  stock:12, trans:0, plazo:30, costo:158000,  pv:'Parker Hannifin Chile S.A.'}
+];
+var RSEL={}, rsFiltro='pedir';
+
+/* Reposición: consumo real de los últimos 90 días + plazo de cada proveedor.
+   Punto de reposición = consumo diario × plazo + stock de seguridad.
+   Solo se pide cuando el disponible (stock + en tránsito) cae a ese punto. */
+function calcRepo(){
+  var obj=parseInt(document.getElementById('rsObj').value,10)||45;
+  var ssd=parseInt(document.getElementById('rsSS').value,10)||7;
+  var per=parseInt(document.getElementById('rsPer').value,10)||90;
+  var f=per/90;
+  REPO.forEach(function(p){
+    p.cons=Math.round(p.cons90*f);
+    p.diario=p.cons/per;
+    p.ss=Math.ceil(p.diario*ssd);
+    p.rop=Math.ceil(p.diario*p.plazo+p.ss);
+    p.disp=p.stock+p.trans;
+    p.cob=p.diario>0?Math.floor(p.disp/p.diario):999;
+    p.bajo=p.disp<=p.rop;
+    p.sug=p.bajo?Math.max(0,Math.ceil(p.diario*(obj+p.plazo)+p.ss-p.disp)):0;
+    p.valor=p.cons*p.costo;
+  });
+  var tot=REPO.reduce(function(a,b){ return a+b.valor; },0), acc=0;
+  REPO.slice().sort(function(a,b){ return b.valor-a.valor; }).forEach(function(x){
+    acc+=x.valor; var sh=tot?acc/tot:0; x.abc=sh<=0.7?'A':(sh<=0.9?'B':'C'); });
+  return REPO;
+}
+function pintarRepo(){
+  calcRepo();
+  var pedir=REPO.filter(function(p){ return p.sug>0; });
+  document.getElementById('rsN').textContent=pedir.length;
+  document.getElementById('rsQ').textContent=REPO.filter(function(p){ return p.disp===0&&p.cons>0; }).length;
+  document.getElementById('rsA').textContent=REPO.filter(function(p){ return p.abc==='A'; }).length;
+  var monto=pedir.reduce(function(a,b){ return a+b.sug*b.costo; },0);
+  document.getElementById('rsMonto').textContent=clp(monto);
+  var pvs={}; pedir.forEach(function(p){ pvs[p.pv]=1; });
+  document.getElementById('rsProv').textContent='en '+Object.keys(pvs).length+' proveedores';
+
+  var rk=REPO.slice().sort(function(a,b){ return b.valor-a.valor; }).slice(0,6);
+  var mx=rk[0]?rk[0].valor:1;
+  var opa={A:1,B:.62,C:.34};
+  document.getElementById('rsRank').innerHTML=rk.map(function(p){
+    return '<div><div class="top"><span>'+esc(p.n)+' <b class="ver">'+p.abc+'</b></span>'
+      +'<b>'+clp(p.valor)+'</b></div><div class="track"><div class="fill" style="width:'
+      +Math.round(p.valor/mx*100)+'%;opacity:'+opa[p.abc]+'"></div></div></div>'; }).join('');
+
+  var cb=REPO.slice().sort(function(a,b){ return a.cob-b.cob; }).slice(0,6);
+  document.getElementById('rsCob').innerHTML=cb.map(function(p){
+    var w=Math.min(100,Math.round(p.cob/90*100));
+    var col=p.cob<=7?'var(--red)':(p.cob<=21?'var(--yellow)':'var(--green)');
+    return '<div><div class="top"><span>'+esc(p.n)+'</span><b style="color:'+col+'">'
+      +(p.cob>=999?'sin venta':p.cob+' días')+'</b></div>'
+      +'<div class="track"><div class="fill" style="width:'+w+'%;background:'+col+'"></div></div></div>'; }).join('');
+
+  var rows=REPO.filter(function(p){
+    return rsFiltro==='pedir'?p.sug>0:(rsFiltro==='A'?p.abc==='A':true); });
+  document.getElementById('rsEmpty').style.display=rows.length?'none':'block';
+  document.getElementById('rsBody').innerHTML=rows.map(function(p){
+    var colC=p.cob<=7?'var(--red)':(p.cob<=21?'var(--yellow)':'var(--green)');
+    return '<tr><td>'+(p.sug>0?'<input type="checkbox" class="rschk" data-c="'+p.c+'"'
+        +(RSEL[p.c]?' checked':'')+'>':'')+'</td>'
+      +'<td><b>'+p.c+'</b></td><td>'+esc(p.n)+'</td>'
+      +'<td><span class="ver" style="opacity:'+opa[p.abc]+'">'+p.abc+'</span></td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.cons+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.diario.toFixed(2).replace('.',',')+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.stock+(p.trans?' <span style="color:var(--muted)">+'+p.trans+' en tránsito</span>':'')+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums;color:'+colC+';font-weight:700">'+(p.cob>=999?'—':p.cob+' d')+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+p.rop+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+(p.sug>0
+        ?'<b style="color:var(--accent-d)">'+p.sug+'</b>':'<span style="color:var(--muted)">—</span>')+'</td>'
+      +'<td>'+esc(p.pv)+' <span style="color:var(--muted)">· '+p.plazo+' d</span></td>'
+      +'<td style="font-variant-numeric:tabular-nums">'+(p.sug>0?clp(p.sug*p.costo):'—')+'</td></tr>'; }).join('');
+  document.querySelectorAll('.rschk').forEach(function(ch){
+    ch.addEventListener('change',function(){ RSEL[ch.dataset.c]=ch.checked; contarSel(); }); });
+  contarSel();
+}
+function contarSel(){
+  var n=REPO.filter(function(p){ return RSEL[p.c]&&p.sug>0; }).length;
+  document.getElementById('rsSel').textContent=n;
+  document.getElementById('btnGenOC').disabled=n===0||!can('compras');
+}
+function abrirGenOC(){
+  if(!can('compras')) return denied();
+  var sel=REPO.filter(function(p){ return RSEL[p.c]&&p.sug>0; });
+  if(!sel.length) return toast('Seleccione al menos un producto');
+  var g={}; sel.forEach(function(p){ (g[p.pv]=g[p.pv]||[]).push(p); });
+  var tot=0, np=0;
+  document.getElementById('genList').innerHTML=Object.keys(g).map(function(pv){
+    var it=g[pv], st=it.reduce(function(a,b){ return a+b.sug*b.costo; },0); tot+=st; np+=it.length;
+    return '<div class="card2" style="margin-bottom:10px;padding:13px 15px">'
+      +'<h3 style="font-size:12.5px">'+esc(pv)+' <span class="ver">'+it[0].plazo+' días de entrega</span></h3>'
+      +'<div style="font-size:12.5px;line-height:1.9;margin-top:6px">'
+      +it.map(function(p){ return '<div>• <b>'+p.sug+'</b> × '+esc(p.n)
+        +' <span style="color:var(--muted)">'+clp(p.sug*p.costo)+'</span></div>'; }).join('')
+      +'</div><div style="margin-top:8px;font-weight:700;font-variant-numeric:tabular-nums">'+clp(st)+'</div></div>';
+  }).join('');
+  document.getElementById('genTot').textContent=clp(tot);
+  document.getElementById('genSub').textContent=Object.keys(g).length+' órdenes · '+np+' productos';
+  open_('mGenOC');
+}
+
+/* ============ MODALES ============ */
+function openPay(d,s){ document.getElementById('payDoc').value=d;
+  document.getElementById('payAmt').value=clp(s); open_('mPay'); }
+function openRecv(oc){ document.getElementById('recvOc').value=oc; open_('mRecv'); }
+function openKardex(c,n){ document.getElementById('kdTitle').textContent='Kardex · '+c+' · '+n;
+  document.getElementById('kdBody').innerHTML=KARDEX.map(function(k){
+    return '<tr><td>'+k.f+'</td><td>'+k.t+'</td><td><span style="color:var(--accent-d)">'+k.d+'</span></td>'
+      +'<td>'+k.b+'</td><td style="font-variant-numeric:tabular-nums;color:'+(k.q>0?'var(--green)':'var(--red)')
+      +';font-weight:700">'+(k.q>0?'+':'')+k.q+'</td>'
+      +'<td style="font-variant-numeric:tabular-nums"><b>'+k.s+'</b></td></tr>'; }).join('');
+  open_('mKardex'); }
+
+/* ============ PERFIL ============ */
+function aplicarPerfil(){
+  document.querySelectorAll('.colMargen').forEach(function(e){
+    e.style.display=can('ver_margen')?'':'none'; });
+  document.getElementById('ubName').textContent=USER.n;
+  document.getElementById('ubRole').textContent=ROLES[ROLE].t;
+  document.getElementById('ubAv').textContent=USER.n.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+  document.getElementById('roleInfo').innerHTML='<span>👤</span><span><b style="color:var(--txt)">'
+    +ROLES[ROLE].t+'</b> · '+ROLES[ROLE].d+'</span>';
+  document.getElementById('qSub').textContent=can('editar_cotiz')
+    ? 'Cree, edite e imprima cotizaciones para sus clientes.'
+    : 'Consulta de cotizaciones. Su perfil no permite crear ni editar.';
+  document.getElementById('btnNewQ').disabled=!can('editar_cotiz');
+  document.getElementById('btnEmit').disabled=!can('facturar');
+  document.getElementById('btnSII').disabled=!can('facturar');
+  document.getElementById('btnMove').disabled=!can('inventario');
+  ['btnImport','btnReprice'].forEach(function(id){ document.getElementById(id).disabled=!can('editar_prod'); });
+  var it=NAV.find(function(x){ return x.v===CURV; });
+  if(it&&it.perm&&!can(it.perm)) go('panel');
+  pintarNav(); pintarTodo();
+}
+
+/* ============ INGRESO ============ */
+function pintarDemoUsers(){
+  document.getElementById('duserList').innerHTML=USERS.map(function(u){
+    var ini=u.n.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+    return '<button class="duser" data-u="'+u.u+'"><span class="av">'+ini+'</span>'
+      +'<span><b>'+esc(u.n)+'</b><br><span style="color:var(--muted);font-size:11px">'+u.u+' · '+u.p+'</span></span>'
+      +'<span class="rl">'+ROLES[u.r].t+'</span></button>'; }).join('');
+  document.querySelectorAll('.duser').forEach(function(b){
+    b.addEventListener('click',function(){
+      var u=USERS.find(function(x){ return x.u===b.dataset.u; });
+      document.getElementById('inUser').value=u.u; document.getElementById('inPass').value=u.p;
+      document.getElementById('loginErr').classList.remove('on'); }); });
+}
+function entrar(){
+  var u=document.getElementById('inUser').value.trim().toLowerCase();
+  var p=document.getElementById('inPass').value;
+  var f=USERS.find(function(x){ return x.u===u&&x.p===p; });
+  var err=document.getElementById('loginErr');
+  if(!f){ err.textContent='Usuario o contraseña incorrectos.'; err.classList.add('on'); return; }
+  err.classList.remove('on'); USER=f; ROLE=f.r;
+  document.getElementById('selRole').value=ROLE;
+  document.getElementById('login').classList.add('hide');
+  document.getElementById('shell').style.display='';
+  CURV='panel'; aplicarPerfil(); go('panel');
+  toast('Bienvenido, '+f.n.split(' ')[0]);
+}
+function salir(){ document.getElementById('shell').style.display='none';
+  document.getElementById('login').classList.remove('hide'); document.getElementById('inPass').value=''; }
+
+/* ============ ARRANQUE ============ */
+document.getElementById('selRole').innerHTML=RKEYS.map(function(r){
+  return '<option value="'+r+'">'+ROLES[r].t+'</option>'; }).join('');
+document.getElementById('btnLogin').addEventListener('click',entrar);
+['inUser','inPass'].forEach(function(id){ document.getElementById(id)
+  .addEventListener('keydown',function(e){ if(e.key==='Enter') entrar(); }); });
+document.getElementById('btnOut').addEventListener('click',salir);
+document.getElementById('selRole').addEventListener('change',function(e){
+  ROLE=e.target.value; USER=USERS.find(function(u){ return u.r===ROLE; }); aplicarPerfil(); });
+document.getElementById('chkNew').addEventListener('change',function(e){
+  document.body.classList.toggle('show-new',e.target.checked); });
+document.getElementById('chkDark').addEventListener('change',function(e){
+  document.documentElement.setAttribute('data-theme',e.target.checked?'dark':'light');
+  if(window.ApexCharts && document.getElementById('view-panel').classList.contains('active')) requestAnimationFrame(renderCharts); });
+document.querySelectorAll('.chip[data-f]').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.chip[data-f]').forEach(function(x){ x.classList.remove('on'); });
+    c.classList.add('on'); filtro=c.dataset.f; pintarQuotes(); }); });
+document.getElementById('qSearch').addEventListener('input',pintarQuotes);
+document.getElementById('pSearch').addEventListener('input',pintarProds);
+document.getElementById('invSearch').addEventListener('input',pintarInv);
+['rsObj','rsSS'].forEach(function(id){ document.getElementById(id).addEventListener('input',pintarRepo); });
+document.getElementById('rsPer').addEventListener('change',pintarRepo);
+document.querySelectorAll('.chip[data-rf]').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('.chip[data-rf]').forEach(function(x){ x.classList.remove('on'); });
+    c.classList.add('on'); rsFiltro=c.dataset.rf; pintarRepo(); }); });
+document.getElementById('rsAll').addEventListener('change',function(e){
+  REPO.forEach(function(p){ if(p.sug>0) RSEL[p.c]=e.target.checked; }); pintarRepo(); });
+document.getElementById('btnGenOC').addEventListener('click',abrirGenOC);
+document.getElementById('btnGenOK').addEventListener('click',function(){
+  var n=REPO.filter(function(p){ return RSEL[p.c]&&p.sug>0; }).length;
+  closeAll(); RSEL={}; pintarRepo();
+  toast(n+' productos pedidos · órdenes generadas y enviadas a los proveedores'); go('purchases'); });
+document.getElementById('btnNewQ').addEventListener('click',function(){
+  can('editar_cotiz')?toast('En el prototipo no se crean cotizaciones'):denied(); });
+document.getElementById('btnEmit').addEventListener('click',function(){ can('facturar')?open_('mEmit'):denied(); });
+document.getElementById('btnSII').addEventListener('click',function(){ can('facturar')?open_('mSII'):denied(); });
+document.getElementById('btnMove').addEventListener('click',function(){ can('inventario')?open_('mMove'):denied(); });
+document.getElementById('btnImport').addEventListener('click',function(){ can('editar_prod')?open_('mImport'):denied(); });
+document.getElementById('btnReprice').addEventListener('click',function(){ can('editar_prod')?open_('mReprice'):denied(); });
+document.getElementById('rpPct').addEventListener('input',function(){
+  var p=parseFloat(String(this.value).replace(',','.'))||0;
+  document.getElementById('rpEx').textContent=clp(Math.round(1890000*(1+p/100)/100)*100); });
+document.querySelectorAll('.overlay').forEach(function(o){
+  o.addEventListener('click',function(e){ if(e.target===o) closeAll(); }); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeAll(); });
+var LOGO=window.__LOGO__||'';
+document.getElementById('sbLogo').src=LOGO; document.getElementById('loginLogo').src=LOGO;
+document.body.classList.add('show-new');
+(function(){ var hb=document.getElementById('hamb'), bd=document.getElementById('navBackdrop');
+  function closeNav(){ document.body.classList.remove('navopen'); }
+  if(hb) hb.addEventListener('click',function(){ document.body.classList.toggle('navopen'); });
+  if(bd) bd.addEventListener('click',closeNav);
+  var nv=document.querySelector('.nav'); if(nv) nv.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('button[data-view]')) closeNav(); });
+})();
+pintarDemoUsers(); pintarNav(); aplicarPerfil();
+</script>
+
+
+</body>
+</html>
